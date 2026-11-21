@@ -2,27 +2,18 @@
 <html lang="zh-HK">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="小朋友音樂盒" />
   <title>小朋友音樂盒 - Kids iPad Launcher</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet" />
   <style>
-    /* Global reset & touch rules for kids iPad screen */
     * {
+      -webkit-box-sizing: border-box;
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
       -webkit-user-select: none;
       user-select: none;
-    }
-
-    input, select, textarea {
-      -webkit-user-select: auto;
-      user-select: auto;
     }
 
     html, body {
@@ -32,1823 +23,231 @@
       height: 100%;
       overflow: hidden;
       background-color: #F9D45C;
-      font-family: 'Fredoka', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
-      color: #1E1B18;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Heiti TC", sans-serif;
     }
 
-    /* Dynamically sized root container to avoid iOS 12 standalone 100vh clipping */
-    #appRoot {
+    /* 主容器：強制佔滿整個螢幕高度 */
+    .app-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       width: 100%;
       height: 100%;
+      background-color: #F9D45C;
+      display: -webkit-box;
       display: -webkit-flex;
       display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
       -webkit-flex-direction: column;
       flex-direction: column;
-      -webkit-justify-content: space-between;
-      justify-content: space-between;
-      padding: 12px 16px;
     }
 
-    /* Strictly cap SVG dimensions on iOS 12.5.8 Safari so icons never scale huge */
-    svg {
+    /* 頂部家人頭像列 */
+    .top-bar {
+      position: relative;
+      width: 100%;
+      height: 130px;
+      min-height: 130px;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      padding: 10px 20px;
+    }
+
+    .avatar-btn {
+      display: inline-block;
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      border: 4px solid #1E1E1E;
+      background-color: #FFFDF7;
+      margin: 0 22px;
+      padding: 6px;
+      text-decoration: none;
+      box-shadow: 0 4px 0 #1E1E1E;
+      overflow: hidden;
+    }
+
+    .avatar-btn:active {
+      -webkit-transform: translateY(3px);
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #1E1E1E;
+    }
+
+    .avatar-btn svg {
+      width: 76px !important;
+      height: 76px !important;
+      max-width: 76px !important;
+      max-height: 76px !important;
       display: block;
-      max-width: 100%;
-      max-height: 100%;
-    }
-    .icon-lock-svg {
-      width: 26px;
-      height: 26px;
-      max-width: 26px;
-      max-height: 26px;
-    }
-    .icon-shelf-svg {
-      width: 44px;
-      height: 44px;
-      max-width: 44px;
-      max-height: 44px;
-    }
-    .icon-arrow-svg {
-      width: 22px;
-      height: 22px;
-      max-width: 22px;
-      max-height: 22px;
-    }
-    .icon-play-svg {
-      width: 22px;
-      height: 22px;
-      max-width: 22px;
-      max-height: 22px;
-    }
-    .portrait-svg-wrap {
-      width: 88px;
-      height: 88px;
-      max-width: 88px;
-      max-height: 88px;
-    }
-    .card-art-svg-wrap {
-      width: 76px;
-      height: 76px;
-      max-width: 76px;
-      max-height: 76px;
+      margin: 0 auto;
     }
 
-    .cartoon-pill {
-      border: 3.5px solid #1E1B18;
-      box-shadow: 0 4px 0 #1E1B18;
-    }
-
-    .tactile-btn {
-      -webkit-transition: -webkit-transform 0.1s ease, box-shadow 0.1s ease;
-      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    /* 右上角家長鎖按鈕 */
+    .lock-btn {
+      position: absolute;
+      top: 16px;
+      right: 18px;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      border: 3px solid #1E1E1E;
+      background-color: #FFFDF7;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      box-shadow: 0 3px 0 #1E1E1E;
       cursor: pointer;
     }
 
-    .tactile-btn:active {
-      -webkit-transform: translateY(3px);
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 #1E1B18 !important;
+    .lock-btn svg {
+      width: 24px !important;
+      height: 24px !important;
+      max-width: 24px !important;
+      max-height: 24px !important;
     }
 
-    .no-scrollbar::-webkit-scrollbar {
+    /* 白色主內容卡片區 */
+    .main-board {
+      -webkit-box-flex: 1;
+      -webkit-flex: 1;
+      flex: 1;
+      margin: 0 18px 18px 18px;
+      background-color: #FFFDF7;
+      border: 4px solid #1E1E1E;
+      border-radius: 28px;
+      box-shadow: 0 6px 0 #1E1E1E;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+      -webkit-flex-direction: column;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* 故事與音樂雙書架列 */
+    .shelf-row {
+      -webkit-box-flex: 1;
+      -webkit-flex: 1;
+      flex: 1;
+      width: 100%;
+      min-height: 210px;
+      padding: 14px 16px;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: normal;
+      -webkit-flex-direction: row;
+      flex-direction: row;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+    }
+
+    .shelf-divider {
+      width: 100%;
+      height: 3px;
+      background-color: #1E1E1E;
+    }
+
+    /* 左側分類圓形圖示 */
+    .category-badge {
+      width: 64px;
+      height: 64px;
+      min-width: 64px;
+      border-radius: 50%;
+      border: 3px solid #1E1E1E;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-box-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      margin-right: 14px;
+      box-shadow: 0 3px 0 #1E1E1E;
+    }
+
+    .category-badge.story {
+      background-color: #DCEEFF;
+    }
+
+    .category-badge.music {
+      background-color: #FFE0EC;
+    }
+
+    .category-badge svg {
+      width: 32px !important;
+      height: 32px !important;
+      max-width: 32px !important;
+      max-height: 32px !important;
+    }
+
+    /* 橫向捲動卡片軌道 */
+    .cards-track {
+      -webkit-box-flex: 1;
+      -webkit-flex: 1;
+      flex: 1;
+      height: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      white-space: nowrap;
+      padding: 6px 4px;
+      font-size: 0;
+    }
+
+    .cards-track::-webkit-scrollbar {
       display: none;
     }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
-    }
 
-    /* Explicit margins instead of CSS gap for iOS 12.5.8 Safari compatibility */
-    .avatar-item {
-      margin-left: 16px;
-      margin-right: 16px;
-    }
-    @media (min-width: 768px) {
-      .avatar-item {
-        margin-left: 26px;
-        margin-right: 26px;
-      }
-    }
-
-    .track-card-item {
-      margin-right: 14px;
-    }
-    .track-card-item:last-child {
-      margin-right: 4px;
-    }
-
-    /* Active playing card pulse & equalizer bars */
-    @-webkit-keyframes activeBounce {
-      0%, 100% { -webkit-transform: scale(1); transform: scale(1); }
-      50% { -webkit-transform: scale(1.03); transform: scale(1.03); }
-    }
-    @keyframes activeBounce {
-      0%, 100% { -webkit-transform: scale(1); transform: scale(1); }
-      50% { -webkit-transform: scale(1.03); transform: scale(1.03); }
-    }
-    .playing-card {
-      -webkit-animation: activeBounce 1.3s ease-in-out infinite;
-      animation: activeBounce 1.3s ease-in-out infinite;
-      border-color: #EC4899 !important;
-      box-shadow: 0 0 0 4px #FBCFE8, 0 5px 0 #1E1B18 !important;
-    }
-
-    @-webkit-keyframes eqBounce {
-      0%, 100% { height: 6px; }
-      50% { height: 20px; }
-    }
-    @keyframes eqBounce {
-      0%, 100% { height: 6px; }
-      50% { height: 20px; }
-    }
-    .eq-bar {
-      width: 5px;
-      background-color: #FFFFFF;
-      border-radius: 9999px;
+    /* 單張故事/音樂卡片 */
+    .media-card {
       display: inline-block;
-      margin-left: 2px;
-      margin-right: 2px;
-    }
-    .eq-1 { -webkit-animation: eqBounce 0.5s ease-in-out infinite; animation: eqBounce 0.5s ease-in-out infinite; }
-    .eq-2 { -webkit-animation: eqBounce 0.38s ease-in-out 0.12s infinite; animation: eqBounce 0.38s ease-in-out 0.12s infinite; }
-    .eq-3 { -webkit-animation: eqBounce 0.58s ease-in-out 0.24s infinite; animation: eqBounce 0.58s ease-in-out 0.24s infinite; }
-
-    /* One-tap FaceTime calling ripple */
-    @-webkit-keyframes callPulse {
-      0% { -webkit-transform: scale(0.96); transform: scale(0.96); opacity: 0.9; }
-      100% { -webkit-transform: scale(1.28); transform: scale(1.28); opacity: 0; }
-    }
-    @keyframes callPulse {
-      0% { -webkit-transform: scale(0.96); transform: scale(0.96); opacity: 0.9; }
-      100% { -webkit-transform: scale(1.28); transform: scale(1.28); opacity: 0; }
-    }
-    .calling-ring {
+      vertical-align: middle;
+      width: 175px;
+      height: 195px;
+      border: 3px solid #1E1E1E;
+      border-radius: 22px;
+      background-color: #FFFFFF;
+      margin-right: 16px;
+      padding: 10px;
+      box-shadow: 0 4px 0 #1E1E1E;
+      text-align: center;
+      cursor: pointer;
       position: relative;
     }
-    .calling-ring::after {
-      content: '';
-      position: absolute;
-      top: -6px;
-      left: -6px;
-      right: -6px;
-      bottom: -6px;
-      border-radius: 9999px;
-      border: 5px solid #2CC865;
-      -webkit-animation: callPulse 0.9s ease-out infinite;
-      animation: callPulse 0.9s ease-out infinite;
+
+    .media-card:active {
+      -webkit-transform: translateY(3px);
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #1E1E1E;
     }
 
-    /* PIN pad cells & indicator dots (no CSS gap) */
-    .pin-cell {
-      padding: 5px;
-    }
-    .pin-dot {
-      width: 18px;
-      height: 18px;
-      border-radius: 9999px;
-      border: 3px solid #1E1B18;
-      background-color: #FFFFFF;
-      margin-left: 8px;
-      margin-right: 8px;
-    }
-  </style>
-</head>
-<body>
-
-  <div id="appRoot">
-    <!-- Hidden HTML5 audio element for offline playback -->
-    <audio id="htmlAudioPlayer" playsinline webkit-playsinline preload="auto"></audio>
-
-    <!-- ==================== 1. TOP BAR: CLEAN CIRCULAR PORTRAITS + PADLOCK ==================== -->
-    <header class="w-full flex items-center justify-between px-2 sm:px-4 mb-2.5 shrink-0 relative z-10" style="height: 25%; min-height: 108px; max-height: 158px;">
-      <!-- Left spacer to keep circular portraits centered -->
-      <div class="w-12 h-12 sm:w-14 sm:h-14 shrink-0"></div>
-
-      <!-- Clean Circular Family Portraits (No text labels, no green video badge icon) -->
-      <div id="topContactsRow" class="flex-1 flex items-center justify-center overflow-x-auto no-scrollbar py-1"></div>
-
-      <!-- Top-Right Compact Round Padlock Button -->
-      <button
-        type="button"
-        onclick="openParentLockModal()"
-        aria-label="家長設定"
-        class="tactile-btn cartoon-pill w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#FFFDF5] flex items-center justify-center shrink-0"
-      >
-        <svg class="icon-lock-svg" width="26" height="26" viewBox="0 0 28 28" fill="none">
-          <path d="M9.5 12V9C9.5 6.51472 11.5147 4.5 14 4.5C16.4853 4.5 18.5 6.51472 18.5 9V12" stroke="#1E1B18" stroke-width="2.8" stroke-linecap="round"/>
-          <rect x="6.5" y="12" width="15" height="11.5" rx="3.5" fill="#F9D45C" stroke="#1E1B18" stroke-width="2.5"/>
-          <circle cx="14" cy="17" r="1.8" fill="#1E1B18"/>
-          <path d="M14 18.5V20.5" stroke="#1E1B18" stroke-width="2.2" stroke-linecap="round"/>
-        </svg>
-      </button>
-    </header>
-
-    <!-- ==================== 2. MAIN CARTOON BOARD: STORY ROW + MUSIC ROW ==================== -->
-    <main class="cartoon-board flex-1 w-full min-h-0 p-3 sm:p-4 flex flex-col justify-between overflow-hidden z-10">
-
-      <!-- ROW 1: STORIES SHELF -->
-      <section class="flex-1 min-h-0 flex items-center pb-2.5 sm:pb-3 border-b-4 border-[#1E1B18]">
-        <div class="w-16 sm:w-20 md:w-24 h-full flex items-center justify-center shrink-0 mr-2.5 sm:mr-3.5">
-          <div class="cartoon-pill w-14 h-14 sm:w-16 sm:h-16 rounded-3xl bg-[#E0F2FE] flex items-center justify-center">
-            <svg class="icon-shelf-svg" width="44" height="44" viewBox="0 0 64 64" fill="none">
-              <path d="M8 17C17 12 27 14 32 21C37 14 47 12 56 17V48C47 43 37 45 32 51C27 45 17 43 8 48V17Z" fill="#FFFDF5" stroke="#1E1B18" stroke-width="4" stroke-linejoin="round"/>
-              <path d="M32 21V51" stroke="#1E1B18" stroke-width="3.5" stroke-linecap="round"/>
-              <path d="M15 24H25M15 31H24M39 24H49M40 31H49" stroke="#38BDF8" stroke-width="3.5" stroke-linecap="round"/>
-            </svg>
-          </div>
-        </div>
-
-        <div id="storyShelf" class="flex-1 h-full flex items-center overflow-x-auto no-scrollbar py-1 px-1"></div>
-
-        <button
-          type="button"
-          onclick="scrollShelf('storyShelf')"
-          aria-label="向右捲動故事"
-          class="tactile-btn cartoon-pill w-10 sm:w-12 h-14 sm:h-16 rounded-2xl bg-[#FFF7D6] flex items-center justify-center shrink-0 ml-2 sm:ml-3"
-        >
-          <svg class="icon-arrow-svg" width="22" height="22" viewBox="0 0 24 24" fill="#1E1B18">
-            <path d="M8 5L18 12L8 19V5Z"/>
-          </svg>
-        </button>
-      </section>
-
-      <!-- ROW 2: MUSIC SHELF -->
-      <section class="flex-1 min-h-0 flex items-center pt-2.5 sm:pt-3">
-        <div class="w-16 sm:w-20 md:w-24 h-full flex items-center justify-center shrink-0 mr-2.5 sm:mr-3.5">
-          <div class="cartoon-pill w-14 h-14 sm:w-16 sm:h-16 rounded-3xl bg-[#FCE7F3] flex items-center justify-center">
-            <svg class="icon-shelf-svg" width="44" height="44" viewBox="0 0 64 64" fill="none">
-              <path d="M24 45V16L50 11V40" stroke="#1E1B18" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M24 24L50 19" stroke="#1E1B18" stroke-width="4.5" stroke-linecap="round"/>
-              <circle cx="18" cy="45" r="7.5" fill="#FB7185" stroke="#1E1B18" stroke-width="4"/>
-              <circle cx="44" cy="40" r="7.5" fill="#F9D45C" stroke="#1E1B18" stroke-width="4"/>
-            </svg>
-          </div>
-        </div>
-
-        <div id="musicShelf" class="flex-1 h-full flex items-center overflow-x-auto no-scrollbar py-1 px-1"></div>
-
-        <button
-          type="button"
-          onclick="scrollShelf('musicShelf')"
-          aria-label="向右捲動音樂"
-          class="tactile-btn cartoon-pill w-10 sm:w-12 h-14 sm:h-16 rounded-2xl bg-[#FFF7D6] flex items-center justify-center shrink-0 ml-2 sm:ml-3"
-        >
-          <svg class="icon-arrow-svg" width="22" height="22" viewBox="0 0 24 24" fill="#1E1B18">
-            <path d="M8 5L18 12L8 19V5Z"/>
-          </svg>
-        </button>
-      </section>
-
-    </main>
-  </div>
-
-  <!-- ==================== PIN LOCK MODAL ==================== -->
-  <div id="pinModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
-    <div class="cartoon-board max-w-sm w-full p-6 text-center bg-[#FFFDF5]">
-      <div class="flex justify-between items-center mb-3">
-        <span class="text-xl font-black text-[#1E1B18]">🔒 家長密碼</span>
-        <button type="button" onclick="closePinModal()" class="tactile-btn cartoon-pill w-10 h-10 rounded-full bg-rose-200 text-[#1E1B18] font-black text-lg">✕</button>
-      </div>
-      <p class="text-sm font-bold text-slate-600 mb-4">請輸入 4 位數字密碼（預設：1234）</p>
-
-      <div class="flex justify-center mb-5">
-        <div id="pinDot0" class="pin-dot"></div>
-        <div id="pinDot1" class="pin-dot"></div>
-        <div id="pinDot2" class="pin-dot"></div>
-        <div id="pinDot3" class="pin-dot"></div>
-      </div>
-
-      <div class="flex flex-wrap -mx-1">
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('1')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">1</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('2')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">2</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('3')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">3</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('4')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">4</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('5')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">5</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('6')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">6</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('7')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">7</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('8')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">8</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('9')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">9</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="clearPinInput()" class="tactile-btn cartoon-pill w-full bg-rose-200 rounded-2xl py-3 text-base font-black">清除</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('0')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">0</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="backspacePinDigit()" class="tactile-btn cartoon-pill w-full bg-amber-200 rounded-2xl py-3 text-lg font-black">⌫</button></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==================== PARENT MODE MODAL ==================== -->
-  <div id="parentModal" class="fixed inset-0 bg-black/65 z-50 hidden flex items-center justify-center p-3 sm:p-5">
-    <div class="cartoon-board max-w-5xl w-full flex flex-col overflow-hidden bg-[#FFFDF5]" style="max-height: 92%;">
-      <!-- Header -->
-      <div class="bg-[#F9D45C] border-b-4 border-[#1E1B18] px-5 py-3 flex items-center justify-between shrink-0">
-        <div class="flex items-center">
-          <span class="text-2xl mr-2">🔐</span>
-          <h2 class="text-xl sm:text-2xl font-black text-[#1E1B18]">家長設定</h2>
-        </div>
-        <button type="button" onclick="closeParentModal()" class="tactile-btn cartoon-pill w-10 h-10 rounded-full bg-white text-[#1E1B18] font-black text-lg flex items-center justify-center">
-          ✕
-        </button>
-      </div>
-
-      <!-- Body -->
-      <div class="flex-1 overflow-y-auto p-4 sm:p-5 flex flex-wrap -mx-2" style="-webkit-overflow-scrolling: touch;">
-
-        <!-- Left Column: Contacts, Backup/Restore & HomePod Control Center Note -->
-        <div class="w-full lg:w-1/2 px-2 mb-4 lg:mb-0">
-          <!-- FaceTime Contacts -->
-          <div class="bg-[#FFF7D6] border-3 border-[#1E1B18] rounded-3xl p-4 shadow-sm mb-4">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="text-base sm:text-lg font-black">👨‍👩‍👧 家人視訊聯絡人（一按即 FaceTime）</h3>
-              <button type="button" onclick="toggleAddContactForm()" class="tactile-btn cartoon-pill bg-[#2CC865] text-white rounded-full px-3.5 py-1 text-sm font-black shrink-0 ml-2">
-                + 新增
-              </button>
-            </div>
-
-            <!-- Add / Edit Contact Form -->
-            <div id="contactFormBox" class="hidden bg-white border-3 border-[#1E1B18] rounded-2xl p-3 mb-3">
-              <input type="hidden" id="editContactIdx" value="-1" />
-              <div class="flex items-center mb-2.5">
-                <div id="contactAvatarPreview" class="w-12 h-12 rounded-full border-2 border-[#1E1B18] bg-amber-100 overflow-hidden flex items-center justify-center shrink-0 mr-2.5">
-                  <span class="text-lg">👤</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <input id="contactNameInput" type="text" placeholder="備註稱呼（例：爸爸 / 媽媽，僅家長可見）" class="w-full border-2 border-[#1E1B18] rounded-xl px-3 py-1.5 text-sm font-bold bg-amber-50 mb-1.5" />
-                  <input id="contactTargetInput" type="text" placeholder="FaceTime Apple ID 電郵或電話號碼" class="w-full border-2 border-[#1E1B18] rounded-xl px-3 py-1.5 text-sm font-bold bg-amber-50" />
-                </div>
-              </div>
-
-              <div class="flex flex-wrap items-center justify-between">
-                <div class="flex items-center mb-1.5 sm:mb-0">
-                  <select id="contactAvatarSelect" onchange="previewPresetContactAvatar()" class="border-2 border-[#1E1B18] rounded-xl px-2.5 py-1.5 text-xs sm:text-sm font-bold bg-amber-50 mr-2">
-                    <option value="dad">👨 爸爸插畫</option>
-                    <option value="mom">👩 媽媽插畫</option>
-                    <option value="grandma">👵 婆婆插畫</option>
-                    <option value="grandpa">👴 公公插畫</option>
-                  </select>
-                  <label class="tactile-btn border-2 border-[#1E1B18] bg-[#F9D45C] rounded-xl px-2.5 py-1.5 text-xs font-black cursor-pointer">
-                    📷 自訂頭像
-                    <input id="contactPhotoFileInput" type="file" accept="image/*" class="hidden" onchange="handleContactPhotoSelect(event)" />
-                  </label>
-                </div>
-                <div class="flex items-center">
-                  <button type="button" onclick="cancelContactForm()" class="tactile-btn border-2 border-[#1E1B18] bg-slate-200 rounded-xl px-3 py-1.5 text-xs sm:text-sm font-black mr-2">取消</button>
-                  <button type="button" onclick="saveContact()" class="tactile-btn border-2 border-[#1E1B18] bg-[#2CC865] text-white rounded-xl px-4 py-1.5 text-xs sm:text-sm font-black">儲存</button>
-                </div>
-              </div>
-            </div>
-
-            <div id="parentContactList" class="max-h-40 overflow-y-auto pr-1"></div>
-          </div>
-
-          <!-- Backup & Restore (.json via AirDrop) -->
-          <div class="bg-[#F3E8FF] border-3 border-[#1E1B18] rounded-3xl p-4 shadow-sm mb-4">
-            <h3 class="text-base sm:text-lg font-black mb-1.5">📦 備份與還原（iPhone AirDrop 傳送至 iPad）</h3>
-            <p class="text-xs font-bold text-slate-700 mb-3 leading-relaxed">
-              在 iPhone 整理好歌曲、故事、封面與頭像後按「匯出備份檔」，透過 <strong>AirDrop</strong> 傳至舊 iPad 並儲存到「檔案」，再於舊 iPad 按「匯入備份檔」即可一鍵同步。
-            </p>
-            <div class="flex -mx-1">
-              <div class="w-1/2 px-1">
-                <button type="button" onclick="exportBackupJson()" class="tactile-btn cartoon-pill w-full bg-[#C084FC] text-[#1E1B18] rounded-2xl py-2.5 px-2 text-xs sm:text-sm font-black text-center">
-                  📦 匯出備份檔 (.json)
-                </button>
-              </div>
-              <div class="w-1/2 px-1">
-                <label class="tactile-btn cartoon-pill w-full bg-[#2CC865] text-white rounded-2xl py-2.5 px-2 text-xs sm:text-sm font-black flex items-center justify-center cursor-pointer text-center">
-                  <span>📥 匯入備份檔 (.json)</span>
-                  <input id="importBackupInput" type="file" accept=".json,application/json" class="hidden" onchange="importBackupJson(event)" />
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <!-- iOS 12.5.8 HomePod AirPlay via Control Center Note -->
-          <div class="bg-[#E0F2FE] border-3 border-[#1E1B18] rounded-3xl p-4 shadow-sm">
-            <h3 class="text-base sm:text-lg font-black mb-1.5">🔊 HomePod 連接與 FaceTime 提示</h3>
-            <p class="text-xs font-bold text-slate-700 leading-relaxed mb-2">
-              <strong>HomePod（iOS 12.5.8）：</strong>Safari 不支援網頁按鈕直接觸發 AirPlay。請由舊 iPad 螢幕<strong>右上角向下拉開「控制中心」</strong> → 長按右上角音樂方塊 → 點選 <strong>AirPlay 圖示</strong> 選擇 HomePod。
-            </p>
-            <p class="text-xs font-bold text-slate-700 leading-relaxed">
-              <strong>FaceTime 系統確認：</strong>點擊家人頭像會直接呼叫 <code>facetime://</code>，沒有額外的網頁確認框；若 FaceTime 視窗本身出現「Click to call」或「Cancel / Call」，那是 macOS／iOS 系統層級的安全提示，網頁無法略過。
-            </p>
-          </div>
-        </div>
-
-        <!-- Right Column: Story & Music Upload + Custom Covers + PIN Change -->
-        <div class="w-full lg:w-1/2 px-2">
-          <div class="bg-[#FFF7D6] border-3 border-[#1E1B18] rounded-3xl p-4 shadow-sm mb-4">
-            <h3 class="text-base sm:text-lg font-black mb-2.5">📖🎵 故事與音樂管理（離線 MP3 / M4A / WAV）</h3>
-
-            <div class="flex -mx-1 mb-3">
-              <div class="w-1/2 px-1">
-                <button type="button" id="parentTabStory" onclick="setParentMediaTab('story')" class="tactile-btn border-2 border-[#1E1B18] w-full py-2 rounded-xl font-black text-sm bg-[#BAE6FD]">
-                  📖 故事列
-                </button>
-              </div>
-              <div class="w-1/2 px-1">
-                <button type="button" id="parentTabMusic" onclick="setParentMediaTab('music')" class="tactile-btn border-2 border-[#1E1B18] w-full py-2 rounded-xl font-black text-sm bg-white">
-                  🎵 音樂列
-                </button>
-              </div>
-            </div>
-
-            <!-- Add New Track + Optional Custom Cover -->
-            <div class="bg-white border-2 border-[#1E1B18] rounded-2xl p-3 mb-3">
-              <div class="flex items-center mb-2.5">
-                <div id="newCoverPreviewBox" class="w-12 h-12 rounded-xl border-2 border-[#1E1B18] bg-amber-50 flex items-center justify-center overflow-hidden shrink-0 mr-2.5">
-                  <span class="text-xl">🖼️</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <input id="newTrackTitleInput" type="text" placeholder="輸入故事或歌曲名稱（留空則用檔名）" class="w-full border-2 border-[#1E1B18] rounded-xl px-3 py-1.5 text-sm font-bold bg-amber-50 mb-1.5" />
-                  <div class="flex items-center">
-                    <label class="tactile-btn border-2 border-[#1E1B18] bg-[#F9D45C] rounded-xl px-2.5 py-1 text-xs font-black cursor-pointer inline-block mr-2">
-                      🖼️ 選封面圖片 (自動壓縮 400×400)
-                      <input id="newCoverFileInput" type="file" accept="image/*" class="hidden" onchange="handleNewCoverSelect(event)" />
-                    </label>
-                    <button type="button" id="clearNewCoverBtn" onclick="clearNewCoverSelection()" class="hidden text-xs font-black text-rose-600 underline">清除</button>
-                  </div>
-                </div>
-              </div>
-              <label class="tactile-btn cartoon-pill w-full bg-[#38BDF8] text-[#1E1B18] rounded-xl py-2.5 px-4 flex items-center justify-center text-sm font-black cursor-pointer">
-                <span>📁 選擇音訊並加入 (MP3 / M4A / WAV)</span>
-                <input id="audioFileUploadInput" type="file" accept="audio/*,.mp3,.m4a,.wav" class="hidden" onchange="handleAudioFileUpload(event)" />
-              </label>
-            </div>
-
-            <!-- Edit Existing Track Title & Cover -->
-            <div id="editTrackBox" class="hidden bg-pink-50 border-3 border-[#1E1B18] rounded-2xl p-3 mb-3">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-black">✏️ 編輯名稱與封面圖片</span>
-                <button type="button" onclick="closeEditTrackBox()" class="text-xs font-black bg-white border-2 border-[#1E1B18] rounded-lg px-2 py-0.5">取消</button>
-              </div>
-              <input type="hidden" id="editTrackIdInput" value="" />
-              <div class="flex items-center mb-2.5">
-                <div id="editCoverPreviewBox" class="w-16 h-16 rounded-2xl border-2 border-[#1E1B18] bg-white flex items-center justify-center overflow-hidden shrink-0 mr-3">
-                  <span class="text-2xl">🖼️</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <input id="editTrackTitleInput" type="text" placeholder="名稱" class="w-full border-2 border-[#1E1B18] rounded-xl px-3 py-1.5 text-sm font-bold bg-white mb-2" />
-                  <div class="flex flex-wrap items-center">
-                    <label class="tactile-btn border-2 border-[#1E1B18] bg-[#F9D45C] rounded-xl px-3 py-1 text-xs font-black cursor-pointer mr-2 mb-1">
-                      🖼️ 換新封面相片
-                      <input id="editCoverFileInput" type="file" accept="image/*" class="hidden" onchange="handleEditCoverSelect(event)" />
-                    </label>
-                    <button type="button" onclick="resetTrackCoverToArt()" class="tactile-btn border-2 border-[#1E1B18] bg-white rounded-xl px-2.5 py-1 text-xs font-black text-slate-600 mb-1">
-                      用回插畫
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <button type="button" onclick="saveEditedTrack()" class="tactile-btn cartoon-pill w-full bg-[#2CC865] text-white rounded-xl py-2 text-sm font-black">
-                儲存修改
-              </button>
-            </div>
-
-            <div id="parentTrackList" class="max-h-40 overflow-y-auto pr-1"></div>
-          </div>
-
-          <!-- Change PIN -->
-          <div class="bg-[#FFF7D6] border-3 border-[#1E1B18] rounded-3xl p-4 shadow-sm flex items-center justify-between">
-            <div class="mr-2">
-              <h4 class="text-base font-black">🔐 更改家長密碼 (PIN)</h4>
-              <p class="text-xs font-bold text-slate-600">設定新 4 位數字密碼</p>
-            </div>
-            <div class="flex items-center shrink-0">
-              <input id="newPinInput" type="password" inputmode="numeric" maxlength="4" placeholder="4位數字" class="w-24 border-2 border-[#1E1B18] rounded-xl px-3 py-2 text-center text-base font-black bg-white mr-2" />
-              <button type="button" onclick="updateParentPin()" class="tactile-btn cartoon-pill bg-[#F9D45C] rounded-xl px-4 py-2 text-sm font-black">
-                更改
-              </button>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast Notification -->
-  <div id="toastPill" class="fixed top-5 left-1/2 -translate-x-1/2 cartoon-pill bg-[#1E1B18] text-white px-6 py-2.5 rounded-full text-base sm:text-lg font-black z-50 hidden text-center">
-    提示
-  </div>
-
-  <script>
-    /*************************************************************************
-     * 1. STRICT iOS 12.5.8 SAFARI COMPATIBLE STATE & INDEXEDDB STORAGE
-     * Uses ES5/ES6 Promises and IndexedDB (no ?., ??, .at(), replaceAll, async/await)
-     *************************************************************************/
-    var DB_NAME = 'KidsStorybookLauncherDB';
-    var DB_VERSION = 1;
-    var STORE_AUDIO = 'audioFiles';
-    var STORE_COVERS = 'coverImages';
-    var dbInstance = null;
-    var imageUrlCache = {};
-    var pendingNewCoverBlob = null;
-    var pendingEditCoverBlob = null;
-    var pendingResetCover = false;
-    var pendingContactPhotoBlob = null;
-
-    var DEFAULT_STATE = {
-      pin: '1234',
-      contacts: [
-        { id: 'c1', name: '爸爸', target: 'dad@example.com', avatar: 'dad', badge: '#FDE047', hasCustomAvatar: false },
-        { id: 'c2', name: '媽媽', target: 'mom@example.com', avatar: 'mom', badge: '#FDA4AF', hasCustomAvatar: false },
-        { id: 'c3', name: '婆婆', target: 'grandma@example.com', avatar: 'grandma', badge: '#DDD6FE', hasCustomAvatar: false }
-      ],
-      tracks: [
-        { id: 's_castle', category: 'story', title: '童話城堡', art: 'castle', bg: '#FCE7F3', builtinMelody: 'lullaby' },
-        { id: 's_unicorn', category: 'story', title: '彩虹獨角獸', art: 'unicorn', bg: '#E0F2FE', builtinMelody: 'forest' },
-        { id: 's_jungle', category: 'story', title: '森林小獅子', art: 'lion', bg: '#FEF3C7', builtinMelody: 'storyChime' },
-        { id: 's_fox', category: 'story', title: '小貓與小狐狸', art: 'fox', bg: '#FFEDD5', builtinMelody: 'twinkle' },
-        { id: 's_moon', category: 'story', title: '月亮晚安', art: 'moon', bg: '#EDE9FE', builtinMelody: 'lullaby' },
-
-        { id: 'm_guitar', category: 'music', title: '快樂結他', art: 'guitar', bg: '#FEF08A', builtinMelody: 'twinkle' },
-        { id: 'm_notes', category: 'music', title: '跳動音符', art: 'notes', bg: '#BAE6FD', builtinMelody: 'birthday' },
-        { id: 'm_galaxy', category: 'music', title: '宇宙小星星', art: 'galaxy', bg: '#DDD6FE', builtinMelody: 'tiger' },
-        { id: 'm_rainbow', category: 'music', title: '彩虹旋律', art: 'rainbow', bg: '#FBCFE8', builtinMelody: 'london' },
-        { id: 'm_sheep', category: 'music', title: '小綿羊搖籃曲', art: 'sheep', bg: '#DCFCE7', builtinMelody: 'mary' }
-      ]
-    };
-
-    var appState = loadSavedState();
-    var parentMediaTab = 'story';
-    var playingTrackId = null;
-    var callingContactId = null;
-    var enteredPin = '';
-
-    var audioCtx = null;
-    var melodyTimer = null;
-    var melodyStep = 0;
-    var currentObjectUrl = null;
-    var htmlAudio = document.getElementById('htmlAudioPlayer');
-
-    function cloneDefaultState() {
-      return JSON.parse(JSON.stringify(DEFAULT_STATE));
+    .media-card.playing {
+      border-color: #E63946;
+      box-shadow: 0 4px 0 #E63946;
+      background-color: #FFF8E7;
     }
 
-    function loadSavedState() {
-      try {
-        var raw = localStorage.getItem('kids_storybook_scroll_state_v1');
-        if (raw) {
-          var parsed = JSON.parse(raw);
-          var contacts = (parsed && Array.isArray(parsed.contacts) && parsed.contacts.length)
-            ? parsed.contacts
-            : cloneDefaultState().contacts;
-          var tracks = (parsed && Array.isArray(parsed.tracks) && parsed.tracks.length)
-            ? parsed.tracks
-            : cloneDefaultState().tracks;
-          return {
-            pin: (parsed && parsed.pin) ? parsed.pin : DEFAULT_STATE.pin,
-            contacts: contacts,
-            tracks: tracks
-          };
-        }
-      } catch (e) {
-        console.warn('State fallback:', e);
-      }
-      return cloneDefaultState();
-    }
-
-    function saveState() {
-      try {
-        localStorage.setItem('kids_storybook_scroll_state_v1', JSON.stringify(appState));
-      } catch (e) {
-        console.warn('Save state warning:', e);
-      }
-    }
-
-    function initIndexedDB() {
-      return new Promise(function (resolve) {
-        if (!window.indexedDB) {
-          resolve(null);
-          return;
-        }
-        try {
-          var req = window.indexedDB.open(DB_NAME, DB_VERSION);
-          req.onupgradeneeded = function (e) {
-            var db = e.target.result;
-            if (!db.objectStoreNames.contains(STORE_AUDIO)) {
-              db.createObjectStore(STORE_AUDIO, { keyPath: 'id' });
-            }
-            if (!db.objectStoreNames.contains(STORE_COVERS)) {
-              db.createObjectStore(STORE_COVERS, { keyPath: 'id' });
-            }
-          };
-          req.onsuccess = function (e) {
-            dbInstance = e.target.result;
-            resolve(dbInstance);
-          };
-          req.onerror = function () {
-            resolve(null);
-          };
-        } catch (err) {
-          resolve(null);
-        }
-      });
-    }
-
-    function putBlobToStore(storeName, id, blob) {
-      return new Promise(function (resolve, reject) {
-        if (!dbInstance) {
-          reject(new Error('No IndexedDB'));
-          return;
-        }
-        try {
-          var tx = dbInstance.transaction(storeName, 'readwrite');
-          tx.objectStore(storeName).put({ id: id, blob: blob });
-          tx.oncomplete = function () { resolve(true); };
-          tx.onerror = function (e) { reject(e); };
-        } catch (err) {
-          reject(err);
-        }
-      });
-    }
-
-    function getBlobFromStore(storeName, id) {
-      return new Promise(function (resolve) {
-        if (!dbInstance) {
-          resolve(null);
-          return;
-        }
-        try {
-          var tx = dbInstance.transaction(storeName, 'readonly');
-          var req = tx.objectStore(storeName).get(id);
-          req.onsuccess = function () {
-            resolve(req.result ? req.result.blob : null);
-          };
-          req.onerror = function () {
-            resolve(null);
-          };
-        } catch (err) {
-          resolve(null);
-        }
-      });
-    }
-
-    function deleteBlobFromStore(storeName, id) {
-      if (!dbInstance) return;
-      try {
-        var tx = dbInstance.transaction(storeName, 'readwrite');
-        tx.objectStore(storeName).delete(id);
-      } catch (err) {
-        console.warn('Delete blob warning:', err);
-      }
-    }
-
-    function getCachedImageUrl(key) {
-      if (imageUrlCache[key]) {
-        return Promise.resolve(imageUrlCache[key]);
-      }
-      return getBlobFromStore(STORE_COVERS, key).then(function (blob) {
-        if (!blob) return null;
-        var url = URL.createObjectURL(blob);
-        imageUrlCache[key] = url;
-        return url;
-      });
-    }
-
-    function clearImageCacheFor(key) {
-      if (imageUrlCache[key]) {
-        URL.revokeObjectURL(imageUrlCache[key]);
-        delete imageUrlCache[key];
-      }
-    }
-
-    function clearAllImageCache() {
-      var keys = Object.keys(imageUrlCache);
-      for (var i = 0; i < keys.length; i++) {
-        URL.revokeObjectURL(imageUrlCache[keys[i]]);
-      }
-      imageUrlCache = {};
-    }
-
-    /* Compress uploaded images to max 400x400 JPEG blob for offline storage */
-    function compressImageToBlob(file, maxSize) {
-      var targetSize = maxSize || 400;
-      return new Promise(function (resolve, reject) {
-        var img = new Image();
-        var url = URL.createObjectURL(file);
-        img.onload = function () {
-          URL.revokeObjectURL(url);
-          var canvas = document.createElement('canvas');
-          var w = img.width;
-          var h = img.height;
-          if (w > h) {
-            if (w > targetSize) {
-              h = Math.round((h * targetSize) / w);
-              w = targetSize;
-            }
-          } else {
-            if (h > targetSize) {
-              w = Math.round((w * targetSize) / h);
-              h = targetSize;
-            }
-          }
-          canvas.width = w;
-          canvas.height = h;
-          var ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          if (canvas.toBlob) {
-            canvas.toBlob(function (blob) {
-              if (blob) {
-                resolve(blob);
-              } else {
-                reject(new Error('Image encode failed'));
-              }
-            }, 'image/jpeg', 0.84);
-          } else {
-            var dataUrl = canvas.toDataURL('image/jpeg', 0.84);
-            resolve(dataUrlToBlob(dataUrl));
-          }
-        };
-        img.onerror = function () {
-          URL.revokeObjectURL(url);
-          reject(new Error('Invalid image'));
-        };
-        img.src = url;
-      });
-    }
-
-    function blobToDataUrl(blob) {
-      return new Promise(function (resolve, reject) {
-        var reader = new FileReader();
-        reader.onload = function () { resolve(reader.result); };
-        reader.onerror = function (err) { reject(err); };
-        reader.readAsDataURL(blob);
-      });
-    }
-
-    function dataUrlToBlob(dataUrl) {
-      var parts = dataUrl.split(',');
-      var mimeMatch = parts[0].match(/:(.*?);/);
-      var mime = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
-      var binary = atob(parts[1]);
-      var len = binary.length;
-      var arr = new Uint8Array(len);
-      for (var i = 0; i < len; i++) {
-        arr[i] = binary.charCodeAt(i);
-      }
-      return new Blob([arr], { type: mime });
-    }
-
-    function readFileAsText(file) {
-      return new Promise(function (resolve, reject) {
-        var reader = new FileReader();
-        reader.onload = function () { resolve(reader.result); };
-        reader.onerror = function (err) { reject(err); };
-        reader.readAsText(file);
-      });
-    }
-
-    /*************************************************************************
-     * 2. BACKUP EXPORT & IMPORT (.JSON FOR AIRDROP TRANSFER)
-     *************************************************************************/
-    function exportBackupJson() {
-      showToast('正在打包備份檔...');
-      var audioPayload = {};
-      var coverPayload = {};
-      var tasks = [];
-
-      for (var i = 0; i < appState.tracks.length; i++) {
-        (function (track) {
-          if (track.isCustom) {
-            tasks.push(
-              getBlobFromStore(STORE_AUDIO, track.id).then(function (aBlob) {
-                if (aBlob) {
-                  return blobToDataUrl(aBlob).then(function (dUrl) {
-                    audioPayload[track.id] = dUrl;
-                  });
-                }
-              })
-            );
-          }
-          if (track.hasCustomCover) {
-            tasks.push(
-              getBlobFromStore(STORE_COVERS, track.id).then(function (cBlob) {
-                if (cBlob) {
-                  return blobToDataUrl(cBlob).then(function (dUrl) {
-                    coverPayload[track.id] = dUrl;
-                  });
-                }
-              })
-            );
-          }
-        })(appState.tracks[i]);
-      }
-
-      for (var j = 0; j < appState.contacts.length; j++) {
-        (function (contact) {
-          if (contact.hasCustomAvatar) {
-            var avatarKey = 'avatar_' + contact.id;
-            tasks.push(
-              getBlobFromStore(STORE_COVERS, avatarKey).then(function (avBlob) {
-                if (avBlob) {
-                  return blobToDataUrl(avBlob).then(function (dUrl) {
-                    coverPayload[avatarKey] = dUrl;
-                  });
-                }
-              })
-            );
-          }
-        })(appState.contacts[j]);
-      }
-
-      Promise.all(tasks).then(function () {
-        var backupObj = {
-          version: 2,
-          exportedAt: new Date().toISOString(),
-          state: appState,
-          audioFiles: audioPayload,
-          coverImages: coverPayload
-        };
-
-        var jsonStr = JSON.stringify(backupObj);
-        var fileBlob = new Blob([jsonStr], { type: 'application/json' });
-        var downloadUrl = URL.createObjectURL(fileBlob);
-        var link = document.createElement('a');
-        var dateStamp = new Date().toISOString().slice(0, 10);
-        link.href = downloadUrl;
-        link.download = 'kids_ipad_backup_' + dateStamp + '.json';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        setTimeout(function () {
-          URL.revokeObjectURL(downloadUrl);
-        }, 4000);
-        showToast('備份檔已產生，可用 AirDrop 傳去 iPad');
-      }).catch(function (err) {
-        console.error(err);
-        showToast('匯出備份檔失敗');
-      });
-    }
-
-    function importBackupJson(event) {
-      var files = event.target.files;
-      var file = (files && files.length > 0) ? files[0] : null;
-      if (!file) return;
-
-      showToast('正在匯入備份檔...');
-      readFileAsText(file).then(function (text) {
-        var data = JSON.parse(text);
-        if (!data || !data.state || !Array.isArray(data.state.tracks)) {
-          showToast('備份檔格式不正確');
-          return;
-        }
-
-        stopPlayback();
-        clearAllImageCache();
-
-        var importedContacts = (Array.isArray(data.state.contacts) && data.state.contacts.length)
-          ? data.state.contacts
-          : cloneDefaultState().contacts;
-
-        for (var cIdx = 0; cIdx < importedContacts.length; cIdx++) {
-          if (!importedContacts[cIdx].name && importedContacts[cIdx].zh) {
-            importedContacts[cIdx].name = importedContacts[cIdx].zh;
-          }
-        }
-
-        appState = {
-          pin: data.state.pin || '1234',
-          contacts: importedContacts,
-          tracks: data.state.tracks
-        };
-        saveState();
-
-        var restoreTasks = [];
-        if (data.audioFiles) {
-          var audioKeys = Object.keys(data.audioFiles);
-          for (var i = 0; i < audioKeys.length; i++) {
-            var aId = audioKeys[i];
-            restoreTasks.push(putBlobToStore(STORE_AUDIO, aId, dataUrlToBlob(data.audioFiles[aId])));
-          }
-        }
-        if (data.coverImages) {
-          var coverKeys = Object.keys(data.coverImages);
-          for (var j = 0; j < coverKeys.length; j++) {
-            var cId = coverKeys[j];
-            restoreTasks.push(putBlobToStore(STORE_COVERS, cId, dataUrlToBlob(data.coverImages[cId])));
-          }
-        }
-
-        return Promise.all(restoreTasks).then(function () {
-          event.target.value = '';
-          return Promise.all([
-            renderParentContacts(),
-            renderParentTracks(),
-            renderTopContacts(),
-            renderShelves()
-          ]);
-        }).then(function () {
-          showToast('已成功匯入所有歌曲、故事與封面');
-        });
-      }).catch(function (err) {
-        console.error(err);
-        showToast('匯入失敗，請確認檔案是否完整');
-      });
-    }
-
-    /*************************************************************************
-     * 3. THICK-OUTLINED CARTOON ILLUSTRATIONS (PORTRAITS & STORY/SONG ART)
-     *************************************************************************/
-    function getPortraitSvg(type) {
-      switch (type) {
-        case 'mom':
-          return '<svg width="88" height="88" viewBox="0 0 100 100" class="portrait-svg-wrap">' +
-            '<path d="M23 50C23 24 77 24 77 50V76H23V50Z" fill="#5B2C1D" stroke="#1E1B18" stroke-width="4" stroke-linejoin="round"/>' +
-            '<circle cx="50" cy="51" r="23" fill="#FFDFC2" stroke="#1E1B18" stroke-width="4"/>' +
-            '<path d="M27 47C34 32 66 32 73 47" fill="#5B2C1D" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>' +
-            '<circle cx="42" cy="51" r="2.8" fill="#1E1B18"/>' +
-            '<circle cx="58" cy="51" r="2.8" fill="#1E1B18"/>' +
-            '<circle cx="36" cy="57" r="3.5" fill="#FF8FA3" opacity="0.8"/>' +
-            '<circle cx="64" cy="57" r="3.5" fill="#FF8FA3" opacity="0.8"/>' +
-            '<path d="M44 61Q50 66 56 61" fill="none" stroke="#1E1B18" stroke-width="3.2" stroke-linecap="round"/>' +
-            '<path d="M28 84C32 72 68 72 72 84" fill="#FB7185" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>' +
-            '</svg>';
-        case 'grandma':
-          return '<svg width="88" height="88" viewBox="0 0 100 100" class="portrait-svg-wrap">' +
-            '<circle cx="50" cy="24" r="12" fill="#E2E8F0" stroke="#1E1B18" stroke-width="4"/>' +
-            '<circle cx="50" cy="51" r="23" fill="#FFDFC2" stroke="#1E1B18" stroke-width="4"/>' +
-            '<path d="M27 48C27 30 73 30 73 48" fill="#F1F5F9" stroke="#1E1B18" stroke-width="4"/>' +
-            '<circle cx="42" cy="51" r="2.8" fill="#1E1B18"/>' +
-            '<circle cx="58" cy="51" r="2.8" fill="#1E1B18"/>' +
-            '<circle cx="42" cy="51" r="6" fill="none" stroke="#1E1B18" stroke-width="2.2"/>' +
-            '<circle cx="58" cy="51" r="6" fill="none" stroke="#1E1B18" stroke-width="2.2"/>' +
-            '<path d="M48 51H52" stroke="#1E1B18" stroke-width="2.2"/>' +
-            '<path d="M43 61Q50 66 57 61" fill="none" stroke="#1E1B18" stroke-width="3.2" stroke-linecap="round"/>' +
-            '<path d="M28 84C32 72 68 72 72 84" fill="#A855F7" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>' +
-            '</svg>';
-        case 'grandpa':
-          return '<svg width="88" height="88" viewBox="0 0 100 100" class="portrait-svg-wrap">' +
-            '<circle cx="50" cy="51" r="23" fill="#FFDFC2" stroke="#1E1B18" stroke-width="4"/>' +
-            '<path d="M27 46C27 32 73 32 73 46" fill="#CBD5E1" stroke="#1E1B18" stroke-width="4"/>' +
-            '<circle cx="42" cy="51" r="2.8" fill="#1E1B18"/>' +
-            '<circle cx="58" cy="51" r="2.8" fill="#1E1B18"/>' +
-            '<path d="M42 61Q50 66 58 61" fill="none" stroke="#1E1B18" stroke-width="3.2" stroke-linecap="round"/>' +
-            '<path d="M28 84C32 72 68 72 72 84" fill="#38BDF8" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>' +
-            '</svg>';
-        default:
-          return '<svg width="88" height="88" viewBox="0 0 100 100" class="portrait-svg-wrap">' +
-            '<circle cx="50" cy="51" r="23" fill="#FFDFC2" stroke="#1E1B18" stroke-width="4"/>' +
-            '<path d="M27 47C27 25 73 25 73 47C64 38 36 38 27 47Z" fill="#2B2D42" stroke="#1E1B18" stroke-width="4" stroke-linejoin="round"/>' +
-            '<circle cx="42" cy="51" r="2.8" fill="#1E1B18"/>' +
-            '<circle cx="58" cy="51" r="2.8" fill="#1E1B18"/>' +
-            '<circle cx="42" cy="51" r="6" fill="none" stroke="#1E1B18" stroke-width="2.2"/>' +
-            '<circle cx="58" cy="51" r="6" fill="none" stroke="#1E1B18" stroke-width="2.2"/>' +
-            '<path d="M48 51H52" stroke="#1E1B18" stroke-width="2.2"/>' +
-            '<path d="M43 61Q50 66 57 61" fill="none" stroke="#1E1B18" stroke-width="3.2" stroke-linecap="round"/>' +
-            '<path d="M28 84C32 72 68 72 72 84" fill="#3B82F6" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>' +
-            '</svg>';
-      }
-    }
-
-    function getCartoonCardArt(art, category) {
-      switch (art) {
-        case 'castle':
-          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
-            '<rect x="0" y="54" width="80" height="26" fill="#86EFAC" stroke="#1E1B18" stroke-width="3"/>' +
-            '<rect x="24" y="34" width="32" height="24" rx="4" fill="#F472B6" stroke="#1E1B18" stroke-width="3"/>' +
-            '<rect x="16" y="26" width="12" height="32" rx="3" fill="#FB7185" stroke="#1E1B18" stroke-width="3"/>' +
-            '<rect x="52" y="26" width="12" height="32" rx="3" fill="#FB7185" stroke="#1E1B18" stroke-width="3"/>' +
-            '<polygon points="15,26 22,12 29,26" fill="#F9D45C" stroke="#1E1B18" stroke-width="3" stroke-linejoin="round"/>' +
-            '<polygon points="51,26 58,12 65,26" fill="#F9D45C" stroke="#1E1B18" stroke-width="3" stroke-linejoin="round"/>' +
-            '<path d="M35 58V46A5 5 0 0 1 45 46V58Z" fill="#7C3AED" stroke="#1E1B18" stroke-width="2.8"/>' +
-            '</svg>';
-        case 'unicorn':
-          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
-            '<rect x="0" y="54" width="80" height="26" fill="#6EE7B7" stroke="#1E1B18" stroke-width="3"/>' +
-            '<polygon points="44,12 40,28 50,28" fill="#F9D45C" stroke="#1E1B18" stroke-width="3" stroke-linejoin="round"/>' +
-            '<circle cx="42" cy="40" r="16" fill="#FFFDF5" stroke="#1E1B18" stroke-width="3.2"/>' +
-            '<path d="M26 32C20 34 20 48 28 52" fill="#FB7185" stroke="#1E1B18" stroke-width="3" stroke-linecap="round"/>' +
-            '<circle cx="48" cy="37" r="2.5" fill="#1E1B18"/>' +
-            '</svg>';
-        case 'lion':
-          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
-            '<rect x="0" y="54" width="80" height="26" fill="#4ADE80" stroke="#1E1B18" stroke-width="3"/>' +
-            '<circle cx="40" cy="40" r="20" fill="#EA580C" stroke="#1E1B18" stroke-width="3.2"/>' +
-            '<circle cx="40" cy="41" r="13" fill="#FBBF24" stroke="#1E1B18" stroke-width="3"/>' +
-            '<circle cx="35" cy="39" r="2.5" fill="#1E1B18"/>' +
-            '<circle cx="45" cy="39" r="2.5" fill="#1E1B18"/>' +
-            '</svg>';
-        case 'fox':
-          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
-            '<rect x="0" y="54" width="80" height="26" fill="#A7F3D0" stroke="#1E1B18" stroke-width="3"/>' +
-            '<polygon points="22,38 20,18 34,30" fill="#FB923C" stroke="#1E1B18" stroke-width="3" stroke-linejoin="round"/>' +
-            '<polygon points="58,38 60,18 46,30" fill="#FB923C" stroke="#1E1B18" stroke-width="3" stroke-linejoin="round"/>' +
-            '<circle cx="40" cy="42" r="16" fill="#FB923C" stroke="#1E1B18" stroke-width="3.2"/>' +
-            '<circle cx="34" cy="40" r="2.4" fill="#1E1B18"/>' +
-            '<circle cx="46" cy="40" r="2.4" fill="#1E1B18"/>' +
-            '</svg>';
-        case 'guitar':
-          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
-            '<circle cx="42" cy="46" r="18" fill="#F59E0B" stroke="#1E1B18" stroke-width="3.2"/>' +
-            '<circle cx="34" cy="34" r="12" fill="#FBBF24" stroke="#1E1B18" stroke-width="3.2"/>' +
-            '<circle cx="42" cy="46" r="5" fill="#451A03" stroke="#1E1B18" stroke-width="2.5"/>' +
-            '<rect x="46" y="14" width="7" height="24" rx="3" transform="rotate(35 46 14)" fill="#FDE68A" stroke="#1E1B18" stroke-width="3"/>' +
-            '</svg>';
-        case 'notes':
-          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
-            '<path d="M28 52V22L54 17V47" stroke="#1E1B18" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>' +
-            '<circle cx="22" cy="52" r="7" fill="#FB7185" stroke="#1E1B18" stroke-width="3.2"/>' +
-            '<circle cx="48" cy="47" r="7" fill="#F9D45C" stroke="#1E1B18" stroke-width="3.2"/>' +
-            '</svg>';
-        case 'galaxy':
-          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
-            '<circle cx="24" cy="58" r="18" fill="#22C55E" stroke="#1E1B18" stroke-width="3.2"/>' +
-            '<path d="M54 14L57 22L65 25L57 28L54 36L51 28L43 25L51 22Z" fill="#F9D45C" stroke="#1E1B18" stroke-width="2.8" stroke-linejoin="round"/>' +
-            '<circle cx="24" cy="24" r="4" fill="#FDE68A" stroke="#1E1B18" stroke-width="2.5"/>' +
-            '</svg>';
-        case 'rainbow':
-          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
-            '<path d="M14 58A26 26 0 0 1 66 58" fill="none" stroke="#FB7185" stroke-width="6" stroke-linecap="round"/>' +
-            '<path d="M21 58A19 19 0 0 1 59 58" fill="none" stroke="#F9D45C" stroke-width="6" stroke-linecap="round"/>' +
-            '<path d="M28 58A12 12 0 0 1 52 58" fill="none" stroke="#38BDF8" stroke-width="6" stroke-linecap="round"/>' +
-            '</svg>';
-        case 'sheep':
-          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
-            '<circle cx="40" cy="42" r="20" fill="#FFFDF5" stroke="#1E1B18" stroke-width="3.2"/>' +
-            '<circle cx="40" cy="44" r="11" fill="#FFDFC2" stroke="#1E1B18" stroke-width="3"/>' +
-            '<circle cx="36" cy="42" r="2.2" fill="#1E1B18"/>' +
-            '<circle cx="44" cy="42" r="2.2" fill="#1E1B18"/>' +
-            '</svg>';
-        case 'moon':
-          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
-            '<path d="M46 16A22 22 0 1 0 60 48A17 17 0 1 1 46 16Z" fill="#F9D45C" stroke="#1E1B18" stroke-width="3.2" stroke-linejoin="round"/>' +
-            '<circle cx="22" cy="24" r="3" fill="#FFFDF5" stroke="#1E1B18" stroke-width="2.2"/>' +
-            '<circle cx="62" cy="20" r="2.5" fill="#FFFDF5" stroke="#1E1B18" stroke-width="2.2"/>' +
-            '</svg>';
-        default:
-          return category === 'story'
-            ? '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap"><rect x="16" y="20" width="48" height="40" rx="8" fill="#FFFDF5" stroke="#1E1B18" stroke-width="3.5"/><path d="M24 32H56M24 42H48" stroke="#38BDF8" stroke-width="4" stroke-linecap="round"/></svg>'
-            : '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap"><path d="M30 54V24L54 19V49" stroke="#1E1B18" stroke-width="5" stroke-linecap="round"/><circle cx="24" cy="54" r="7" fill="#F9D45C" stroke="#1E1B18" stroke-width="3.2"/><circle cx="48" cy="49" r="7" fill="#38BDF8" stroke="#1E1B18" stroke-width="3.2"/></svg>';
-      }
-    }
-
-    /*************************************************************************
-     * 4. RENDER CLEAN CIRCULAR PORTRAITS & DUAL STORY/MUSIC SHELVES
-     *************************************************************************/
-    function renderTopContacts() {
-      var row = document.getElementById('topContactsRow');
-      var tasks = appState.contacts.map(function (c) {
-        if (c.hasCustomAvatar) {
-          return getCachedImageUrl('avatar_' + c.id).then(function (url) {
-            return { contact: c, customUrl: url };
-          });
-        }
-        return Promise.resolve({ contact: c, customUrl: null });
-      });
-
-      return Promise.all(tasks).then(function (items) {
-        row.innerHTML = '';
-        for (var i = 0; i < items.length; i++) {
-          (function (item) {
-            var c = item.contact;
-            var isCalling = callingContactId === c.id;
-            var btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'tactile-btn avatar-item flex items-center justify-center shrink-0 focus:outline-none';
-            btn.setAttribute('aria-label', c.name || '視訊通話');
-            btn.onclick = function () {
-              triggerOneTapVideoCall(c);
-            };
-
-            var innerArt = item.customUrl
-              ? '<img src="' + item.customUrl + '" alt="" class="w-full h-full object-cover" />'
-              : getPortraitSvg(c.avatar);
-
-            btn.innerHTML =
-              '<div class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-[#1E1B18] shadow-[0_5px_0_#1E1B18] flex items-center justify-center ' + (isCalling ? 'calling-ring' : '') + '" style="background-color: ' + (c.badge || '#FDE047') + ';">' +
-                '<div class="w-full h-full rounded-full overflow-hidden">' +
-                  innerArt +
-                '</div>' +
-              '</div>';
-            row.appendChild(btn);
-          })(items[i]);
-        }
-      });
-    }
-
-    function triggerOneTapVideoCall(contact) {
-      if (!contact || !contact.target) return;
-      if (playingTrackId) stopPlayback();
-
-      callingContactId = contact.id;
-      renderTopContacts();
-      showToast('📹 正在呼叫 FaceTime...');
-
-      setTimeout(function () {
-        callingContactId = null;
-        renderTopContacts();
-      }, 2200);
-
-      try {
-        window.location.href = 'facetime://' + encodeURIComponent(contact.target.trim());
-      } catch (e) {
-        console.warn('FaceTime launch warning:', e);
-      }
-    }
-
-    function renderShelves() {
-      return Promise.all([
-        renderSingleShelf('storyShelf', 'story'),
-        renderSingleShelf('musicShelf', 'music')
-      ]);
-    }
-
-    function renderSingleShelf(containerId, category) {
-      var shelf = document.getElementById(containerId);
-      var tracks = appState.tracks.filter(function (t) {
-        return t.category === category;
-      });
-
-      if (!tracks.length) {
-        shelf.innerHTML = '<div class="w-full text-center text-[#1E1B18]/70 font-black text-base">請家長按右上角 🔒 新增項目</div>';
-        return Promise.resolve();
-      }
-
-      var coverTasks = tracks.map(function (track) {
-        if (track.hasCustomCover) {
-          return getCachedImageUrl(track.id).then(function (url) {
-            return { track: track, coverUrl: url };
-          });
-        }
-        return Promise.resolve({ track: track, coverUrl: null });
-      });
-
-      return Promise.all(coverTasks).then(function (entries) {
-        shelf.innerHTML = '';
-        for (var i = 0; i < entries.length; i++) {
-          (function (entry) {
-            var track = entry.track;
-            var isPlaying = playingTrackId === track.id;
-
-            var card = document.createElement('button');
-            card.type = 'button';
-            card.className = 'tactile-btn track-card-item h-full aspect-square max-h-[195px] min-w-[118px] sm:min-w-[148px] md:min-w-[162px] rounded-[24px] bg-[#FFFDF5] border-4 border-[#1E1B18] shadow-[0_5px_0_#1E1B18] p-2 flex flex-col items-center justify-between shrink-0 relative ' + (isPlaying ? 'playing-card' : '');
-            card.onclick = function () {
-              toggleCardPlayPause(track);
-            };
-
-            var artHtml = entry.coverUrl
-              ? '<img src="' + entry.coverUrl + '" alt="' + escapeHtml(track.title) + '" class="w-full h-full object-cover" />'
-              : getCartoonCardArt(track.art, category);
-
-            var centerIndicator = isPlaying
-              ? '<div class="flex items-end justify-center h-5">' +
-                  '<span class="eq-bar eq-1"></span>' +
-                  '<span class="eq-bar eq-2"></span>' +
-                  '<span class="eq-bar eq-3"></span>' +
-                '</div>'
-              : '<svg class="icon-play-svg" width="22" height="22" viewBox="0 0 24 24" fill="#1E1B18">' +
-                  '<path d="M7 5L19 12L7 19V5Z"/>' +
-                '</svg>';
-
-            card.innerHTML =
-              '<div class="w-full flex-1 rounded-2xl border-3 border-[#1E1B18] overflow-hidden relative flex items-center justify-center" style="background: ' + (track.bg || '#E0F2FE') + ';">' +
-                artHtml +
-                '<div class="absolute inset-0 flex items-center justify-center bg-black/5">' +
-                  '<div class="w-11 h-11 sm:w-12 sm:h-12 rounded-full border-3 border-[#1E1B18] ' + (isPlaying ? 'bg-[#FB7185]' : 'bg-[#FFFDF5]/95') + ' shadow-[0_3px_0_#1E1B18] flex items-center justify-center">' +
-                    centerIndicator +
-                  '</div>' +
-                '</div>' +
-              '</div>' +
-              '<div class="mt-1.5 w-full px-2.5 py-0.5 rounded-full bg-[#FFF7D6] border-2 border-[#1E1B18] text-[#1E1B18] text-center truncate text-xs sm:text-sm font-black">' +
-                escapeHtml(track.title) +
-              '</div>';
-
-            shelf.appendChild(card);
-          })(entries[i]);
-        }
-      });
-    }
-
-    function scrollShelf(shelfId) {
-      var el = document.getElementById(shelfId);
-      if (!el) return;
-      var step = Math.max(200, Math.round(el.clientWidth * 0.65));
-      if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 16) {
-        el.scrollLeft = 0;
-      } else {
-        el.scrollLeft += step;
-      }
-    }
-
-    /*************************************************************************
-     * 5. PLAY / PAUSE ENGINE (OFFLINE INDEXEDDB AUDIO + BUILT-IN MELODIES)
-     *************************************************************************/
-    var MELODIES = {
-      twinkle: [261.6, 261.6, 392.0, 392.0, 440.0, 440.0, 392.0, 0, 349.2, 349.2, 329.6, 329.6, 293.7, 293.7, 261.6, 0],
-      birthday: [261.6, 261.6, 293.7, 261.6, 349.2, 329.6, 0, 261.6, 261.6, 293.7, 261.6, 392.0, 349.2, 0],
-      tiger: [261.6, 293.7, 329.6, 261.6, 261.6, 293.7, 329.6, 261.6, 329.6, 349.2, 392.0, 0, 329.6, 349.2, 392.0, 0],
-      london: [392.0, 440.0, 392.0, 349.2, 329.6, 349.2, 392.0, 0, 293.7, 329.6, 349.2, 0, 329.6, 349.2, 392.0, 0],
-      mary: [329.6, 293.7, 261.6, 293.7, 329.6, 329.6, 329.6, 0, 293.7, 293.7, 293.7, 0, 329.6, 392.0, 392.0, 0],
-      lullaby: [329.6, 329.6, 392.0, 0, 329.6, 329.6, 392.0, 0, 329.6, 329.6, 523.3, 493.9, 440.0, 440.0, 392.0, 0],
-      forest: [261.6, 329.6, 392.0, 523.3, 392.0, 329.6, 293.7, 349.2, 440.0, 349.2, 293.7, 261.6],
-      storyChime: [523.3, 659.3, 784.0, 1046.5, 784.0, 659.3, 523.3, 0]
-    };
-
-    function toggleCardPlayPause(track) {
-      if (playingTrackId === track.id) {
-        stopPlayback();
-        return;
-      }
-
-      stopPlayback();
-      playingTrackId = track.id;
-      renderShelves();
-
-      if (track.isCustom) {
-        getBlobFromStore(STORE_AUDIO, track.id).then(function (blob) {
-          if (!blob) {
-            showToast('找不到音訊檔案，請家長重新上傳或匯入備份');
-            stopPlayback();
-            return;
-          }
-          if (currentObjectUrl) {
-            URL.revokeObjectURL(currentObjectUrl);
-          }
-          currentObjectUrl = URL.createObjectURL(blob);
-          htmlAudio.src = currentObjectUrl;
-          var playPromise = htmlAudio.play();
-          if (playPromise && typeof playPromise.catch === 'function') {
-            playPromise.catch(function () {
-              showToast('請再點一下卡片播放');
-              stopPlayback();
-            });
-          }
-        });
-      } else {
-        startBuiltInMelody(track.builtinMelody || 'twinkle', track.category === 'story');
-      }
-    }
-
-    function startBuiltInMelody(melodyKey, isStorySoft) {
-      if (!audioCtx) {
-        var AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        if (AudioContextClass) {
-          audioCtx = new AudioContextClass();
-        }
-      }
-      if (!audioCtx) return;
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-
-      var notes = MELODIES[melodyKey] || MELODIES.twinkle;
-      melodyStep = 0;
-
-      var playNote = function () {
-        if (!playingTrackId) return;
-        var freq = notes[melodyStep % notes.length];
-        if (freq > 0) {
-          var osc = audioCtx.createOscillator();
-          var gain = audioCtx.createGain();
-          osc.type = isStorySoft ? 'sine' : 'triangle';
-          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-          gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(isStorySoft ? 0.14 : 0.2, audioCtx.currentTime + 0.04);
-          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.42);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.45);
-        }
-        melodyStep++;
-      };
-
-      playNote();
-      melodyTimer = setInterval(playNote, isStorySoft ? 560 : 440);
-    }
-
-    function stopPlayback() {
-      playingTrackId = null;
-      if (melodyTimer) {
-        clearInterval(melodyTimer);
-        melodyTimer = null;
-      }
-      try {
-        htmlAudio.pause();
-      } catch (e) {}
-      renderShelves();
-    }
-
-    htmlAudio.addEventListener('ended', function () {
-      stopPlayback();
-    });
-
-    /*************************************************************************
-     * 6. PIN MODAL & PARENT MODE ACTIONS
-     *************************************************************************/
-    function openParentLockModal() {
-      enteredPin = '';
-      updatePinDots();
-      document.getElementById('pinModal').classList.remove('hidden');
-    }
-
-    function closePinModal() {
-      document.getElementById('pinModal').classList.add('hidden');
-    }
-
-    function enterPinDigit(digit) {
-      if (enteredPin.length >= 4) return;
-      enteredPin += digit;
-      updatePinDots();
-      if (enteredPin.length === 4) {
-        setTimeout(function () {
-          if (enteredPin === appState.pin) {
-            closePinModal();
-            openParentModal();
-          } else {
-            showToast('密碼錯誤，預設為 1234');
-            enteredPin = '';
-            updatePinDots();
-          }
-        }, 120);
-      }
-    }
-
-    function backspacePinDigit() {
-      enteredPin = enteredPin.slice(0, -1);
-      updatePinDots();
-    }
-
-    function clearPinInput() {
-      enteredPin = '';
-      updatePinDots();
-    }
-
-    function updatePinDots() {
-      for (var i = 0; i < 4; i++) {
-        var dot = document.getElementById('pinDot' + i);
-        if (dot) {
-          dot.style.backgroundColor = i < enteredPin.length ? '#1E1B18' : '#FFFFFF';
-        }
-      }
-    }
-
-    function openParentModal() {
-      renderParentContacts();
-      setParentMediaTab(parentMediaTab);
-      document.getElementById('parentModal').classList.remove('hidden');
-    }
-
-    function closeParentModal() {
-      document.getElementById('parentModal').classList.add('hidden');
-      renderTopContacts();
-      renderShelves();
-    }
-
-    function renderParentContacts() {
-      var list = document.getElementById('parentContactList');
-      var tasks = appState.contacts.map(function (c, idx) {
-        if (c.hasCustomAvatar) {
-          return getCachedImageUrl('avatar_' + c.id).then(function (url) {
-            return { contact: c, idx: idx, customUrl: url };
-          });
-        }
-        return Promise.resolve({ contact: c, idx: idx, customUrl: null });
-      });
-
-      return Promise.all(tasks).then(function (items) {
-        list.innerHTML = '';
-        for (var i = 0; i < items.length; i++) {
-          var c = items[i].contact;
-          var idx = items[i].idx;
-          var avatarHtml = items[i].customUrl
-            ? '<img src="' + items[i].customUrl + '" class="w-full h-full object-cover" />'
-            : getPortraitSvg(c.avatar);
-
-          var row = document.createElement('div');
-          row.className = 'flex items-center justify-between bg-white border-2 border-[#1E1B18] rounded-2xl px-3 py-2 mb-2';
-          row.innerHTML =
-            '<div class="flex items-center min-w-0 mr-2">' +
-              '<div class="w-10 h-10 rounded-full border-2 border-[#1E1B18] overflow-hidden shrink-0 mr-2.5" style="background:' + (c.badge || '#FDE047') + '">' +
-                avatarHtml +
-              '</div>' +
-              '<div class="truncate">' +
-                '<div class="text-sm font-black">' + escapeHtml(c.name || '家人') + '</div>' +
-                '<div class="text-xs font-bold text-slate-500 truncate">' + escapeHtml(c.target) + '</div>' +
-              '</div>' +
-            '</div>' +
-            '<div class="flex items-center shrink-0">' +
-              '<button type="button" onclick="editContact(' + idx + ')" class="tactile-btn border-2 border-[#1E1B18] bg-amber-200 rounded-xl px-2.5 py-1 text-xs font-black mr-1.5">編輯</button>' +
-              '<button type="button" onclick="deleteContact(' + idx + ')" class="tactile-btn border-2 border-[#1E1B18] bg-rose-200 rounded-xl px-2.5 py-1 text-xs font-black">刪除</button>' +
-            '</div>';
-          list.appendChild(row);
-        }
-      });
-    }
-
-    function previewPresetContactAvatar() {
-      pendingContactPhotoBlob = null;
-      var sel = document.getElementById('contactAvatarSelect').value;
-      document.getElementById('contactAvatarPreview').innerHTML = getPortraitSvg(sel);
-    }
-
-    function handleContactPhotoSelect(event) {
-      var files = event.target.files;
-      var file = (files && files.length > 0) ? files[0] : null;
-      if (!file) return;
-      compressImageToBlob(file, 400).then(function (blob) {
-        pendingContactPhotoBlob = blob;
-        var url = URL.createObjectURL(blob);
-        document.getElementById('contactAvatarPreview').innerHTML = '<img src="' + url + '" class="w-full h-full object-cover" />';
-      }).catch(function () {
-        showToast('頭像圖片讀取失敗');
-      });
-    }
-
-    function toggleAddContactForm() {
-      pendingContactPhotoBlob = null;
-      document.getElementById('editContactIdx').value = '-1';
-      document.getElementById('contactNameInput').value = '';
-      document.getElementById('contactTargetInput').value = '';
-      document.getElementById('contactAvatarSelect').value = 'dad';
-      document.getElementById('contactPhotoFileInput').value = '';
-      previewPresetContactAvatar();
-      document.getElementById('contactFormBox').classList.remove('hidden');
-    }
-
-    function cancelContactForm() {
-      pendingContactPhotoBlob = null;
-      document.getElementById('contactFormBox').classList.add('hidden');
-    }
-
-    function editContact(idx) {
-      var c = appState.contacts[idx];
-      if (!c) return;
-      pendingContactPhotoBlob = null;
-      document.getElementById('editContactIdx').value = String(idx);
-      document.getElementById('contactNameInput').value = c.name || '';
-      document.getElementById('contactTargetInput').value = c.target || '';
-      document.getElementById('contactAvatarSelect').value = c.avatar || 'dad';
-      document.getElementById('contactPhotoFileInput').value = '';
-
-      if (c.hasCustomAvatar) {
-        getCachedImageUrl('avatar_' + c.id).then(function (url) {
-          if (url) {
-            document.getElementById('contactAvatarPreview').innerHTML = '<img src="' + url + '" class="w-full h-full object-cover" />';
-          } else {
-            previewPresetContactAvatar();
-          }
-        });
-      } else {
-        previewPresetContactAvatar();
-      }
-      document.getElementById('contactFormBox').classList.remove('hidden');
-    }
-
-    function saveContact() {
-      var idx = parseInt(document.getElementById('editContactIdx').value, 10);
-      var name = document.getElementById('contactNameInput').value.trim() || '家人';
-      var target = document.getElementById('contactTargetInput').value.trim();
-      var avatar = document.getElementById('contactAvatarSelect').value;
-
-      if (!target) {
-        showToast('請填寫 FaceTime 電郵或電話');
-        return;
-      }
-
-      var badges = { dad: '#FDE047', mom: '#FDA4AF', grandma: '#DDD6FE', grandpa: '#BAE6FD' };
-      var existing = (idx >= 0 && appState.contacts[idx]) ? appState.contacts[idx] : null;
-      var contactId = existing ? existing.id : ('c_' + Date.now());
-      var hasCustomAvatar = existing ? Boolean(existing.hasCustomAvatar) : false;
-
-      var saveAvatarTask = Promise.resolve();
-      if (pendingContactPhotoBlob) {
-        hasCustomAvatar = true;
-        saveAvatarTask = putBlobToStore(STORE_COVERS, 'avatar_' + contactId, pendingContactPhotoBlob).then(function () {
-          clearImageCacheFor('avatar_' + contactId);
-        });
-      }
-
-      saveAvatarTask.then(function () {
-        var item = {
-          id: contactId,
-          name: name,
-          target: target,
-          avatar: avatar,
-          badge: badges[avatar] || '#FDE047',
-          hasCustomAvatar: hasCustomAvatar
-        };
-
-        if (existing) {
-          appState.contacts[idx] = item;
-        } else {
-          appState.contacts.push(item);
-        }
-
-        saveState();
-        cancelContactForm();
-        renderParentContacts();
-        renderTopContacts();
-        showToast('聯絡人已儲存');
-      });
-    }
-
-    function deleteContact(idx) {
-      if (appState.contacts.length <= 1) {
-        showToast('最少要保留 1 位聯絡人');
-        return;
-      }
-      var removed = appState.contacts.splice(idx, 1)[0];
-      if (removed && removed.hasCustomAvatar) {
-        deleteBlobFromStore(STORE_COVERS, 'avatar_' + removed.id);
-        clearImageCacheFor('avatar_' + removed.id);
-      }
-      saveState();
-      renderParentContacts();
-      renderTopContacts();
-    }
-
-    function setParentMediaTab(cat) {
-      parentMediaTab = cat;
-      document.getElementById('parentTabStory').className = 'tactile-btn border-2 border-[#1E1B18] w-full py-2 rounded-xl font-black text-sm ' + (cat === 'story' ? 'bg-[#BAE6FD]' : 'bg-white');
-      document.getElementById('parentTabMusic').className = 'tactile-btn border-2 border-[#1E1B18] w-full py-2 rounded-xl font-black text-sm ' + (cat === 'music' ? 'bg-[#FBCFE8]' : 'bg-white');
-      closeEditTrackBox();
-      renderParentTracks();
-    }
-
-    function renderParentTracks() {
-      var list = document.getElementById('parentTrackList');
-      var tracks = appState.tracks.filter(function (t) {
-        return t.category === parentMediaTab;
-      });
-
-      var tasks = tracks.map(function (t) {
-        if (t.hasCustomCover) {
-          return getCachedImageUrl(t.id).then(function (url) {
-            return { track: t, customUrl: url };
-          });
-        }
-        return Promise.resolve({ track: t, customUrl: null });
-      });
-
-      return Promise.all(tasks).then(function (items) {
-        list.innerHTML = '';
-        for (var i = 0; i < items.length; i++) {
-          var t = items[i].track;
-          var customUrl = items[i].customUrl;
-          var thumb = customUrl
-            ? '<img src="' + customUrl + '" class="w-8 h-8 rounded-lg border-2 border-[#1E1B18] object-cover shrink-0 mr-2" />'
-            : '<span class="w-8 h-8 rounded-lg border-2 border-[#1E1B18] flex items-center justify-center text-sm shrink-0 mr-2" style="background:' + (t.bg || '#E0F2FE') + '">' + (t.category === 'story' ? '📖' : '🎵') + '</span>';
-
-          var row = document.createElement('div');
-          row.className = 'flex items-center justify-between bg-white border-2 border-[#1E1B18] rounded-2xl px-3 py-2 mb-2';
-          row.innerHTML =
-            '<div class="flex items-center min-w-0 mr-2">' +
-              thumb +
-              '<span class="text-sm font-black truncate mr-1.5">' + escapeHtml(t.title) + '</span>' +
-              (t.isCustom ? '<span class="text-[11px] bg-sky-100 border border-[#1E1B18] rounded-full px-2 font-bold shrink-0">離線音訊</span>' : '') +
-            '</div>' +
-            '<div class="flex items-center shrink-0">' +
-              '<button type="button" onclick="openEditTrackBox(\'' + t.id + '\')" class="tactile-btn border-2 border-[#1E1B18] bg-amber-200 rounded-xl px-2.5 py-1 text-xs font-black mr-1.5">🖼️ 封面/改名</button>' +
-              '<button type="button" onclick="deleteTrack(\'' + t.id + '\')" class="tactile-btn border-2 border-[#1E1B18] bg-rose-200 rounded-xl px-2.5 py-1 text-xs font-black">刪除</button>' +
-            '</div>';
-          list.appendChild(row);
-        }
-      });
-    }
-
-    function handleNewCoverSelect(event) {
-      var files = event.target.files;
-      var file = (files && files.length > 0) ? files[0] : null;
-      if (!file) return;
-      compressImageToBlob(file, 400).then(function (blob) {
-        pendingNewCoverBlob = blob;
-        var url = URL.createObjectURL(blob);
-        document.getElementById('newCoverPreviewBox').innerHTML = '<img src="' + url + '" class="w-full h-full object-cover" />';
-        document.getElementById('clearNewCoverBtn').classList.remove('hidden');
-      }).catch(function () {
-        showToast('圖片讀取失敗');
-      });
-    }
-
-    function clearNewCoverSelection() {
-      pendingNewCoverBlob = null;
-      document.getElementById('newCoverFileInput').value = '';
-      document.getElementById('newCoverPreviewBox').innerHTML = '<span class="text-xl">🖼️</span>';
-      document.getElementById('clearNewCoverBtn').classList.add('hidden');
-    }
-
-    function openEditTrackBox(trackId) {
-      var track = null;
-      for (var i = 0; i < appState.tracks.length; i++) {
-        if (appState.tracks[i].id === trackId) {
-          track = appState.tracks[i];
-          break;
-        }
-      }
-      if (!track) return;
-
-      pendingEditCoverBlob = null;
-      pendingResetCover = false;
-      document.getElementById('editCoverFileInput').value = '';
-      document.getElementById('editTrackIdInput').value = track.id;
-      document.getElementById('editTrackTitleInput').value = track.title;
-
-      var box = document.getElementById('editTrackBox');
-      var preview = document.getElementById('editCoverPreviewBox');
-
-      var loadPreview = track.hasCustomCover ? getCachedImageUrl(track.id) : Promise.resolve(null);
-      loadPreview.then(function (existingUrl) {
-        if (existingUrl) {
-          preview.innerHTML = '<img src="' + existingUrl + '" class="w-full h-full object-cover" />';
-        } else {
-          preview.style.background = track.bg || '#E0F2FE';
-          preview.innerHTML = getCartoonCardArt(track.art, track.category);
-        }
-        box.classList.remove('hidden');
-      });
-    }
-
-    function closeEditTrackBox() {
-      pendingEditCoverBlob = null;
-      pendingResetCover = false;
-      document.getElementById('editTrackBox').classList.add('hidden');
-    }
-
-    function handleEditCoverSelect(event) {
-      var files = event.target.files;
-      var file = (files && files.length > 0) ? files[0] : null;
-      if (!file) return;
-      compressImageToBlob(file, 400).then(function (blob) {
-        pendingEditCoverBlob = blob;
-        pendingResetCover = false;
-        var url = URL.createObjectURL(blob);
-        document.getElementById('editCoverPreviewBox').innerHTML = '<img src="' + url + '" class="w-full h-full object-cover" />';
-      }).catch(function () {
-        showToast('圖片讀取失敗');
-      });
-    }
-
-    function resetTrackCoverToArt() {
-      var trackId = document.getElementById('editTrackIdInput').value;
-      var track = null;
-      for (var i = 0; i < appState.tracks.length; i++) {
-        if (appState.tracks[i].id === trackId) {
-          track = appState.tracks[i];
-          break;
-        }
-      }
-      if (!track) return;
-      pendingEditCoverBlob = null;
-      pendingResetCover = true;
-      var preview = document.getElementById('editCoverPreviewBox');
-      preview.style.background = track.bg || '#E0F2FE';
-      preview.innerHTML = getCartoonCardArt(track.art, track.category);
-    }
-
-    function saveEditedTrack() {
-      var trackId = document.getElementById('editTrackIdInput').value;
-      var track = null;
-      for (var i = 0; i < appState.tracks.length; i++) {
-        if (appState.tracks[i].id === trackId) {
-          track = appState.tracks[i];
-          break;
-        }
-      }
-      if (!track) return;
-
-      var title = document.getElementById('editTrackTitleInput').value.trim();
-      if (title) track.title = title;
-
-      var coverTask = Promise.resolve();
-      if (pendingEditCoverBlob) {
-        coverTask = putBlobToStore(STORE_COVERS, track.id, pendingEditCoverBlob).then(function () {
-          clearImageCacheFor(track.id);
-          track.hasCustomCover = true;
-        });
-      } else if (pendingResetCover) {
-        deleteBlobFromStore(STORE_COVERS, track.id);
-        clearImageCacheFor(track.id);
-        track.hasCustomCover = false;
-      }
-
-      coverTask.then(function () {
-        saveState();
-        closeEditTrackBox();
-        return Promise.all([renderParentTracks(), renderShelves()]);
-      }).then(function () {
-        showToast('已儲存封面與名稱');
-      });
-    }
-
-    function handleAudioFileUpload(event) {
-      var files = event.target.files;
-      var file = (files && files.length > 0) ? files[0] : null;
-      if (!file) return;
-
-      var titleInput = document.getElementById('newTrackTitleInput').value.trim();
-      var title = titleInput || file.name.replace(/\.[^/.]+$/, '');
-      var id = 'custom_' + Date.now();
-
-      putBlobToStore(STORE_AUDIO, id, file).then(function () {
-        if (pendingNewCoverBlob) {
-          return putBlobToStore(STORE_COVERS, id, pendingNewCoverBlob).then(function () {
-            clearImageCacheFor(id);
-            return true;
-          });
-        }
-        return false;
-      }).then(function (hasCustomCover) {
-        var bgs = parentMediaTab === 'story'
-          ? ['#FCE7F3', '#E0F2FE', '#FEF3C7']
-          : ['#FEF08A', '#BAE6FD', '#FBCFE8'];
-
-        appState.tracks.push({
-          id: id,
-          category: parentMediaTab,
-          title: title,
-          art: parentMediaTab === 'story' ? 'castle' : 'notes',
-          bg: bgs[appState.tracks.length % bgs.length],
-          isCustom: true,
-          hasCustomCover: hasCustomCover
-        });
-
-        saveState();
-        document.getElementById('newTrackTitleInput').value = '';
-        event.target.value = '';
-        clearNewCoverSelection();
-        return Promise.all([renderParentTracks(), renderShelves()]);
-      }).then(function () {
-        showToast('已加入「' + title + '」');
-      }).catch(function () {
-        showToast('儲存音訊失敗，請確認空間充足且未開啟無痕模式');
-      });
-    }
-
-    function deleteTrack(trackId) {
-      var idx = -1;
-      for (var i = 0; i < appState.tracks.length; i++) {
-        if (appState.tracks[i].id === trackId) {
-          idx = i;
-          break;
-        }
-      }
-      if (idx === -1) return;
-      if (playingTrackId === trackId) stopPlayback();
-
-      var removed = appState.tracks.splice(idx, 1)[0];
-      if (removed && removed.isCustom) {
-        deleteBlobFromStore(STORE_AUDIO, removed.id);
-      }
-      if (removed && removed.hasCustomCover) {
-        deleteBlobFromStore(STORE_COVERS, removed.id);
-        clearImageCacheFor(removed.id);
-      }
-      saveState();
-      renderParentTracks();
-      renderShelves();
-      showToast('已刪除項目');
-    }
-
-    function updateParentPin() {
-      var val = document.getElementById('newPinInput').value.trim();
-      if (!/^\d{4}$/.test(val)) {
-        showToast('請輸入 4 位數字密碼');
-        return;
-      }
-      appState.pin = val;
-      saveState();
-      document.getElementById('newPinInput').value = '';
-      showToast('家長密碼已更新');
-    }
-
-    function showToast(msg) {
-      var el = document.getElementById('toastPill');
-      el.textContent = msg;
-      el.classList.remove('hidden');
-      clearTimeout(el._t);
-      el._t = setTimeout(function () {
-        el.classList.add('hidden');
-      }, 2600);
-    }
-
-    function escapeHtml(str) {
-      return String(str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    /* Dynamically sync viewport height on resize/orientation changes to avoid 100vh clipping */
-    function syncViewportDimensions() {
-      var root = document.getElementById('appRoot');
-      if (root) {
-        root.style.height = window.innerHeight + 'px';
-      }
-    }
-
-    window.addEventListener('resize', syncViewportDimensions);
-    window.addEventListener('orientationchange', function () {
-      setTimeout(syncViewportDimensions, 150);
-    });
-
-    window.onload = function () {
-      syncViewportDimensions();
-      initIndexedDB().then(function () {
-        return Promise.all([renderTopContacts(), renderShelves()]);
-      });
-    };
-  </script>
-</body>
-</html>
+    
