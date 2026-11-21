@@ -421,6 +421,91 @@
       margin-top: 10px;
     }
 
+    /* Parent PIN Keypad Modal Styles */
+    .pin-box {
+      max-width: 340px;
+      margin: 24px auto;
+      background-color: #FFFDF7;
+      border: 4px solid #1E1E1E;
+      border-radius: 26px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 6px 0 #1E1E1E;
+    }
+
+    .pin-box h3 {
+      margin: 0 0 12px 0;
+      font-size: 20px;
+      color: #1E1E1E;
+    }
+
+    .pin-dots {
+      height: 44px;
+      line-height: 40px;
+      margin-bottom: 10px;
+      background-color: #FFFFFF;
+      border: 3px solid #1E1E1E;
+      border-radius: 14px;
+      font-size: 26px;
+      letter-spacing: 12px;
+      font-weight: bold;
+      color: #1E1E1E;
+    }
+
+    .pin-error {
+      height: 22px;
+      line-height: 22px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #D62828;
+      margin-bottom: 8px;
+    }
+
+    .keypad-grid {
+      width: 100%;
+      font-size: 0;
+    }
+
+    .key-btn {
+      display: inline-block;
+      vertical-align: middle;
+      width: 30%;
+      height: 54px;
+      line-height: 48px;
+      margin: 1.5%;
+      background-color: #FFFFFF;
+      border: 3px solid #1E1E1E;
+      border-radius: 14px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #1E1E1E;
+      box-shadow: 0 3px 0 #1E1E1E;
+      cursor: pointer;
+    }
+
+    .key-btn:active {
+      -webkit-transform: translateY(2px);
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #1E1E1E;
+    }
+
+    .key-btn.key-clear {
+      background-color: #FFAFCC;
+      font-size: 16px;
+    }
+
+    .key-btn.key-cancel {
+      background-color: #E5E5E5;
+      font-size: 16px;
+    }
+
+    .pin-default-note {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #555555;
+      font-weight: bold;
+    }
+
     /* Responsive adjustments for smaller portrait screens */
     @media screen and (max-width: 600px) {
       .avatar-btn {
@@ -571,10 +656,41 @@
   <!-- Non-blocking toast banner -->
   <div class="toast-banner" id="toastBanner"></div>
 
+  <!-- Parent PIN Verification Modal -->
+  <div class="modal-backdrop" id="pinModal">
+    <div class="pin-box">
+      <h3>請輸入家長密碼</h3>
+      <div class="pin-dots" id="pinDisplay">----</div>
+      <div class="pin-error" id="pinErrorMsg"></div>
+      <div class="keypad-grid" id="keypadGrid">
+        <div class="key-btn" data-key="1">1</div>
+        <div class="key-btn" data-key="2">2</div>
+        <div class="key-btn" data-key="3">3</div>
+        <div class="key-btn" data-key="4">4</div>
+        <div class="key-btn" data-key="5">5</div>
+        <div class="key-btn" data-key="6">6</div>
+        <div class="key-btn" data-key="7">7</div>
+        <div class="key-btn" data-key="8">8</div>
+        <div class="key-btn" data-key="9">9</div>
+        <div class="key-btn key-clear" data-key="clear">清除</div>
+        <div class="key-btn" data-key="0">0</div>
+        <div class="key-btn key-cancel" data-key="cancel">取消</div>
+      </div>
+      <div class="pin-default-note">預設密碼：1234</div>
+    </div>
+  </div>
+
   <!-- Parent Settings Modal -->
   <div class="modal-backdrop" id="adminModal">
     <div class="modal-box">
       <h2>家長設定</h2>
+
+      <div class="form-group">
+        <label>更改家長密碼（4 位數字）</label>
+        <input type="tel" id="parentPinInput" maxlength="4" pattern="[0-9]*" placeholder="輸入新 4 位數字密碼（預設 1234）" />
+      </div>
+
+      <hr style="border:1px solid #1E1E1E; margin:12px 0;" />
 
       <div class="form-group">
         <label>聯絡人 1（黃色頭像）FaceTime 帳號 / 電話</label>
@@ -631,9 +747,11 @@
     (function() {
       var DB_NAME = 'KidsLauncherDB_v2';
       var STORE_NAME = 'tracks';
+      var PIN_STORAGE_KEY = 'kid_parent_pin';
       var db = null;
       var currentPlayingId = null;
       var demoTimer = null;
+      var enteredPin = '';
       var audioPlayer = document.getElementById('audioPlayer');
 
       var defaultItems = [
@@ -707,6 +825,71 @@
           if (input) input.value = saved;
           if (btn) {
             btn.setAttribute('href', saved ? ('facetime://' + encodeURIComponent(saved)) : 'facetime://');
+          }
+        }
+        var currentPin = getParentPin();
+        var pinInput = document.getElementById('parentPinInput');
+        if (pinInput) pinInput.value = currentPin;
+      }
+
+      function getParentPin() {
+        var saved = localStorage.getItem(PIN_STORAGE_KEY);
+        if (saved && /^\d{4}$/.test(saved)) {
+          return saved;
+        }
+        return '1234';
+      }
+
+      function updatePinDisplay() {
+        var display = document.getElementById('pinDisplay');
+        if (!display) return;
+        var out = '';
+        for (var i = 0; i < 4; i++) {
+          out += (i < enteredPin.length) ? '●' : '-';
+        }
+        display.textContent = out;
+      }
+
+      function openPinGate() {
+        enteredPin = '';
+        document.getElementById('pinErrorMsg').textContent = '';
+        updatePinDisplay();
+        document.getElementById('pinModal').style.display = 'block';
+      }
+
+      function closePinGate() {
+        enteredPin = '';
+        document.getElementById('pinModal').style.display = 'none';
+      }
+
+      function handlePinKey(key) {
+        var errEl = document.getElementById('pinErrorMsg');
+        if (key === 'cancel') {
+          closePinGate();
+          return;
+        }
+        if (key === 'clear') {
+          enteredPin = '';
+          errEl.textContent = '';
+          updatePinDisplay();
+          return;
+        }
+        if (enteredPin.length < 4) {
+          enteredPin += key;
+          errEl.textContent = '';
+          updatePinDisplay();
+        }
+        if (enteredPin.length === 4) {
+          var targetPin = getParentPin();
+          if (enteredPin === targetPin) {
+            closePinGate();
+            document.getElementById('adminModal').style.display = 'block';
+          } else {
+            errEl.textContent = '密碼錯誤，請重新輸入';
+            setTimeout(function() {
+              enteredPin = '';
+              updatePinDisplay();
+            }, 350);
           }
         }
       }
@@ -891,14 +1074,33 @@
       };
 
       document.getElementById('openAdminBtn').onclick = function() {
-        document.getElementById('adminModal').style.display = 'block';
+        openPinGate();
       };
+
+      var keyButtons = document.querySelectorAll('#keypadGrid .key-btn');
+      for (var k = 0; k < keyButtons.length; k++) {
+        (function(btn) {
+          btn.onclick = function() {
+            handlePinKey(btn.getAttribute('data-key'));
+          };
+        })(keyButtons[k]);
+      }
 
       document.getElementById('closeAdminBtn').onclick = function() {
         document.getElementById('adminModal').style.display = 'none';
       };
 
       document.getElementById('saveAdminBtn').onclick = function() {
+        var newPinRaw = document.getElementById('parentPinInput').value.trim();
+        if (newPinRaw) {
+          if (/^\d{4}$/.test(newPinRaw)) {
+            localStorage.setItem(PIN_STORAGE_KEY, newPinRaw);
+          } else {
+            showToast('家長密碼必須為 4 位數字');
+            return;
+          }
+        }
+
         for (var i = 0; i < 3; i++) {
           var val = document.getElementById('contactInput' + i).value.trim();
           localStorage.setItem('kid_contact_' + i, val);
@@ -931,14 +1133,15 @@
           };
         } else {
           document.getElementById('adminModal').style.display = 'none';
-          showToast('聯絡人設定已儲存');
+          showToast('家長設定已儲存');
         }
       };
 
-      /* Export .json backup including contacts and offline audio tracks */
+      /* Export .json backup including parent PIN, contacts and offline audio tracks */
       document.getElementById('exportJsonBtn').onclick = function() {
         getAllSavedTracks(function(tracks) {
           var payload = {
+            parentPin: getParentPin(),
             contacts: [
               localStorage.getItem('kid_contact_0') || '',
               localStorage.getItem('kid_contact_1') || '',
@@ -998,12 +1201,15 @@
         reader.onload = function(ev) {
           try {
             var parsed = JSON.parse(ev.target.result);
+            if (parsed.parentPin && /^\d{4}$/.test(String(parsed.parentPin))) {
+              localStorage.setItem(PIN_STORAGE_KEY, String(parsed.parentPin));
+            }
             if (parsed.contacts && parsed.contacts.length) {
               for (var i = 0; i < 3; i++) {
                 localStorage.setItem('kid_contact_' + i, parsed.contacts[i] || '');
               }
-              loadContacts();
             }
+            loadContacts();
             if (parsed.tracks && parsed.tracks.length && db) {
               var tx = db.transaction([STORE_NAME], 'readwrite');
               var store = tx.objectStore(STORE_NAME);
@@ -1016,7 +1222,7 @@
               };
             } else {
               renderTracks();
-              showToast('聯絡人設定已匯入');
+              showToast('聯絡人與密碼設定已匯入');
             }
           } catch (err) {
             showToast('JSON 備份檔格式錯誤');
