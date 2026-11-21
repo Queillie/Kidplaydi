@@ -49,12 +49,47 @@
       padding: 12px 16px;
     }
 
-    /* Thick-outlined cartoon board & pills */
-    .cartoon-board {
-      background-color: #FFFDF5;
-      border: 4px solid #1E1B18;
-      border-radius: 30px;
-      box-shadow: 0 7px 0 #1E1B18;
+    /* Strictly cap SVG dimensions on iOS 12.5.8 Safari so icons never scale huge */
+    svg {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+    }
+    .icon-lock-svg {
+      width: 26px;
+      height: 26px;
+      max-width: 26px;
+      max-height: 26px;
+    }
+    .icon-shelf-svg {
+      width: 44px;
+      height: 44px;
+      max-width: 44px;
+      max-height: 44px;
+    }
+    .icon-arrow-svg {
+      width: 22px;
+      height: 22px;
+      max-width: 22px;
+      max-height: 22px;
+    }
+    .icon-play-svg {
+      width: 22px;
+      height: 22px;
+      max-width: 22px;
+      max-height: 22px;
+    }
+    .portrait-svg-wrap {
+      width: 88px;
+      height: 88px;
+      max-width: 88px;
+      max-height: 88px;
+    }
+    .card-art-svg-wrap {
+      width: 76px;
+      height: 76px;
+      max-width: 76px;
+      max-height: 76px;
     }
 
     .cartoon-pill {
@@ -199,7 +234,7 @@
         aria-label="家長設定"
         class="tactile-btn cartoon-pill w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#FFFDF5] flex items-center justify-center shrink-0"
       >
-        <svg class="w-6 h-6 sm:w-7 sm:h-7" viewBox="0 0 28 28" fill="none">
+        <svg class="icon-lock-svg" width="26" height="26" viewBox="0 0 28 28" fill="none">
           <path d="M9.5 12V9C9.5 6.51472 11.5147 4.5 14 4.5C16.4853 4.5 18.5 6.51472 18.5 9V12" stroke="#1E1B18" stroke-width="2.8" stroke-linecap="round"/>
           <rect x="6.5" y="12" width="15" height="11.5" rx="3.5" fill="#F9D45C" stroke="#1E1B18" stroke-width="2.5"/>
           <circle cx="14" cy="17" r="1.8" fill="#1E1B18"/>
@@ -214,8 +249,8 @@
       <!-- ROW 1: STORIES SHELF -->
       <section class="flex-1 min-h-0 flex items-center pb-2.5 sm:pb-3 border-b-4 border-[#1E1B18]">
         <div class="w-16 sm:w-20 md:w-24 h-full flex items-center justify-center shrink-0 mr-2.5 sm:mr-3.5">
-          <div class="cartoon-pill w-14 h-14 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-3xl bg-[#E0F2FE] flex items-center justify-center">
-            <svg class="w-9 h-9 sm:w-12 sm:h-12" viewBox="0 0 64 64" fill="none">
+          <div class="cartoon-pill w-14 h-14 sm:w-16 sm:h-16 rounded-3xl bg-[#E0F2FE] flex items-center justify-center">
+            <svg class="icon-shelf-svg" width="44" height="44" viewBox="0 0 64 64" fill="none">
               <path d="M8 17C17 12 27 14 32 21C37 14 47 12 56 17V48C47 43 37 45 32 51C27 45 17 43 8 48V17Z" fill="#FFFDF5" stroke="#1E1B18" stroke-width="4" stroke-linejoin="round"/>
               <path d="M32 21V51" stroke="#1E1B18" stroke-width="3.5" stroke-linecap="round"/>
               <path d="M15 24H25M15 31H24M39 24H49M40 31H49" stroke="#38BDF8" stroke-width="3.5" stroke-linecap="round"/>
@@ -229,9 +264,9 @@
           type="button"
           onclick="scrollShelf('storyShelf')"
           aria-label="向右捲動故事"
-          class="tactile-btn cartoon-pill w-10 sm:w-12 h-16 sm:h-20 rounded-2xl bg-[#FFF7D6] flex items-center justify-center shrink-0 ml-2 sm:ml-3"
+          class="tactile-btn cartoon-pill w-10 sm:w-12 h-14 sm:h-16 rounded-2xl bg-[#FFF7D6] flex items-center justify-center shrink-0 ml-2 sm:ml-3"
         >
-          <svg class="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="#1E1B18">
+          <svg class="icon-arrow-svg" width="22" height="22" viewBox="0 0 24 24" fill="#1E1B18">
             <path d="M8 5L18 12L8 19V5Z"/>
           </svg>
         </button>
@@ -240,8 +275,8 @@
       <!-- ROW 2: MUSIC SHELF -->
       <section class="flex-1 min-h-0 flex items-center pt-2.5 sm:pt-3">
         <div class="w-16 sm:w-20 md:w-24 h-full flex items-center justify-center shrink-0 mr-2.5 sm:mr-3.5">
-          <div class="cartoon-pill w-14 h-14 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-3xl bg-[#FCE7F3] flex items-center justify-center">
-            <svg class="w-9 h-9 sm:w-12 sm:h-12" viewBox="0 0 64 64" fill="none">
+          <div class="cartoon-pill w-14 h-14 sm:w-16 sm:h-16 rounded-3xl bg-[#FCE7F3] flex items-center justify-center">
+            <svg class="icon-shelf-svg" width="44" height="44" viewBox="0 0 64 64" fill="none">
               <path d="M24 45V16L50 11V40" stroke="#1E1B18" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M24 24L50 19" stroke="#1E1B18" stroke-width="4.5" stroke-linecap="round"/>
               <circle cx="18" cy="45" r="7.5" fill="#FB7185" stroke="#1E1B18" stroke-width="4"/>
@@ -256,9 +291,9 @@
           type="button"
           onclick="scrollShelf('musicShelf')"
           aria-label="向右捲動音樂"
-          class="tactile-btn cartoon-pill w-10 sm:w-12 h-16 sm:h-20 rounded-2xl bg-[#FFF7D6] flex items-center justify-center shrink-0 ml-2 sm:ml-3"
+          class="tactile-btn cartoon-pill w-10 sm:w-12 h-14 sm:h-16 rounded-2xl bg-[#FFF7D6] flex items-center justify-center shrink-0 ml-2 sm:ml-3"
         >
-          <svg class="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="#1E1B18">
+          <svg class="icon-arrow-svg" width="22" height="22" viewBox="0 0 24 24" fill="#1E1B18">
             <path d="M8 5L18 12L8 19V5Z"/>
           </svg>
         </button>
@@ -387,9 +422,12 @@
 
           <!-- iOS 12.5.8 HomePod AirPlay via Control Center Note -->
           <div class="bg-[#E0F2FE] border-3 border-[#1E1B18] rounded-3xl p-4 shadow-sm">
-            <h3 class="text-base sm:text-lg font-black mb-1.5">🔊 HomePod 喇叭連接方式（iOS 12.5.8）</h3>
+            <h3 class="text-base sm:text-lg font-black mb-1.5">🔊 HomePod 連接與 FaceTime 提示</h3>
+            <p class="text-xs font-bold text-slate-700 leading-relaxed mb-2">
+              <strong>HomePod（iOS 12.5.8）：</strong>Safari 不支援網頁按鈕直接觸發 AirPlay。請由舊 iPad 螢幕<strong>右上角向下拉開「控制中心」</strong> → 長按右上角音樂方塊 → 點選 <strong>AirPlay 圖示</strong> 選擇 HomePod。
+            </p>
             <p class="text-xs font-bold text-slate-700 leading-relaxed">
-              iOS 12.5.8 Safari 不支援從網頁按鈕直接觸發 AirPlay。請由舊 iPad 螢幕<strong>右上角向下拉開「控制中心」</strong> → 長按右上角音樂方塊 → 點選 <strong>AirPlay 圖示</strong> 選擇家中的 HomePod。
+              <strong>FaceTime 系統確認：</strong>點擊家人頭像會直接呼叫 <code>facetime://</code>，沒有額外的網頁確認框；若 FaceTime 視窗本身出現「Click to call」或「Cancel / Call」，那是 macOS／iOS 系統層級的安全提示，網頁無法略過。
             </p>
           </div>
         </div>
@@ -913,7 +951,7 @@
     function getPortraitSvg(type) {
       switch (type) {
         case 'mom':
-          return '<svg viewBox="0 0 100 100" class="w-full h-full">' +
+          return '<svg width="88" height="88" viewBox="0 0 100 100" class="portrait-svg-wrap">' +
             '<path d="M23 50C23 24 77 24 77 50V76H23V50Z" fill="#5B2C1D" stroke="#1E1B18" stroke-width="4" stroke-linejoin="round"/>' +
             '<circle cx="50" cy="51" r="23" fill="#FFDFC2" stroke="#1E1B18" stroke-width="4"/>' +
             '<path d="M27 47C34 32 66 32 73 47" fill="#5B2C1D" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>' +
@@ -925,7 +963,7 @@
             '<path d="M28 84C32 72 68 72 72 84" fill="#FB7185" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>' +
             '</svg>';
         case 'grandma':
-          return '<svg viewBox="0 0 100 100" class="w-full h-full">' +
+          return '<svg width="88" height="88" viewBox="0 0 100 100" class="portrait-svg-wrap">' +
             '<circle cx="50" cy="24" r="12" fill="#E2E8F0" stroke="#1E1B18" stroke-width="4"/>' +
             '<circle cx="50" cy="51" r="23" fill="#FFDFC2" stroke="#1E1B18" stroke-width="4"/>' +
             '<path d="M27 48C27 30 73 30 73 48" fill="#F1F5F9" stroke="#1E1B18" stroke-width="4"/>' +
@@ -938,7 +976,7 @@
             '<path d="M28 84C32 72 68 72 72 84" fill="#A855F7" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>' +
             '</svg>';
         case 'grandpa':
-          return '<svg viewBox="0 0 100 100" class="w-full h-full">' +
+          return '<svg width="88" height="88" viewBox="0 0 100 100" class="portrait-svg-wrap">' +
             '<circle cx="50" cy="51" r="23" fill="#FFDFC2" stroke="#1E1B18" stroke-width="4"/>' +
             '<path d="M27 46C27 32 73 32 73 46" fill="#CBD5E1" stroke="#1E1B18" stroke-width="4"/>' +
             '<circle cx="42" cy="51" r="2.8" fill="#1E1B18"/>' +
@@ -947,7 +985,7 @@
             '<path d="M28 84C32 72 68 72 72 84" fill="#38BDF8" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>' +
             '</svg>';
         default:
-          return '<svg viewBox="0 0 100 100" class="w-full h-full">' +
+          return '<svg width="88" height="88" viewBox="0 0 100 100" class="portrait-svg-wrap">' +
             '<circle cx="50" cy="51" r="23" fill="#FFDFC2" stroke="#1E1B18" stroke-width="4"/>' +
             '<path d="M27 47C27 25 73 25 73 47C64 38 36 38 27 47Z" fill="#2B2D42" stroke="#1E1B18" stroke-width="4" stroke-linejoin="round"/>' +
             '<circle cx="42" cy="51" r="2.8" fill="#1E1B18"/>' +
@@ -964,7 +1002,7 @@
     function getCartoonCardArt(art, category) {
       switch (art) {
         case 'castle':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
+          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
             '<rect x="0" y="54" width="80" height="26" fill="#86EFAC" stroke="#1E1B18" stroke-width="3"/>' +
             '<rect x="24" y="34" width="32" height="24" rx="4" fill="#F472B6" stroke="#1E1B18" stroke-width="3"/>' +
             '<rect x="16" y="26" width="12" height="32" rx="3" fill="#FB7185" stroke="#1E1B18" stroke-width="3"/>' +
@@ -974,7 +1012,7 @@
             '<path d="M35 58V46A5 5 0 0 1 45 46V58Z" fill="#7C3AED" stroke="#1E1B18" stroke-width="2.8"/>' +
             '</svg>';
         case 'unicorn':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
+          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
             '<rect x="0" y="54" width="80" height="26" fill="#6EE7B7" stroke="#1E1B18" stroke-width="3"/>' +
             '<polygon points="44,12 40,28 50,28" fill="#F9D45C" stroke="#1E1B18" stroke-width="3" stroke-linejoin="round"/>' +
             '<circle cx="42" cy="40" r="16" fill="#FFFDF5" stroke="#1E1B18" stroke-width="3.2"/>' +
@@ -982,7 +1020,7 @@
             '<circle cx="48" cy="37" r="2.5" fill="#1E1B18"/>' +
             '</svg>';
         case 'lion':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
+          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
             '<rect x="0" y="54" width="80" height="26" fill="#4ADE80" stroke="#1E1B18" stroke-width="3"/>' +
             '<circle cx="40" cy="40" r="20" fill="#EA580C" stroke="#1E1B18" stroke-width="3.2"/>' +
             '<circle cx="40" cy="41" r="13" fill="#FBBF24" stroke="#1E1B18" stroke-width="3"/>' +
@@ -990,7 +1028,7 @@
             '<circle cx="45" cy="39" r="2.5" fill="#1E1B18"/>' +
             '</svg>';
         case 'fox':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
+          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
             '<rect x="0" y="54" width="80" height="26" fill="#A7F3D0" stroke="#1E1B18" stroke-width="3"/>' +
             '<polygon points="22,38 20,18 34,30" fill="#FB923C" stroke="#1E1B18" stroke-width="3" stroke-linejoin="round"/>' +
             '<polygon points="58,38 60,18 46,30" fill="#FB923C" stroke="#1E1B18" stroke-width="3" stroke-linejoin="round"/>' +
@@ -999,47 +1037,47 @@
             '<circle cx="46" cy="40" r="2.4" fill="#1E1B18"/>' +
             '</svg>';
         case 'guitar':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
+          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
             '<circle cx="42" cy="46" r="18" fill="#F59E0B" stroke="#1E1B18" stroke-width="3.2"/>' +
             '<circle cx="34" cy="34" r="12" fill="#FBBF24" stroke="#1E1B18" stroke-width="3.2"/>' +
             '<circle cx="42" cy="46" r="5" fill="#451A03" stroke="#1E1B18" stroke-width="2.5"/>' +
             '<rect x="46" y="14" width="7" height="24" rx="3" transform="rotate(35 46 14)" fill="#FDE68A" stroke="#1E1B18" stroke-width="3"/>' +
             '</svg>';
         case 'notes':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
+          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
             '<path d="M28 52V22L54 17V47" stroke="#1E1B18" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>' +
             '<circle cx="22" cy="52" r="7" fill="#FB7185" stroke="#1E1B18" stroke-width="3.2"/>' +
             '<circle cx="48" cy="47" r="7" fill="#F9D45C" stroke="#1E1B18" stroke-width="3.2"/>' +
             '</svg>';
         case 'galaxy':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
+          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
             '<circle cx="24" cy="58" r="18" fill="#22C55E" stroke="#1E1B18" stroke-width="3.2"/>' +
             '<path d="M54 14L57 22L65 25L57 28L54 36L51 28L43 25L51 22Z" fill="#F9D45C" stroke="#1E1B18" stroke-width="2.8" stroke-linejoin="round"/>' +
             '<circle cx="24" cy="24" r="4" fill="#FDE68A" stroke="#1E1B18" stroke-width="2.5"/>' +
             '</svg>';
         case 'rainbow':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
+          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
             '<path d="M14 58A26 26 0 0 1 66 58" fill="none" stroke="#FB7185" stroke-width="6" stroke-linecap="round"/>' +
             '<path d="M21 58A19 19 0 0 1 59 58" fill="none" stroke="#F9D45C" stroke-width="6" stroke-linecap="round"/>' +
             '<path d="M28 58A12 12 0 0 1 52 58" fill="none" stroke="#38BDF8" stroke-width="6" stroke-linecap="round"/>' +
             '</svg>';
         case 'sheep':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
+          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
             '<circle cx="40" cy="42" r="20" fill="#FFFDF5" stroke="#1E1B18" stroke-width="3.2"/>' +
             '<circle cx="40" cy="44" r="11" fill="#FFDFC2" stroke="#1E1B18" stroke-width="3"/>' +
             '<circle cx="36" cy="42" r="2.2" fill="#1E1B18"/>' +
             '<circle cx="44" cy="42" r="2.2" fill="#1E1B18"/>' +
             '</svg>';
         case 'moon':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
+          return '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap">' +
             '<path d="M46 16A22 22 0 1 0 60 48A17 17 0 1 1 46 16Z" fill="#F9D45C" stroke="#1E1B18" stroke-width="3.2" stroke-linejoin="round"/>' +
             '<circle cx="22" cy="24" r="3" fill="#FFFDF5" stroke="#1E1B18" stroke-width="2.2"/>' +
             '<circle cx="62" cy="20" r="2.5" fill="#FFFDF5" stroke="#1E1B18" stroke-width="2.2"/>' +
             '</svg>';
         default:
           return category === 'story'
-            ? '<svg viewBox="0 0 80 80" class="w-full h-full"><rect x="16" y="20" width="48" height="40" rx="8" fill="#FFFDF5" stroke="#1E1B18" stroke-width="3.5"/><path d="M24 32H56M24 42H48" stroke="#38BDF8" stroke-width="4" stroke-linecap="round"/></svg>'
-            : '<svg viewBox="0 0 80 80" class="w-full h-full"><path d="M30 54V24L54 19V49" stroke="#1E1B18" stroke-width="5" stroke-linecap="round"/><circle cx="24" cy="54" r="7" fill="#F9D45C" stroke="#1E1B18" stroke-width="3.2"/><circle cx="48" cy="49" r="7" fill="#38BDF8" stroke="#1E1B18" stroke-width="3.2"/></svg>';
+            ? '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap"><rect x="16" y="20" width="48" height="40" rx="8" fill="#FFFDF5" stroke="#1E1B18" stroke-width="3.5"/><path d="M24 32H56M24 42H48" stroke="#38BDF8" stroke-width="4" stroke-linecap="round"/></svg>'
+            : '<svg width="76" height="76" viewBox="0 0 80 80" class="card-art-svg-wrap"><path d="M30 54V24L54 19V49" stroke="#1E1B18" stroke-width="5" stroke-linecap="round"/><circle cx="24" cy="54" r="7" fill="#F9D45C" stroke="#1E1B18" stroke-width="3.2"/><circle cx="48" cy="49" r="7" fill="#38BDF8" stroke="#1E1B18" stroke-width="3.2"/></svg>';
       }
     }
 
@@ -1093,12 +1131,12 @@
 
       callingContactId = contact.id;
       renderTopContacts();
-      showToast('📹 正在撥出視訊通話...');
+      showToast('📹 正在呼叫 FaceTime...');
 
       setTimeout(function () {
         callingContactId = null;
         renderTopContacts();
-      }, 2400);
+      }, 2200);
 
       try {
         window.location.href = 'facetime://' + encodeURIComponent(contact.target.trim());
@@ -1158,7 +1196,7 @@
                   '<span class="eq-bar eq-2"></span>' +
                   '<span class="eq-bar eq-3"></span>' +
                 '</div>'
-              : '<svg class="w-5 h-5 sm:w-6 sm:h-6 ml-0.5" viewBox="0 0 24 24" fill="#1E1B18">' +
+              : '<svg class="icon-play-svg" width="22" height="22" viewBox="0 0 24 24" fill="#1E1B18">' +
                   '<path d="M7 5L19 12L7 19V5Z"/>' +
                 '</svg>';
 
