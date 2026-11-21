@@ -8,6 +8,7 @@
   <meta name="apple-mobile-web-app-title" content="小朋友音樂盒" />
   <title>小朋友音樂盒 - Kids iPad Launcher</title>
   <style>
+    /* Global reset & touch rules strictly compatible with iOS 12.5.8 Safari */
     * {
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
@@ -23,51 +24,35 @@
       height: 100%;
       overflow: hidden;
       background-color: #F9D45C;
-      font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Heiti TC", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Heiti TC", "Helvetica Neue", sans-serif;
     }
 
-    /* 主容器：強制佔滿整個螢幕高度 */
+    /* Fixed full-viewport container using explicit heights so iOS 12 flex never collapses */
     .app-container {
       position: fixed;
       top: 0;
       left: 0;
-      right: 0;
-      bottom: 0;
       width: 100%;
       height: 100%;
       background-color: #F9D45C;
-      display: -webkit-box;
-      display: -webkit-flex;
-      display: flex;
-      -webkit-box-orient: vertical;
-      -webkit-box-direction: normal;
-      -webkit-flex-direction: column;
-      flex-direction: column;
+      padding: 12px 18px 18px 18px;
     }
 
-    /* 頂部家人頭像列 */
+    /* Top bar: fixed 120px height */
     .top-bar {
       position: relative;
       width: 100%;
-      height: 130px;
-      min-height: 130px;
-      display: -webkit-box;
-      display: -webkit-flex;
-      display: flex;
-      -webkit-box-align: center;
-      -webkit-align-items: center;
-      align-items: center;
-      -webkit-box-pack: center;
-      -webkit-justify-content: center;
-      justify-content: center;
-      padding: 10px 20px;
+      height: 120px;
+      text-align: center;
+      padding-top: 6px;
     }
 
     .avatar-btn {
       display: inline-block;
+      vertical-align: middle;
       width: 96px;
       height: 96px;
-      border-radius: 50%;
+      border-radius: 48px;
       border: 4px solid #1E1E1E;
       background-color: #FFFDF7;
       margin: 0 22px;
@@ -75,6 +60,7 @@
       text-decoration: none;
       box-shadow: 0 4px 0 #1E1E1E;
       overflow: hidden;
+      cursor: pointer;
     }
 
     .avatar-btn:active {
@@ -83,6 +69,7 @@
       box-shadow: 0 1px 0 #1E1E1E;
     }
 
+    /* Strict SVG dimensions to prevent oversized icon bugs on iOS 12.5.8 */
     .avatar-btn svg {
       width: 76px !important;
       height: 76px !important;
@@ -92,27 +79,25 @@
       margin: 0 auto;
     }
 
-    /* 右上角家長鎖按鈕 */
+    /* Top-right parent settings lock button */
     .lock-btn {
       position: absolute;
-      top: 16px;
-      right: 18px;
-      width: 48px;
-      height: 48px;
+      top: 8px;
+      right: 4px;
+      width: 50px;
+      height: 50px;
       border-radius: 14px;
       border: 3px solid #1E1E1E;
       background-color: #FFFDF7;
-      display: -webkit-box;
-      display: -webkit-flex;
-      display: flex;
-      -webkit-box-align: center;
-      -webkit-align-items: center;
-      align-items: center;
-      -webkit-box-pack: center;
-      -webkit-justify-content: center;
-      justify-content: center;
+      padding: 10px;
       box-shadow: 0 3px 0 #1E1E1E;
       cursor: pointer;
+    }
+
+    .lock-btn:active {
+      -webkit-transform: translateY(2px);
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #1E1E1E;
     }
 
     .lock-btn svg {
@@ -120,46 +105,28 @@
       height: 24px !important;
       max-width: 24px !important;
       max-height: 24px !important;
+      display: block;
+      margin: 0 auto;
     }
 
-    /* 白色主內容卡片區 */
+    /* Main cream board using explicit calc height */
     .main-board {
-      -webkit-box-flex: 1;
-      -webkit-flex: 1;
-      flex: 1;
-      margin: 0 18px 18px 18px;
+      width: 100%;
+      height: -webkit-calc(100% - 126px);
+      height: calc(100% - 126px);
       background-color: #FFFDF7;
       border: 4px solid #1E1E1E;
       border-radius: 28px;
       box-shadow: 0 6px 0 #1E1E1E;
-      display: -webkit-box;
-      display: -webkit-flex;
-      display: flex;
-      -webkit-box-orient: vertical;
-      -webkit-box-direction: normal;
-      -webkit-flex-direction: column;
-      flex-direction: column;
       overflow: hidden;
     }
 
-    /* 故事與音樂雙書架列 */
+    /* Two horizontal shelves each taking half the board */
     .shelf-row {
-      -webkit-box-flex: 1;
-      -webkit-flex: 1;
-      flex: 1;
+      position: relative;
       width: 100%;
-      min-height: 210px;
-      padding: 14px 16px;
-      display: -webkit-box;
-      display: -webkit-flex;
-      display: flex;
-      -webkit-box-orient: horizontal;
-      -webkit-box-direction: normal;
-      -webkit-flex-direction: row;
-      flex-direction: row;
-      -webkit-box-align: center;
-      -webkit-align-items: center;
-      align-items: center;
+      height: 49.5%;
+      padding: 12px 68px 12px 92px;
     }
 
     .shelf-divider {
@@ -168,23 +135,17 @@
       background-color: #1E1E1E;
     }
 
-    /* 左側分類圓形圖示 */
+    /* Left circular category badge */
     .category-badge {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      margin-top: -32px;
       width: 64px;
       height: 64px;
-      min-width: 64px;
-      border-radius: 50%;
+      border-radius: 32px;
       border: 3px solid #1E1E1E;
-      display: -webkit-box;
-      display: -webkit-flex;
-      display: flex;
-      -webkit-box-align: center;
-      -webkit-align-items: center;
-      align-items: center;
-      -webkit-box-pack: center;
-      -webkit-justify-content: center;
-      justify-content: center;
-      margin-right: 14px;
+      padding: 13px;
       box-shadow: 0 3px 0 #1E1E1E;
     }
 
@@ -201,32 +162,32 @@
       height: 32px !important;
       max-width: 32px !important;
       max-height: 32px !important;
+      display: block;
+      margin: 0 auto;
     }
 
-    /* 橫向捲動卡片軌道 */
+    /* Horizontally scrollable track */
     .cards-track {
-      -webkit-box-flex: 1;
-      -webkit-flex: 1;
-      flex: 1;
+      width: 100%;
       height: 100%;
       overflow-x: auto;
       overflow-y: hidden;
       -webkit-overflow-scrolling: touch;
       white-space: nowrap;
-      padding: 6px 4px;
       font-size: 0;
+      padding-top: 4px;
     }
 
     .cards-track::-webkit-scrollbar {
       display: none;
     }
 
-    /* 單張故事/音樂卡片 */
+    /* Individual media card */
     .media-card {
       display: inline-block;
       vertical-align: middle;
-      width: 175px;
-      height: 195px;
+      width: 176px;
+      height: 196px;
       border: 3px solid #1E1E1E;
       border-radius: 22px;
       background-color: #FFFFFF;
@@ -235,7 +196,6 @@
       box-shadow: 0 4px 0 #1E1E1E;
       text-align: center;
       cursor: pointer;
-      position: relative;
     }
 
     .media-card:active {
@@ -250,4 +210,833 @@
       background-color: #FFF8E7;
     }
 
-    
+    .card-art {
+      position: relative;
+      width: 150px;
+      height: 128px;
+      border-radius: 14px;
+      border: 2px solid #1E1E1E;
+      margin: 0 auto 8px auto;
+      padding-top: 16px;
+      overflow: hidden;
+    }
+
+    .card-art svg.art-svg {
+      width: 92px !important;
+      height: 92px !important;
+      max-width: 92px !important;
+      max-height: 92px !important;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .play-pill {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 40px;
+      height: 40px;
+      margin-top: -20px;
+      margin-left: -20px;
+      border-radius: 20px;
+      background-color: rgba(255, 255, 255, 0.94);
+      border: 3px solid #1E1E1E;
+      padding: 9px;
+    }
+
+    .play-pill svg {
+      width: 16px !important;
+      height: 16px !important;
+      max-width: 16px !important;
+      max-height: 16px !important;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1E1E1E;
+      line-height: 30px;
+      height: 34px;
+      border: 2px solid #1E1E1E;
+      border-radius: 12px;
+      background-color: #FFFDF7;
+      padding: 0 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Right-side scroll button */
+    .scroll-next-btn {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      margin-top: -42px;
+      width: 44px;
+      height: 84px;
+      border-radius: 22px;
+      border: 3px solid #1E1E1E;
+      background-color: #FFF3B0;
+      padding-top: 30px;
+      box-shadow: 0 3px 0 #1E1E1E;
+      cursor: pointer;
+    }
+
+    .scroll-next-btn:active {
+      -webkit-transform: translateY(2px);
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #1E1E1E;
+    }
+
+    .scroll-next-btn svg {
+      width: 18px !important;
+      height: 18px !important;
+      max-width: 18px !important;
+      max-height: 18px !important;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* Toast banner for non-blocking notifications */
+    .toast-banner {
+      display: none;
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      width: 300px;
+      margin-left: -150px;
+      background-color: #1E1E1E;
+      color: #FFFFFF;
+      font-size: 15px;
+      font-weight: 700;
+      text-align: center;
+      padding: 10px 16px;
+      border-radius: 20px;
+      border: 2px solid #FFFDF7;
+      z-index: 1200;
+    }
+
+    /* Parent Settings Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.65);
+      z-index: 999;
+      padding: 16px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .modal-box {
+      max-width: 580px;
+      margin: 10px auto;
+      background-color: #FFFDF7;
+      border: 4px solid #1E1E1E;
+      border-radius: 24px;
+      padding: 20px;
+      font-size: 15px;
+      color: #1E1E1E;
+    }
+
+    .modal-box h2 {
+      margin: 0 0 12px 0;
+      font-size: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 9px;
+      font-size: 15px;
+      border: 2px solid #1E1E1E;
+      border-radius: 10px;
+      background-color: #FFFFFF;
+      -webkit-user-select: text;
+      user-select: text;
+    }
+
+    .btn-action {
+      display: inline-block;
+      border: 3px solid #1E1E1E;
+      border-radius: 12px;
+      padding: 9px 14px;
+      font-size: 15px;
+      font-weight: bold;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+
+    .custom-track-list {
+      margin-top: 8px;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+
+    .custom-track-row {
+      background-color: #FFFFFF;
+      border: 2px solid #1E1E1E;
+      border-radius: 10px;
+      padding: 6px 10px;
+      margin-bottom: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      overflow: hidden;
+    }
+
+    .custom-track-del {
+      float: right;
+      background-color: #FF758F;
+      border: 2px solid #1E1E1E;
+      border-radius: 8px;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .hint-box {
+      background-color: #FFF3CD;
+      border: 2px solid #1E1E1E;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.45;
+      margin-top: 10px;
+    }
+
+    /* Responsive adjustments for smaller portrait screens */
+    @media screen and (max-width: 600px) {
+      .avatar-btn {
+        width: 78px;
+        height: 78px;
+        border-radius: 39px;
+        margin: 0 8px;
+      }
+      .avatar-btn svg {
+        width: 58px !important;
+        height: 58px !important;
+        max-width: 58px !important;
+        max-height: 58px !important;
+      }
+      .top-bar {
+        height: 104px;
+      }
+      .main-board {
+        height: -webkit-calc(100% - 110px);
+        height: calc(100% - 110px);
+      }
+      .shelf-row {
+        padding: 10px 54px 10px 76px;
+      }
+      .category-badge {
+        left: 10px;
+        width: 54px;
+        height: 54px;
+        margin-top: -27px;
+        padding: 9px;
+      }
+      .media-card {
+        width: 150px;
+        height: 174px;
+      }
+      .card-art {
+        width: 124px;
+        height: 108px;
+        padding-top: 10px;
+      }
+      .card-art svg.art-svg {
+        width: 80px !important;
+        height: 80px !important;
+        max-width: 80px !important;
+        max-height: 80px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top bar: 3 circular family contact avatars + top-right parent lock button -->
+    <div class="top-bar">
+      <a class="avatar-btn" id="callBtn0" href="facetime://" style="background-color:#FFE66D;" aria-label="致電聯絡人 1">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="44" fill="#FFE66D" stroke="#1E1E1E" stroke-width="5"/>
+          <circle cx="50" cy="44" r="22" fill="#FFDCB8" stroke="#1E1E1E" stroke-width="4"/>
+          <path d="M28 40 C30 20, 70 20, 72 40" fill="#2B2D42" stroke="#1E1E1E" stroke-width="4"/>
+          <circle cx="42" cy="44" r="6" fill="#FFF" stroke="#1E1E1E" stroke-width="3"/>
+          <circle cx="58" cy="44" r="6" fill="#FFF" stroke="#1E1E1E" stroke-width="3"/>
+          <circle cx="42" cy="44" r="2" fill="#1E1E1E"/>
+          <circle cx="58" cy="44" r="2" fill="#1E1E1E"/>
+          <path d="M44 55 Q50 60 56 55" fill="none" stroke="#1E1E1E" stroke-width="3" stroke-linecap="round"/>
+          <path d="M26 84 C30 68, 70 68, 74 84" fill="#3A86FF" stroke="#1E1E1E" stroke-width="4"/>
+        </svg>
+      </a>
+
+      <a class="avatar-btn" id="callBtn1" href="facetime://" style="background-color:#FFAFCC;" aria-label="致電聯絡人 2">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="44" fill="#FFAFCC" stroke="#1E1E1E" stroke-width="5"/>
+          <path d="M24 62 C22 22, 78 22, 76 62" fill="#5C3A21" stroke="#1E1E1E" stroke-width="4"/>
+          <circle cx="50" cy="46" r="21" fill="#FFDCB8" stroke="#1E1E1E" stroke-width="4"/>
+          <circle cx="43" cy="45" r="2.5" fill="#1E1E1E"/>
+          <circle cx="57" cy="45" r="2.5" fill="#1E1E1E"/>
+          <path d="M44 55 Q50 61 56 55" fill="none" stroke="#1E1E1E" stroke-width="3" stroke-linecap="round"/>
+          <path d="M28 84 C32 69, 68 69, 72 84" fill="#FF4D6D" stroke="#1E1E1E" stroke-width="4"/>
+        </svg>
+      </a>
+
+      <a class="avatar-btn" id="callBtn2" href="facetime://" style="background-color:#CDB4DB;" aria-label="致電聯絡人 3">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="44" fill="#CDB4DB" stroke="#1E1E1E" stroke-width="5"/>
+          <circle cx="50" cy="22" r="10" fill="#D8E2DC" stroke="#1E1E1E" stroke-width="4"/>
+          <circle cx="50" cy="46" r="21" fill="#FFDCB8" stroke="#1E1E1E" stroke-width="4"/>
+          <circle cx="42" cy="46" r="6" fill="#FFF" stroke="#1E1E1E" stroke-width="3"/>
+          <circle cx="58" cy="46" r="6" fill="#FFF" stroke="#1E1E1E" stroke-width="3"/>
+          <circle cx="42" cy="46" r="2" fill="#1E1E1E"/>
+          <circle cx="58" cy="46" r="2" fill="#1E1E1E"/>
+          <path d="M45 56 Q50 60 55 56" fill="none" stroke="#1E1E1E" stroke-width="3" stroke-linecap="round"/>
+          <path d="M28 84 C32 69, 68 69, 72 84" fill="#8338EC" stroke="#1E1E1E" stroke-width="4"/>
+        </svg>
+      </a>
+
+      <div class="lock-btn" id="openAdminBtn" title="家長設定" role="button" tabindex="0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" stroke-width="2.5">
+          <rect x="4" y="11" width="16" height="10" rx="2" fill="#FFD166"/>
+          <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Main cream board: Story shelf + Music shelf -->
+    <div class="main-board">
+      <!-- Top Row: Stories -->
+      <div class="shelf-row">
+        <div class="category-badge story">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" stroke-width="2.2">
+            <path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z" fill="#FFF"/>
+            <path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z" fill="#FFF"/>
+          </svg>
+        </div>
+
+        <div class="cards-track" id="storyTrack"></div>
+
+        <div class="scroll-next-btn" onclick="scrollTrack('storyTrack')" role="button" tabindex="0">
+          <svg viewBox="0 0 24 24" fill="#1E1E1E">
+            <polygon points="8,5 19,12 8,19"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="shelf-divider"></div>
+
+      <!-- Bottom Row: Music -->
+      <div class="shelf-row">
+        <div class="category-badge music">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" stroke-width="2.2">
+            <path d="M9 18V5l12-2v13"/>
+            <circle cx="6" cy="18" r="3" fill="#FF758F"/>
+            <circle cx="18" cy="16" r="3" fill="#FF758F"/>
+          </svg>
+        </div>
+
+        <div class="cards-track" id="musicTrack"></div>
+
+        <div class="scroll-next-btn" onclick="scrollTrack('musicTrack')" role="button" tabindex="0">
+          <svg viewBox="0 0 24 24" fill="#1E1E1E">
+            <polygon points="8,5 19,12 8,19"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden HTML5 audio element -->
+  <audio id="audioPlayer" preload="auto"></audio>
+
+  <!-- Non-blocking toast banner -->
+  <div class="toast-banner" id="toastBanner"></div>
+
+  <!-- Parent Settings Modal -->
+  <div class="modal-backdrop" id="adminModal">
+    <div class="modal-box">
+      <h2>家長設定</h2>
+
+      <div class="form-group">
+        <label>聯絡人 1（黃色頭像）FaceTime 帳號 / 電話</label>
+        <input type="text" id="contactInput0" placeholder="例如：85291234567 或 name@icloud.com" />
+      </div>
+      <div class="form-group">
+        <label>聯絡人 2（粉紅頭像）FaceTime 帳號 / 電話</label>
+        <input type="text" id="contactInput1" placeholder="例如：85291234567 或 name@icloud.com" />
+      </div>
+      <div class="form-group">
+        <label>聯絡人 3（紫色頭像）FaceTime 帳號 / 電話</label>
+        <input type="text" id="contactInput2" placeholder="例如：85291234567 或 name@icloud.com" />
+      </div>
+
+      <hr style="border:1px solid #1E1E1E; margin:12px 0;" />
+
+      <div class="form-group">
+        <label>新增本地故事 / 音樂（支援 MP3 / M4A，離線永久儲存）</label>
+        <select id="uploadCategory">
+          <option value="story">故事列（上排）</option>
+          <option value="music">音樂列（下排）</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <input type="text" id="uploadTitle" placeholder="輸入故事或歌曲名稱（留空則用檔名）" />
+      </div>
+      <div class="form-group">
+        <input type="file" id="uploadFile" accept="audio/*,.mp3,.m4a,.wav" />
+      </div>
+
+      <div class="custom-track-list" id="customTrackList"></div>
+
+      <hr style="border:1px solid #1E1E1E; margin:12px 0;" />
+
+      <div class="form-group">
+        <label>資料備份與還原（.json 檔案）</label>
+        <button type="button" class="btn-action" style="background-color:#A8DADC;" id="exportJsonBtn">匯出 .json 備份</button>
+        <button type="button" class="btn-action" style="background-color:#CDB4DB;" id="importJsonTriggerBtn">匯入 .json 備份</button>
+        <input type="file" id="importJsonFile" accept=".json,application/json" style="display:none;" />
+      </div>
+
+      <div style="margin-top:12px;">
+        <button type="button" class="btn-action" style="background-color:#4CC9F0;" id="saveAdminBtn">儲存設定 / 上載音訊</button>
+        <button type="button" class="btn-action" style="background-color:#FFD166;" id="closeAdminBtn">關閉</button>
+      </div>
+
+      <div class="hint-box">
+        <strong>系統提示說明：</strong>點擊頭像會直接呼叫 <code>facetime://</code>；開啟 FaceTime App 後出現的「Click to call / Call」為 iOS / macOS 系統原生安全確認，無法由網頁跳過。
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      var DB_NAME = 'KidsLauncherDB_v2';
+      var STORE_NAME = 'tracks';
+      var db = null;
+      var currentPlayingId = null;
+      var demoTimer = null;
+      var audioPlayer = document.getElementById('audioPlayer');
+
+      var defaultItems = [
+        { id: 's1', category: 'story', title: '童話城堡', bg: '#E3D7FF', icon: 'castle', notes: [523.25, 659.25, 783.99, 659.25] },
+        { id: 's2', category: 'story', title: '彩虹獨角獸', bg: '#D8F3DC', icon: 'unicorn', notes: [392.00, 493.88, 587.33, 783.99] },
+        { id: 's3', category: 'story', title: '森林小獅子', bg: '#FFF3B0', icon: 'lion', notes: [261.63, 329.63, 392.00, 523.25] },
+        { id: 's4', category: 'story', title: '小貓與小狐狸', bg: '#FFE5D9', icon: 'cat', notes: [329.63, 392.00, 440.00, 523.25] },
+        { id: 's5', category: 'story', title: '月亮晚安', bg: '#D0EBFF', icon: 'moon', notes: [329.63, 329.63, 392.00, 261.63] },
+        { id: 'm1', category: 'music', title: '快樂結他', bg: '#F4F186', icon: 'guitar', notes: [261.63, 261.63, 392.00, 392.00, 440.00, 440.00, 392.00] },
+        { id: 'm2', category: 'music', title: '跳動音符', bg: '#BDE0FE', icon: 'note', notes: [261.63, 293.66, 329.63, 261.63, 329.63, 349.23, 392.00] },
+        { id: 'm3', category: 'music', title: '宇宙小星星', bg: '#D8F3DC', icon: 'star', notes: [523.25, 493.88, 440.00, 392.00, 349.23, 329.63, 293.66, 261.63] },
+        { id: 'm4', category: 'music', title: '彩虹旋律', bg: '#F3D5F5', icon: 'rainbow', notes: [392.00, 440.00, 392.00, 349.23, 329.63, 349.23, 392.00] },
+        { id: 'm5', category: 'music', title: '小綿羊搖籃曲', bg: '#CBEAD9', icon: 'disc', notes: [329.63, 293.66, 261.63, 293.66, 329.63, 329.63, 329.63] }
+      ];
+
+      function showToast(msg) {
+        var el = document.getElementById('toastBanner');
+        if (!el) return;
+        el.textContent = msg;
+        el.style.display = 'block';
+        if (el._timer) clearTimeout(el._timer);
+        el._timer = setTimeout(function() {
+          el.style.display = 'none';
+        }, 2500);
+      }
+
+      function escapeHtml(str) {
+        return String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function getArtSvg(type) {
+        if (type === 'castle') {
+          return '<svg class="art-svg" viewBox="0 0 100 100"><rect x="15" y="65" width="70" height="22" fill="#2EC4B6" stroke="#1E1E1E" stroke-width="4"/><rect x="24" y="38" width="16" height="27" fill="#FF758F" stroke="#1E1E1E" stroke-width="4"/><rect x="60" y="38" width="16" height="27" fill="#FF758F" stroke="#1E1E1E" stroke-width="4"/><polygon points="22,38 32,20 42,38" fill="#FFD166" stroke="#1E1E1E" stroke-width="4"/><polygon points="58,38 68,20 78,38" fill="#FFD166" stroke="#1E1E1E" stroke-width="4"/></svg>';
+        }
+        if (type === 'unicorn') {
+          return '<svg class="art-svg" viewBox="0 0 100 100"><rect x="15" y="65" width="70" height="22" fill="#2EC4B6" stroke="#1E1E1E" stroke-width="4"/><polygon points="50,15 43,38 57,38" fill="#FFD166" stroke="#1E1E1E" stroke-width="4"/><circle cx="50" cy="50" r="16" fill="#FFF" stroke="#1E1E1E" stroke-width="4"/></svg>';
+        }
+        if (type === 'lion') {
+          return '<svg class="art-svg" viewBox="0 0 100 100"><rect x="15" y="65" width="70" height="22" fill="#2EC4B6" stroke="#1E1E1E" stroke-width="4"/><circle cx="50" cy="46" r="20" fill="#F77F00" stroke="#1E1E1E" stroke-width="4"/><circle cx="50" cy="46" r="12" fill="#FCBF49" stroke="#1E1E1E" stroke-width="3"/></svg>';
+        }
+        if (type === 'cat') {
+          return '<svg class="art-svg" viewBox="0 0 100 100"><rect x="15" y="65" width="70" height="22" fill="#2EC4B6" stroke="#1E1E1E" stroke-width="4"/><polygon points="30,42 34,22 46,36" fill="#F4A261" stroke="#1E1E1E" stroke-width="4"/><polygon points="70,42 66,22 54,36" fill="#F4A261" stroke="#1E1E1E" stroke-width="4"/><circle cx="50" cy="48" r="16" fill="#F4A261" stroke="#1E1E1E" stroke-width="4"/></svg>';
+        }
+        if (type === 'moon') {
+          return '<svg class="art-svg" viewBox="0 0 100 100"><path d="M58 22 A26 26 0 1 0 76 66 A20 20 0 1 1 58 22 Z" fill="#FFD166" stroke="#1E1E1E" stroke-width="4"/><circle cx="72" cy="30" r="4" fill="#FFF" stroke="#1E1E1E" stroke-width="3"/></svg>';
+        }
+        if (type === 'guitar') {
+          return '<svg class="art-svg" viewBox="0 0 100 100"><circle cx="46" cy="58" r="22" fill="#F77F00" stroke="#1E1E1E" stroke-width="4"/><rect x="54" y="20" width="8" height="28" transform="rotate(30 54 20)" fill="#D62828" stroke="#1E1E1E" stroke-width="3"/></svg>';
+        }
+        if (type === 'note') {
+          return '<svg class="art-svg" viewBox="0 0 100 100"><rect x="34" y="24" width="34" height="44" rx="6" fill="#1E1E1E"/><circle cx="44" cy="64" r="10" fill="#FF758F" stroke="#1E1E1E" stroke-width="4"/></svg>';
+        }
+        if (type === 'star') {
+          return '<svg class="art-svg" viewBox="0 0 100 100"><circle cx="42" cy="62" r="16" fill="#2EC4B6" stroke="#1E1E1E" stroke-width="4"/><polygon points="66,22 70,34 82,36 72,44 75,56 66,48 57,56 60,44 50,36 62,34" fill="#FFD166" stroke="#1E1E1E" stroke-width="3"/></svg>';
+        }
+        if (type === 'rainbow') {
+          return '<svg class="art-svg" viewBox="0 0 100 100"><path d="M22 68 A28 28 0 0 1 78 68" fill="none" stroke="#FF595E" stroke-width="8"/><path d="M30 68 A20 20 0 0 1 70 68" fill="none" stroke="#FFCA3A" stroke-width="8"/><path d="M38 68 A12 12 0 0 1 62 68" fill="none" stroke="#1982C4" stroke-width="8"/></svg>';
+        }
+        return '<svg class="art-svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="26" fill="#A8DADC" stroke="#1E1E1E" stroke-width="4"/><circle cx="50" cy="50" r="8" fill="#FFF" stroke="#1E1E1E" stroke-width="3"/></svg>';
+      }
+
+      function loadContacts() {
+        for (var i = 0; i < 3; i++) {
+          var saved = localStorage.getItem('kid_contact_' + i) || '';
+          var btn = document.getElementById('callBtn' + i);
+          var input = document.getElementById('contactInput' + i);
+          if (input) input.value = saved;
+          if (btn) {
+            btn.setAttribute('href', saved ? ('facetime://' + encodeURIComponent(saved)) : 'facetime://');
+          }
+        }
+      }
+
+      function initDB(callback) {
+        if (!window.indexedDB) {
+          callback();
+          return;
+        }
+        var req = indexedDB.open(DB_NAME, 1);
+        req.onupgradeneeded = function(e) {
+          var database = e.target.result;
+          if (!database.objectStoreNames.contains(STORE_NAME)) {
+            database.createObjectStore(STORE_NAME, { keyPath: 'id' });
+          }
+        };
+        req.onsuccess = function(e) {
+          db = e.target.result;
+          callback();
+        };
+        req.onerror = function() {
+          callback();
+        };
+      }
+
+      function getAllSavedTracks(callback) {
+        if (!db) {
+          callback([]);
+          return;
+        }
+        try {
+          var tx = db.transaction([STORE_NAME], 'readonly');
+          var store = tx.objectStore(STORE_NAME);
+          var req = store.getAll();
+          req.onsuccess = function() {
+            callback(req.result || []);
+          };
+          req.onerror = function() {
+            callback([]);
+          };
+        } catch (err) {
+          callback([]);
+        }
+      }
+
+      function stopAllAudio() {
+        if (demoTimer) {
+          clearInterval(demoTimer);
+          demoTimer = null;
+        }
+        try {
+          audioPlayer.pause();
+        } catch (e) {}
+        currentPlayingId = null;
+      }
+
+      function playToneSequence(notes) {
+        try {
+          var AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return;
+          var ctx = new AudioCtx();
+          if (ctx.state === 'suspended') ctx.resume();
+          var seq = (notes && notes.length) ? notes : [523.25, 659.25, 783.99];
+          var step = 0;
+
+          function playStep() {
+            if (!currentPlayingId) return;
+            var freq = seq[step % seq.length];
+            var osc = ctx.createOscillator();
+            var gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.001, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.36);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.38);
+            step++;
+          }
+
+          playStep();
+          demoTimer = setInterval(playStep, 450);
+        } catch (err) {}
+      }
+
+      function handleCardClick(item) {
+        if (currentPlayingId === item.id) {
+          stopAllAudio();
+          renderTracks();
+          return;
+        }
+
+        stopAllAudio();
+        currentPlayingId = item.id;
+        renderTracks();
+
+        if (item.blob) {
+          var url = URL.createObjectURL(item.blob);
+          audioPlayer.src = url;
+          audioPlayer.play();
+        } else if (item.dataUrl) {
+          audioPlayer.src = item.dataUrl;
+          audioPlayer.play();
+        } else {
+          playToneSequence(item.notes);
+        }
+      }
+
+      function renderTracks() {
+        getAllSavedTracks(function(savedList) {
+          var all = defaultItems.concat(savedList);
+          var storyTrack = document.getElementById('storyTrack');
+          var musicTrack = document.getElementById('musicTrack');
+          var customListEl = document.getElementById('customTrackList');
+          storyTrack.innerHTML = '';
+          musicTrack.innerHTML = '';
+          if (customListEl) customListEl.innerHTML = '';
+
+          for (var i = 0; i < all.length; i++) {
+            (function(item) {
+              var card = document.createElement('div');
+              card.className = 'media-card' + (currentPlayingId === item.id ? ' playing' : '');
+              card.innerHTML =
+                '<div class="card-art" style="background-color:' + (item.bg || '#FFE5D9') + ';">' +
+                  getArtSvg(item.icon || 'disc') +
+                  '<div class="play-pill">' +
+                    (currentPlayingId === item.id
+                      ? '<svg viewBox="0 0 24 24" fill="#1E1E1E"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>'
+                      : '<svg viewBox="0 0 24 24" fill="#1E1E1E"><polygon points="7,5 19,12 7,19"/></svg>') +
+                  '</div>' +
+                '</div>' +
+                '<div class="card-title">' + escapeHtml(item.title) + '</div>';
+
+              card.onclick = function() {
+                handleCardClick(item);
+              };
+
+              if (item.category === 'music') {
+                musicTrack.appendChild(card);
+              } else {
+                storyTrack.appendChild(card);
+              }
+            })(all[i]);
+          }
+
+          if (customListEl && savedList.length > 0) {
+            for (var j = 0; j < savedList.length; j++) {
+              (function(savedItem) {
+                var row = document.createElement('div');
+                row.className = 'custom-track-row';
+                row.innerHTML =
+                  '<span>' + (savedItem.category === 'story' ? '📖 ' : '🎵 ') + escapeHtml(savedItem.title) + '</span>' +
+                  '<button type="button" class="custom-track-del">刪除</button>';
+                row.querySelector('.custom-track-del').onclick = function() {
+                  if (!db) return;
+                  if (currentPlayingId === savedItem.id) stopAllAudio();
+                  var tx = db.transaction([STORE_NAME], 'readwrite');
+                  tx.objectStore(STORE_NAME).delete(savedItem.id);
+                  tx.oncomplete = function() {
+                    renderTracks();
+                    showToast('已刪除項目');
+                  };
+                };
+                customListEl.appendChild(row);
+              })(savedList[j]);
+            }
+          }
+        });
+      }
+
+      window.scrollTrack = function(trackId) {
+        var el = document.getElementById(trackId);
+        if (el) {
+          if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 10) {
+            el.scrollLeft = 0;
+          } else {
+            el.scrollLeft += 220;
+          }
+        }
+      };
+
+      document.getElementById('openAdminBtn').onclick = function() {
+        document.getElementById('adminModal').style.display = 'block';
+      };
+
+      document.getElementById('closeAdminBtn').onclick = function() {
+        document.getElementById('adminModal').style.display = 'none';
+      };
+
+      document.getElementById('saveAdminBtn').onclick = function() {
+        for (var i = 0; i < 3; i++) {
+          var val = document.getElementById('contactInput' + i).value.trim();
+          localStorage.setItem('kid_contact_' + i, val);
+        }
+        loadContacts();
+
+        var fileInput = document.getElementById('uploadFile');
+        var titleInput = document.getElementById('uploadTitle');
+        var catInput = document.getElementById('uploadCategory');
+
+        if (fileInput.files && fileInput.files[0] && db) {
+          var file = fileInput.files[0];
+          var title = titleInput.value.trim() || file.name.replace(/\.[^/.]+$/, '');
+          var newTrack = {
+            id: 'custom_' + Date.now(),
+            category: catInput.value,
+            title: title,
+            bg: catInput.value === 'story' ? '#D0EBFF' : '#F3D5F5',
+            icon: catInput.value === 'story' ? 'castle' : 'note',
+            blob: file
+          };
+          var tx = db.transaction([STORE_NAME], 'readwrite');
+          tx.objectStore(STORE_NAME).put(newTrack);
+          tx.oncomplete = function() {
+            fileInput.value = '';
+            titleInput.value = '';
+            renderTracks();
+            document.getElementById('adminModal').style.display = 'none';
+            showToast('已儲存設定並加入音訊');
+          };
+        } else {
+          document.getElementById('adminModal').style.display = 'none';
+          showToast('聯絡人設定已儲存');
+        }
+      };
+
+      /* Export .json backup including contacts and offline audio tracks */
+      document.getElementById('exportJsonBtn').onclick = function() {
+        getAllSavedTracks(function(tracks) {
+          var payload = {
+            contacts: [
+              localStorage.getItem('kid_contact_0') || '',
+              localStorage.getItem('kid_contact_1') || '',
+              localStorage.getItem('kid_contact_2') || ''
+            ],
+            tracks: []
+          };
+          var idx = 0;
+          function nextTrack() {
+            if (idx >= tracks.length) {
+              var jsonString = JSON.stringify(payload);
+              var blob = new Blob([jsonString], { type: 'application/json' });
+              var url = URL.createObjectURL(blob);
+              var a = document.createElement('a');
+              a.setAttribute('href', url);
+              a.setAttribute('download', 'kids_launcher_backup.json');
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              setTimeout(function() { URL.revokeObjectURL(url); }, 2000);
+              showToast('已匯出備份檔');
+              return;
+            }
+            var t = tracks[idx++];
+            if (t.blob) {
+              var reader = new FileReader();
+              reader.onload = function(e) {
+                payload.tracks.push({
+                  id: t.id,
+                  category: t.category,
+                  title: t.title,
+                  bg: t.bg,
+                  icon: t.icon,
+                  dataUrl: e.target.result
+                });
+                nextTrack();
+              };
+              reader.readAsDataURL(t.blob);
+            } else {
+              payload.tracks.push(t);
+              nextTrack();
+            }
+          }
+          nextTrack();
+        });
+      };
+
+      /* Import .json backup */
+      document.getElementById('importJsonTriggerBtn').onclick = function() {
+        document.getElementById('importJsonFile').click();
+      };
+
+      document.getElementById('importJsonFile').onchange = function(e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          try {
+            var parsed = JSON.parse(ev.target.result);
+            if (parsed.contacts && parsed.contacts.length) {
+              for (var i = 0; i < 3; i++) {
+                localStorage.setItem('kid_contact_' + i, parsed.contacts[i] || '');
+              }
+              loadContacts();
+            }
+            if (parsed.tracks && parsed.tracks.length && db) {
+              var tx = db.transaction([STORE_NAME], 'readwrite');
+              var store = tx.objectStore(STORE_NAME);
+              for (var j = 0; j < parsed.tracks.length; j++) {
+                store.put(parsed.tracks[j]);
+              }
+              tx.oncomplete = function() {
+                renderTracks();
+                showToast('備份資料已匯入');
+              };
+            } else {
+              renderTracks();
+              showToast('聯絡人設定已匯入');
+            }
+          } catch (err) {
+            showToast('JSON 備份檔格式錯誤');
+          }
+        };
+        reader.readAsText(file);
+      };
+
+      audioPlayer.onended = function() {
+        stopAllAudio();
+        renderTracks();
+      };
+
+      window.onload = function() {
+        loadContacts();
+        initDB(function() {
+          renderTracks();
+        });
+      };
+    })();
+  </script>
+</body>
+</html>
