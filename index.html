@@ -20,7 +20,7 @@ html, body {
   height: 100%;
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang TC", "Microsoft JhengHei", sans-serif;
-  background: #f5f0e6;
+  background: #f7f1e3;
   color: #3d3a34;
   -webkit-user-select: none;
   user-select: none;
@@ -28,7 +28,7 @@ html, body {
 body {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: #f5f0e6;
+  background: #f7f1e3;
 }
 
 /* ========== 主畫面 ========== */
@@ -38,7 +38,7 @@ body {
   display: none;
   -webkit-flex-direction: column;
   flex-direction: column;
-  background: #f5f0e6;
+  background: #f7f1e3;
 }
 #main-screen.active {
   display: -webkit-flex;
@@ -47,8 +47,8 @@ body {
 
 /* 頂部列 */
 #top-bar {
-  height: 88px;
-  padding: 14px 18px 10px;
+  height: 92px;
+  padding: 16px 20px 10px;
   display: -webkit-flex;
   display: flex;
   -webkit-align-items: center;
@@ -66,24 +66,29 @@ body {
   align-items: center;
 }
 .family-btn {
-  width: 62px;
-  height: 62px;
+  width: 66px;
+  height: 66px;
   border-radius: 50%;
   border: 2.5px solid #3d3a34;
-  margin-right: 12px;
+  margin-right: 14px;
   background-size: cover;
   background-position: center;
-  background-color: #e8d9c0;
+  background-color: #f0e6d4;
   position: relative;
   overflow: hidden;
   -webkit-flex-shrink: 0;
   flex-shrink: 0;
-  box-shadow: 1px 2px 0 rgba(61,58,52,0.15);
+  box-shadow: 1px 2px 0 rgba(61,58,52,0.12);
+}
+.family-btn svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 .family-btn .label {
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  background: rgba(61,58,52,0.55);
+  background: rgba(61,58,52,0.6);
   font-size: 11px;
   text-align: center;
   padding: 2px 0;
@@ -91,11 +96,11 @@ body {
   line-height: 1.2;
 }
 #parent-lock {
-  width: 48px;
-  height: 48px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  background: #f0e8d8;
-  border: 2px solid #3d3a34;
+  background: #f0e6d4;
+  border: 2.5px solid #3d3a34;
   display: -webkit-flex;
   display: flex;
   -webkit-align-items: center;
@@ -104,7 +109,7 @@ body {
   justify-content: center;
   -webkit-flex-shrink: 0;
   flex-shrink: 0;
-  box-shadow: 1px 2px 0 rgba(61,58,52,0.12);
+  box-shadow: 1px 2px 0 rgba(61,58,52,0.1);
 }
 #parent-lock svg {
   width: 24px;
@@ -118,7 +123,7 @@ body {
   -webkit-flex: 1;
   flex: 1;
   overflow: hidden;
-  padding: 4px 12px 12px;
+  padding: 4px 14px 14px;
   display: -webkit-flex;
   display: flex;
   -webkit-flex-direction: column;
@@ -130,14 +135,14 @@ body {
   flex: 1;
   background: #faf6ee;
   border: 2.5px solid #3d3a34;
-  border-radius: 22px;
-  padding: 14px 10px 12px;
+  border-radius: 24px;
+  padding: 16px 12px 14px;
   display: -webkit-flex;
   display: flex;
   -webkit-flex-direction: column;
   flex-direction: column;
   min-height: 0;
-  box-shadow: 2px 3px 0 rgba(61,58,52,0.08);
+  box-shadow: 2px 3px 0 rgba(61,58,52,0.07);
 }
 
 .section {
@@ -148,7 +153,7 @@ body {
   -webkit-flex-direction: column;
   flex-direction: column;
   min-height: 0;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 .section:last-child {
   margin-bottom: 0;
@@ -159,23 +164,23 @@ body {
   display: flex;
   -webkit-align-items: center;
   align-items: center;
-  padding: 0 6px 8px;
+  padding: 0 6px 10px;
   -webkit-flex-shrink: 0;
   flex-shrink: 0;
 }
 .section-icon {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   border: 2px solid #3d3a34;
-  background: #f0e8d8;
+  background: #f0e6d4;
   display: -webkit-flex;
   display: flex;
   -webkit-align-items: center;
   align-items: center;
   -webkit-justify-content: center;
   justify-content: center;
-  margin-right: 8px;
+  margin-right: 10px;
   -webkit-flex-shrink: 0;
   flex-shrink: 0;
 }
@@ -186,7 +191,7 @@ body {
   max-height: 20px;
 }
 .section-title {
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 600;
   color: #3d3a34;
 }
@@ -196,7 +201,7 @@ body {
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   white-space: nowrap;
-  padding: 0 4px 6px;
+  padding: 0 4px 8px;
   -webkit-flex: 1;
   flex: 1;
 }
@@ -207,30 +212,36 @@ body {
 .card {
   display: inline-block;
   vertical-align: top;
-  width: 118px;
-  margin-right: 12px;
+  width: 124px;
+  margin-right: 14px;
   background: #fffdf8;
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: hidden;
-  border: 2px solid #3d3a34;
+  border: 2.2px solid #3d3a34;
   position: relative;
   box-shadow: 1px 2px 0 rgba(61,58,52,0.1);
 }
 .card-cover {
-  width: 118px;
-  height: 118px;
+  width: 124px;
+  height: 124px;
   background-size: cover;
   background-position: center;
   background-color: #e8d9c0;
   position: relative;
+  overflow: hidden;
+}
+.card-cover svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 .card-play {
   position: absolute;
-  bottom: 6px;
-  right: 6px;
-  width: 28px;
-  height: 28px;
-  background: rgba(61,58,52,0.75);
+  bottom: 7px;
+  right: 7px;
+  width: 30px;
+  height: 30px;
+  background: rgba(61,58,52,0.78);
   border-radius: 50%;
   display: -webkit-flex;
   display: flex;
@@ -241,33 +252,34 @@ body {
   border: 1.5px solid #fff;
 }
 .card-play svg {
-  width: 12px;
-  height: 12px;
-  max-width: 12px;
-  max-height: 12px;
+  width: 13px;
+  height: 13px;
+  max-width: 13px;
+  max-height: 13px;
   margin-left: 1px;
 }
 .card-title {
   font-size: 13px;
-  padding: 7px 6px 9px;
+  padding: 8px 6px 10px;
   text-align: center;
   white-space: normal;
   line-height: 1.25;
-  height: 42px;
+  height: 44px;
   overflow: hidden;
   color: #3d3a34;
   background: #fffdf8;
+  font-weight: 500;
 }
 
 /* 播放器列 */
 #player-bar {
-  height: 64px;
-  background: #f0e8d8;
-  border-top: 2px solid #3d3a34;
+  height: 66px;
+  background: #f0e6d4;
+  border-top: 2.5px solid #3d3a34;
   display: none;
   -webkit-align-items: center;
   align-items: center;
-  padding: 0 14px;
+  padding: 0 16px;
   -webkit-flex-shrink: 0;
   flex-shrink: 0;
 }
@@ -276,16 +288,22 @@ body {
   display: flex;
 }
 #player-cover {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
   border: 1.5px solid #3d3a34;
   background-size: cover;
   background-position: center;
   background-color: #e8d9c0;
-  margin-right: 10px;
+  margin-right: 12px;
   -webkit-flex-shrink: 0;
   flex-shrink: 0;
+  overflow: hidden;
+}
+#player-cover svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 #player-info {
   -webkit-flex: 1;
@@ -312,8 +330,8 @@ body {
   align-items: center;
 }
 .ctrl-btn {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: #faf6ee;
   border: 2px solid #3d3a34;
@@ -336,7 +354,7 @@ body {
 #pin-screen {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(245,240,230,0.97);
+  background: rgba(247,241,227,0.97);
   display: none;
   -webkit-flex-direction: column;
   flex-direction: column;
@@ -410,7 +428,7 @@ body {
 #parent-screen {
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: #f5f0e6;
+  background: #f7f1e3;
   display: none;
   -webkit-flex-direction: column;
   flex-direction: column;
@@ -430,8 +448,8 @@ body {
   align-items: center;
   -webkit-justify-content: space-between;
   justify-content: space-between;
-  background: #f0e8d8;
-  border-bottom: 2px solid #3d3a34;
+  background: #f0e6d4;
+  border-bottom: 2.5px solid #3d3a34;
   -webkit-flex-shrink: 0;
   flex-shrink: 0;
 }
@@ -468,7 +486,7 @@ body {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding: 12px;
-  background: #f5f0e6;
+  background: #f7f1e3;
 }
 .parent-section-title {
   font-size: 14px;
@@ -498,6 +516,7 @@ body {
   -webkit-flex-shrink: 0;
   flex-shrink: 0;
   border: 1.5px solid #3d3a34;
+  overflow: hidden;
 }
 .media-thumb {
   border-radius: 8px;
@@ -534,11 +553,6 @@ body {
   color: #8b3a3a;
   border-color: #8b3a3a;
 }
-.btn-sm.primary {
-  background: #c5d9f0;
-  color: #1e4a7a;
-  border-color: #1e4a7a;
-}
 .btn-block {
   display: block;
   width: 100%;
@@ -555,10 +569,6 @@ body {
 .btn-block.secondary {
   background: #e8d9c0;
   color: #3d3a34;
-}
-.btn-block.danger {
-  background: #f5d0d0;
-  color: #8b3a3a;
 }
 input, select, textarea {
   width: 100%;
@@ -611,7 +621,7 @@ label {
   line-height: 1.5;
   margin: 8px 0;
   padding: 10px;
-  background: #f0e8d8;
+  background: #f0e6d4;
   border-radius: 10px;
   border: 1px solid #d4cbb8;
 }
@@ -661,10 +671,7 @@ label {
   margin: 0 4px;
 }
 
-/* 音訊隱藏 */
-audio {
-  display: none;
-}
+audio { display: none; }
 </style>
 </head>
 <body>
@@ -772,8 +779,9 @@ audio {
       <button class="btn-block secondary" onclick="document.getElementById('import-file').click()">匯入備份檔 (.json)</button>
       <input type="file" id="import-file" accept=".json,application/json" class="hidden" onchange="importBackup(event)">
       <div class="note">
-        建議用 iPhone 透過 AirDrop 傳送 .json 檔案到 iPad 的「檔案」App，再從「檔案」選擇匯入。<br>
-        注意：音訊檔案較大時，匯出檔會包含 base64 資料，檔案可能很大。
+        建議用郵件或 AirDrop 傳送 .json 到 iPad 的「檔案」App 再匯入。<br>
+        從管理頁（admin）匯出的檔案只會更新故事與音樂，<b>不會覆蓋</b>家人視訊與密碼。<br>
+        完整備份（含聯絡人）才會覆蓋所有設定。
       </div>
 
       <div class="parent-section-title">修改家長密碼</div>
@@ -837,6 +845,26 @@ function createEl(tag, cls) {
   return el;
 }
 
+/* ========== 可愛 SVG 插畫（手繪風格） ========== */
+var SVG_AVATARS = {
+  dad: '<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="40" r="38" fill="#e8f0d8"/><ellipse cx="40" cy="48" rx="22" ry="24" fill="#f5d5b8"/><circle cx="40" cy="32" r="18" fill="#f5d5b8"/><path d="M22 28 Q40 8 58 28" fill="#5c4033"/><rect x="24" y="30" width="32" height="6" rx="2" fill="#3d3a34"/><circle cx="32" cy="36" r="3.5" fill="#3d3a34"/><circle cx="48" cy="36" r="3.5" fill="#3d3a34"/><path d="M33 46 Q40 52 47 46" fill="none" stroke="#c4785a" stroke-width="2" stroke-linecap="round"/><path d="M28 58 Q40 72 52 58" fill="#7a9e5a"/></svg>',
+  mom: '<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="40" r="38" fill="#f5e0ec"/><ellipse cx="40" cy="50" rx="20" ry="22" fill="#f5d5b8"/><circle cx="40" cy="34" r="17" fill="#f5d5b8"/><path d="M20 30 Q40 4 60 30 Q55 42 40 38 Q25 42 20 30" fill="#4a3728"/><circle cx="28" cy="20" r="6" fill="#4a3728"/><circle cx="33" cy="38" r="2.8" fill="#3d3a34"/><circle cx="47" cy="38" r="2.8" fill="#3d3a34"/><path d="M34 47 Q40 52 46 47" fill="none" stroke="#c4785a" stroke-width="2" stroke-linecap="round"/><path d="M28 60 Q40 74 52 60" fill="#c9a0c0"/><circle cx="26" cy="48" r="3" fill="#f0a0a0" opacity="0.6"/><circle cx="54" cy="48" r="3" fill="#f0a0a0" opacity="0.6"/></svg>',
+  grandma: '<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="40" r="38" fill="#e0e8f5"/><ellipse cx="40" cy="50" rx="20" ry="22" fill="#f0d0b8"/><circle cx="40" cy="34" r="17" fill="#f0d0b8"/><path d="M18 32 Q40 10 62 32 Q58 20 40 18 Q22 20 18 32" fill="#b0a090"/><circle cx="28" cy="28" r="5" fill="#b0a090"/><circle cx="52" cy="28" r="5" fill="#b0a090"/><rect x="24" y="32" width="32" height="5" rx="1.5" fill="#5a6a7a"/><circle cx="32" cy="38" r="3" fill="#3d3a34"/><circle cx="48" cy="38" r="3" fill="#3d3a34"/><path d="M34 48 Q40 53 46 48" fill="none" stroke="#c4785a" stroke-width="1.8" stroke-linecap="round"/><path d="M28 60 Q40 74 52 60" fill="#8a7ab0"/></svg>'
+};
+
+var SVG_ILLUSTRATIONS = {
+  castle: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#d4eaf5"/><rect x="25" y="55" width="70" height="50" fill="#e8d5b8" stroke="#3d3a34" stroke-width="1.5"/><rect x="20" y="40" width="18" height="65" fill="#e0c8a0" stroke="#3d3a34" stroke-width="1.5"/><rect x="82" y="40" width="18" height="65" fill="#e0c8a0" stroke="#3d3a34" stroke-width="1.5"/><rect x="48" y="30" width="24" height="75" fill="#f0e0c0" stroke="#3d3a34" stroke-width="1.5"/><polygon points="20,40 29,22 38,40" fill="#e07070" stroke="#3d3a34" stroke-width="1.2"/><polygon points="82,40 91,22 100,40" fill="#e07070" stroke="#3d3a34" stroke-width="1.2"/><polygon points="48,30 60,10 72,30" fill="#e07070" stroke="#3d3a34" stroke-width="1.2"/><rect x="26" y="70" width="8" height="12" fill="#7ab0d0"/><rect x="86" y="70" width="8" height="12" fill="#7ab0d0"/><rect x="54" y="70" width="12" height="18" fill="#8b5a3a"/><circle cx="30" cy="18" r="3" fill="#f0c040"/><path d="M10 105 Q40 95 60 105 Q80 95 110 105 L110 120 L10 120 Z" fill="#90c070"/></svg>',
+  unicorn: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#f5e8f0"/><ellipse cx="60" cy="75" rx="28" ry="22" fill="#fff" stroke="#3d3a34" stroke-width="1.5"/><circle cx="75" cy="48" r="18" fill="#fff" stroke="#3d3a34" stroke-width="1.5"/><polygon points="78,32 85,8 90,34" fill="#f0a0c0" stroke="#3d3a34" stroke-width="1.2"/><path d="M88 42 Q105 30 110 50 Q100 55 88 48" fill="#f0a0c0" stroke="#3d3a34" stroke-width="1"/><path d="M88 48 Q105 55 108 70" fill="#a0d0f0" stroke="#3d3a34" stroke-width="1"/><path d="M88 52 Q100 65 105 80" fill="#c0e080" stroke="#3d3a34" stroke-width="1"/><circle cx="80" cy="45" r="2.5" fill="#3d3a34"/><path d="M68 55 Q72 60 76 55" fill="none" stroke="#e08080" stroke-width="1.5"/><path d="M45 90 Q40 110 50 110" fill="none" stroke="#3d3a34" stroke-width="2"/><path d="M70 90 Q75 110 65 110" fill="none" stroke="#3d3a34" stroke-width="2"/><circle cx="25" cy="95" r="4" fill="#f0a0c0"/><circle cx="100" cy="100" r="3" fill="#a0d0f0"/></svg>',
+  lion: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#e0f0d0"/><circle cx="60" cy="58" r="32" fill="#f0c040" stroke="#3d3a34" stroke-width="1.5"/><circle cx="60" cy="58" r="22" fill="#f5d060"/><circle cx="50" cy="52" r="4" fill="#3d3a34"/><circle cx="70" cy="52" r="4" fill="#3d3a34"/><circle cx="50" cy="52" r="1.5" fill="#fff"/><circle cx="70" cy="52" r="1.5" fill="#fff"/><ellipse cx="60" cy="62" rx="5" ry="4" fill="#e09040"/><path d="M52 70 Q60 78 68 70" fill="none" stroke="#3d3a34" stroke-width="2" stroke-linecap="round"/><path d="M28 40 Q20 50 28 65" fill="#e0a030" stroke="#3d3a34" stroke-width="1.2"/><path d="M92 40 Q100 50 92 65" fill="#e0a030" stroke="#3d3a34" stroke-width="1.2"/><path d="M35 30 Q45 15 55 28" fill="#e0a030" stroke="#3d3a34" stroke-width="1.2"/><path d="M85 30 Q75 15 65 28" fill="#e0a030" stroke="#3d3a34" stroke-width="1.2"/><ellipse cx="30" cy="100" rx="18" ry="8" fill="#90c070"/><ellipse cx="90" cy="100" rx="15" ry="7" fill="#90c070"/></svg>',
+  catfox: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#f5e8e0"/><ellipse cx="42" cy="70" rx="22" ry="20" fill="#c0c0c0" stroke="#3d3a34" stroke-width="1.5"/><circle cx="42" cy="52" r="16" fill="#c0c0c0" stroke="#3d3a34" stroke-width="1.5"/><polygon points="30,40 28,22 40,38" fill="#c0c0c0" stroke="#3d3a34" stroke-width="1.2"/><polygon points="54,40 56,22 44,38" fill="#c0c0c0" stroke="#3d3a34" stroke-width="1.2"/><circle cx="36" cy="50" r="3" fill="#3d3a34"/><circle cx="48" cy="50" r="3" fill="#3d3a34"/><path d="M38 58 Q42 62 46 58" fill="none" stroke="#3d3a34" stroke-width="1.5"/><ellipse cx="78" cy="70" rx="22" ry="20" fill="#f0a050" stroke="#3d3a34" stroke-width="1.5"/><circle cx="78" cy="52" r="16" fill="#f0a050" stroke="#3d3a34" stroke-width="1.5"/><polygon points="66,40 64,22 76,38" fill="#f0a050" stroke="#3d3a34" stroke-width="1.2"/><polygon points="90,40 92,22 80,38" fill="#f0a050" stroke="#3d3a34" stroke-width="1.2"/><circle cx="72" cy="50" r="3" fill="#3d3a34"/><circle cx="84" cy="50" r="3" fill="#3d3a34"/><path d="M74 58 Q78 62 82 58" fill="none" stroke="#3d3a34" stroke-width="1.5"/><ellipse cx="78" cy="56" rx="4" ry="3" fill="#e08040"/></svg>',
+  moon: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#1a2a4a"/><circle cx="70" cy="50" r="28" fill="#f5e8a0" stroke="#3d3a34" stroke-width="1.5"/><circle cx="82" cy="42" r="22" fill="#1a2a4a"/><circle cx="30" cy="30" r="2.5" fill="#f5e8a0"/><circle cx="50" cy="20" r="1.8" fill="#f5e8a0"/><circle cx="95" cy="70" r="2" fill="#f5e8a0"/><circle cx="25" cy="60" r="1.5" fill="#f5e8a0"/><circle cx="100" cy="35" r="2.2" fill="#f5e8a0"/><circle cx="40" cy="90" r="1.8" fill="#f5e8a0"/><circle cx="85" cy="95" r="2.5" fill="#f5e8a0"/><path d="M20 100 Q40 85 60 100 Q80 85 100 100" fill="none" stroke="#3a5a8a" stroke-width="2"/></svg>',
+  guitar: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#f5f0d8"/><ellipse cx="55" cy="75" rx="28" ry="32" fill="#d4a060" stroke="#3d3a34" stroke-width="1.8"/><ellipse cx="55" cy="75" rx="12" ry="14" fill="#3d3a34"/><rect x="50" y="15" width="10" height="45" fill="#e0b870" stroke="#3d3a34" stroke-width="1.5"/><rect x="48" y="12" width="14" height="8" rx="2" fill="#c09050" stroke="#3d3a34" stroke-width="1"/><line x1="52" y1="20" x2="52" y2="55" stroke="#3d3a34" stroke-width="0.8"/><line x1="55" y1="20" x2="55" y2="55" stroke="#3d3a34" stroke-width="0.8"/><line x1="58" y1="20" x2="58" y2="55" stroke="#3d3a34" stroke-width="0.8"/><circle cx="25" cy="40" r="6" fill="#90c070"/><circle cx="95" cy="50" r="5" fill="#f0a0c0"/><path d="M90 90 Q100 80 105 95" fill="#90c070"/></svg>',
+  notes: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#f0e8f5"/><path d="M40 85 Q40 40 70 30 L70 75" fill="none" stroke="#e0a020" stroke-width="5" stroke-linecap="round"/><ellipse cx="40" cy="88" rx="12" ry="9" fill="#e0a020" transform="rotate(-20 40 88)"/><path d="M70 30 Q85 25 90 40" fill="none" stroke="#e0a020" stroke-width="3"/><circle cx="30" cy="35" r="6" fill="#70c0e0"/><circle cx="95" cy="55" r="5" fill="#f0a0c0"/><circle cx="55" cy="20" r="4" fill="#90d070"/><path d="M25 60 Q30 50 35 60" fill="none" stroke="#70c0e0" stroke-width="2"/><path d="M90 80 Q95 70 100 80" fill="none" stroke="#f0a0c0" stroke-width="2"/></svg>',
+  star: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#1a2a5a"/><polygon points="60,20 68,48 98,48 74,66 82,95 60,78 38,95 46,66 22,48 52,48" fill="#f5d040" stroke="#3d3a34" stroke-width="1.5"/><circle cx="60" cy="55" r="8" fill="#f5e080"/><circle cx="55" cy="52" r="2" fill="#3d3a34"/><circle cx="65" cy="52" r="2" fill="#3d3a34"/><path d="M55 60 Q60 65 65 60" fill="none" stroke="#3d3a34" stroke-width="1.5" stroke-linecap="round"/><circle cx="25" cy="30" r="2" fill="#f5e080"/><circle cx="95" cy="35" r="2.5" fill="#f5e080"/><circle cx="30" cy="90" r="1.8" fill="#f5e080"/><circle cx="100" cy="85" r="2" fill="#f5e080"/><circle cx="80" cy="20" r="1.5" fill="#f5e080"/></svg>',
+  rainbow: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#e0f0ff"/><path d="M15 90 Q60 20 105 90" fill="none" stroke="#e07070" stroke-width="8"/><path d="M20 90 Q60 28 100 90" fill="none" stroke="#f0a040" stroke-width="8"/><path d="M25 90 Q60 36 95 90" fill="none" stroke="#f0e040" stroke-width="8"/><path d="M30 90 Q60 44 90 90" fill="none" stroke="#70c070" stroke-width="8"/><path d="M35 90 Q60 52 85 90" fill="none" stroke="#60a0e0" stroke-width="8"/><path d="M40 90 Q60 60 80 90" fill="none" stroke="#a070d0" stroke-width="8"/><ellipse cx="30" cy="100" rx="25" ry="10" fill="#90c070"/><ellipse cx="90" cy="100" rx="22" ry="9" fill="#90c070"/><ellipse cx="50" cy="70" rx="12" ry="6" fill="#fff" opacity="0.8"/><ellipse cx="75" cy="55" rx="10" ry="5" fill="#fff" opacity="0.7"/></svg>',
+  sheep: '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="120" fill="#1a2a4a"/><ellipse cx="60" cy="75" rx="32" ry="25" fill="#f5f0e8" stroke="#3d3a34" stroke-width="1.5"/><circle cx="60" cy="48" r="18" fill="#f5f0e8" stroke="#3d3a34" stroke-width="1.5"/><circle cx="52" cy="45" r="3" fill="#3d3a34"/><circle cx="68" cy="45" r="3" fill="#3d3a34"/><ellipse cx="60" cy="52" rx="5" ry="3.5" fill="#f0d0b0"/><path d="M54 58 Q60 63 66 58" fill="none" stroke="#3d3a34" stroke-width="1.5"/><circle cx="42" cy="38" r="7" fill="#f5f0e8" stroke="#3d3a34" stroke-width="1"/><circle cx="78" cy="38" r="7" fill="#f5f0e8" stroke="#3d3a34" stroke-width="1"/><circle cx="35" cy="70" r="8" fill="#f5f0e8" stroke="#3d3a34" stroke-width="1"/><circle cx="85" cy="70" r="8" fill="#f5f0e8" stroke="#3d3a34" stroke-width="1"/><circle cx="90" cy="30" r="10" fill="#f5e8a0"/><circle cx="96" cy="26" r="7" fill="#1a2a4a"/><circle cx="25" cy="25" r="1.8" fill="#f5e8a0"/><circle cx="100" cy="55" r="1.5" fill="#f5e8a0"/><circle cx="20" cy="50" r="1.2" fill="#f5e8a0"/></svg>'
+};
+
 /* ========== 資料結構 ========== */
 var DB_NAME = 'KidsLauncherDB';
 var DB_VERSION = 1;
@@ -851,22 +879,20 @@ var pinBuffer = '';
 var currentMediaTab = 'story';
 var audioEl = null;
 var currentPlayingId = null;
-var currentPlayingType = null;
 
-/* 預設示範資料（僅在完全空白時使用） */
 var DEMO_STORIES = [
-  { id: 'demo_s1', name: '童話城堡', cover: '', url: null },
-  { id: 'demo_s2', name: '彩虹獨角獸', cover: '', url: null },
-  { id: 'demo_s3', name: '森林小獅子', cover: '', url: null },
-  { id: 'demo_s4', name: '小貓與小狐狸', cover: '', url: null },
-  { id: 'demo_s5', name: '月亮晚安', cover: '', url: null }
+  { id: 'demo_s1', name: '童話城堡', cover: '', url: null, svgKey: 'castle' },
+  { id: 'demo_s2', name: '彩虹獨角獸', cover: '', url: null, svgKey: 'unicorn' },
+  { id: 'demo_s3', name: '森林小獅子', cover: '', url: null, svgKey: 'lion' },
+  { id: 'demo_s4', name: '小貓與小狐狸', cover: '', url: null, svgKey: 'catfox' },
+  { id: 'demo_s5', name: '月亮晚安', cover: '', url: null, svgKey: 'moon' }
 ];
 var DEMO_MUSIC = [
-  { id: 'demo_m1', name: '快樂吉他', cover: '', url: null },
-  { id: 'demo_m2', name: '跳動音符', cover: '', url: null },
-  { id: 'demo_m3', name: '宇宙小星星', cover: '', url: null },
-  { id: 'demo_m4', name: '彩虹旋律', cover: '', url: null },
-  { id: 'demo_m5', name: '小綿羊搖籃曲', cover: '', url: null }
+  { id: 'demo_m1', name: '快樂吉他', cover: '', url: null, svgKey: 'guitar' },
+  { id: 'demo_m2', name: '跳動音符', cover: '', url: null, svgKey: 'notes' },
+  { id: 'demo_m3', name: '宇宙小星星', cover: '', url: null, svgKey: 'star' },
+  { id: 'demo_m4', name: '彩虹旋律', cover: '', url: null, svgKey: 'rainbow' },
+  { id: 'demo_m5', name: '小綿羊搖籃曲', cover: '', url: null, svgKey: 'sheep' }
 ];
 
 /* ========== IndexedDB ========== */
@@ -940,10 +966,10 @@ function persistState(cb) {
   saveMeta('state', {
     contacts: state.contacts,
     stories: state.stories.map(function(s) {
-      return { id: s.id, name: s.name, cover: s.cover, url: s.url || null };
+      return { id: s.id, name: s.name, cover: s.cover, url: s.url || null, svgKey: s.svgKey || null };
     }),
     music: state.music.map(function(m) {
-      return { id: m.id, name: m.name, cover: m.cover, url: m.url || null };
+      return { id: m.id, name: m.name, cover: m.cover, url: m.url || null, svgKey: m.svgKey || null };
     }),
     pin: state.pin
   }, cb);
@@ -959,12 +985,11 @@ function loadState(cb) {
     }
     if (state.contacts.length === 0) {
       state.contacts = [
-        { id: uid(), name: '爸爸', account: '', avatar: '' },
-        { id: uid(), name: '媽媽', account: '', avatar: '' },
-        { id: uid(), name: '爺爺', account: '', avatar: '' }
+        { id: uid(), name: '爸爸', account: '', avatar: '', avatarKey: 'dad' },
+        { id: uid(), name: '媽媽', account: '', avatar: '', avatarKey: 'mom' },
+        { id: uid(), name: '爺爺', account: '', avatar: '', avatarKey: 'grandma' }
       ];
     }
-    /* 首次使用時顯示示範標題卡片（無實際音訊） */
     if (state.stories.length === 0 && state.music.length === 0) {
       state.stories = DEMO_STORIES.slice();
       state.music = DEMO_MUSIC.slice();
@@ -1015,18 +1040,18 @@ function renderFamily() {
   var container = $('family-avatars');
   container.innerHTML = '';
   var list = state.contacts.slice(0, 3);
+  var defaultKeys = ['dad', 'mom', 'grandma'];
   while (list.length < 3) {
-    list.push({ id: 'empty_' + list.length, name: '未設定', account: '', avatar: '' });
+    list.push({ id: 'empty_' + list.length, name: '未設定', account: '', avatar: '', avatarKey: defaultKeys[list.length] });
   }
   for (var i = 0; i < list.length; i++) {
-    (function(c) {
+    (function(c, idx) {
       var btn = createEl('div', 'family-btn');
       if (c.avatar) {
         btn.style.backgroundImage = 'url(' + c.avatar + ')';
       } else {
-        /* 簡單預設色塊 */
-        var colors = ['#c5d9f0', '#f0d0e0', '#d0e8c8'];
-        btn.style.backgroundColor = colors[i % 3];
+        var key = c.avatarKey || defaultKeys[idx] || 'dad';
+        btn.innerHTML = SVG_AVATARS[key] || SVG_AVATARS.dad;
       }
       var label = createEl('div', 'label');
       label.textContent = c.name || '家人';
@@ -1040,7 +1065,7 @@ function renderFamily() {
         }
       };
       container.appendChild(btn);
-    })(list[i]);
+    })(list[i], i);
   }
 }
 
@@ -1062,17 +1087,17 @@ function renderTrack(type) {
       var cover = createEl('div', 'card-cover');
       if (item.cover) {
         cover.style.backgroundImage = 'url(' + item.cover + ')';
+      } else if (item.svgKey && SVG_ILLUSTRATIONS[item.svgKey]) {
+        cover.innerHTML = SVG_ILLUSTRATIONS[item.svgKey];
       } else {
-        /* 無封面時用柔和底色 + 首字 */
-        var hues = ['#d4e8f5', '#f5e0d4', '#e0f0d4', '#f0e0f0', '#f5f0d0'];
-        cover.style.backgroundColor = hues[i % hues.length];
+        cover.style.backgroundColor = '#e8d9c0';
         var initial = createEl('div');
-        initial.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-size:28px;color:rgba(61,58,52,0.35);font-weight:600;';
+        initial.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;-webkit-justify-content:center;justify-content:center;font-size:32px;color:rgba(61,58,52,0.3);font-weight:600;';
         initial.textContent = (item.name || '?').charAt(0);
         cover.appendChild(initial);
       }
       var play = createEl('div', 'card-play');
-      play.innerHTML = '<svg viewBox="0 0 24 24" fill="#fff" width="12" height="12" style="max-width:12px;max-height:12px;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
+      play.innerHTML = '<svg viewBox="0 0 24 24" fill="#fff" width="13" height="13" style="max-width:13px;max-height:13px;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
       cover.appendChild(play);
       var title = createEl('div', 'card-title');
       title.textContent = item.name || '未命名';
@@ -1094,7 +1119,6 @@ function renderAll() {
 function playMedia(type, item) {
   audioEl = $('audio-el');
   currentPlayingId = item.id;
-  currentPlayingType = type;
 
   function startPlay(src) {
     audioEl.src = src;
@@ -1106,11 +1130,15 @@ function playMedia(type, item) {
     }
     $('player-bar').className = 'active';
     $('player-title').textContent = item.name || '播放中';
+    var coverEl = $('player-cover');
+    coverEl.innerHTML = '';
+    coverEl.style.backgroundImage = '';
     if (item.cover) {
-      $('player-cover').style.backgroundImage = 'url(' + item.cover + ')';
+      coverEl.style.backgroundImage = 'url(' + item.cover + ')';
+    } else if (item.svgKey && SVG_ILLUSTRATIONS[item.svgKey]) {
+      coverEl.innerHTML = SVG_ILLUSTRATIONS[item.svgKey];
     } else {
-      $('player-cover').style.backgroundImage = '';
-      $('player-cover').style.backgroundColor = '#e8d9c0';
+      coverEl.style.backgroundColor = '#e8d9c0';
     }
     $('icon-play').className = 'hidden';
     $('icon-pause').className = '';
@@ -1124,7 +1152,6 @@ function playMedia(type, item) {
         var url = URL.createObjectURL(blob);
         startPlay(url);
       } else {
-        /* 示範卡片沒有實際音訊 */
         alert('此項目尚未上傳音訊檔案。\n請家長進入設定 → 故事/音樂列，重新新增並選擇音訊。');
       }
     });
@@ -1249,7 +1276,11 @@ function renderContacts() {
     (function(c) {
       var row = createEl('div', 'contact-row');
       var av = createEl('div', 'contact-avatar');
-      if (c.avatar) av.style.backgroundImage = 'url(' + c.avatar + ')';
+      if (c.avatar) {
+        av.style.backgroundImage = 'url(' + c.avatar + ')';
+      } else if (c.avatarKey && SVG_AVATARS[c.avatarKey]) {
+        av.innerHTML = SVG_AVATARS[c.avatarKey];
+      }
       var info = createEl('div', 'contact-info');
       var name = createEl('div', 'contact-name');
       name.textContent = c.name;
@@ -1297,13 +1328,17 @@ function openContactModal(existing) {
       if (isEdit) {
         existing.name = name;
         existing.account = account;
-        if (avatarData) existing.avatar = avatarData;
+        if (avatarData) {
+          existing.avatar = avatarData;
+          existing.avatarKey = null;
+        }
       } else {
         state.contacts.push({
           id: uid(),
           name: name,
           account: account,
-          avatar: avatarData || ''
+          avatar: avatarData || '',
+          avatarKey: null
         });
       }
       persistState(function() {
@@ -1348,7 +1383,11 @@ function renderMediaList() {
     (function(item) {
       var row = createEl('div', 'media-row');
       var thumb = createEl('div', 'media-thumb');
-      if (item.cover) thumb.style.backgroundImage = 'url(' + item.cover + ')';
+      if (item.cover) {
+        thumb.style.backgroundImage = 'url(' + item.cover + ')';
+      } else if (item.svgKey && SVG_ILLUSTRATIONS[item.svgKey]) {
+        thumb.innerHTML = SVG_ILLUSTRATIONS[item.svgKey];
+      }
       var info = createEl('div', 'media-info');
       var name = createEl('div', 'media-name');
       name.textContent = item.name + (item.url ? ' （連結）' : '');
@@ -1385,7 +1424,7 @@ function addMedia() {
   }
 
   var id = uid();
-  var item = { id: id, name: name, cover: '', url: url || null };
+  var item = { id: id, name: name, cover: '', url: url || null, svgKey: null };
 
   function finish() {
     if (currentMediaTab === 'story') {
@@ -1440,6 +1479,7 @@ function editMedia(item) {
     if (file) {
       compressImage(file, 400, function(data) {
         item.cover = data;
+        item.svgKey = null;
         persistState(function() {
           closeModal();
           renderMediaList();
@@ -1501,7 +1541,7 @@ function exportBackup() {
   function processList(srcList, destList) {
     for (var i = 0; i < srcList.length; i++) {
       (function(item) {
-        var obj = { id: item.id, name: item.name, cover: item.cover, url: item.url || null, audioBase64: null };
+        var obj = { id: item.id, name: item.name, cover: item.cover, url: item.url || null, svgKey: item.svgKey || null, audioBase64: null };
         destList.push(obj);
         if (!item.url) {
           pending++;
@@ -1539,7 +1579,77 @@ function importBackup(e) {
   reader.onload = function(ev) {
     try {
       var data = JSON.parse(ev.target.result);
-      if (!data || !data.contacts) {
+      if (!data) {
+        alert('備份檔格式不正確');
+        return;
+      }
+
+      // 判斷是否為「只含故事/音樂」的管理頁匯出檔
+      var isMediaOnly = (data.type === 'media-only') || (!data.contacts && (data.stories || data.music));
+
+      if (isMediaOnly) {
+        // 只更新故事與音樂，保留原本的聯絡人與密碼
+        if (!confirm('將更新故事與音樂列表（不會改動家人視訊與密碼），確定嗎？')) return;
+
+        state.stories = [];
+        state.music = [];
+
+        var items = [];
+        var i;
+        if (data.stories) {
+          for (i = 0; i < data.stories.length; i++) {
+            items.push({ type: 'story', item: data.stories[i] });
+          }
+        }
+        if (data.music) {
+          for (i = 0; i < data.music.length; i++) {
+            items.push({ type: 'music', item: data.music[i] });
+          }
+        }
+
+        var idx = 0;
+        function nextMedia() {
+          if (idx >= items.length) {
+            persistState(function() {
+              alert('故事與音樂已更新（家人視訊設定已保留）');
+              renderMediaList();
+              renderAll();
+              $('import-file').value = '';
+            });
+            return;
+          }
+          var entry = items[idx++];
+          var raw = entry.item;
+          var newItem = {
+            id: raw.id || uid(),
+            name: raw.name || '未命名',
+            cover: raw.cover || '',
+            url: raw.url || null,
+            svgKey: raw.svgKey || null
+          };
+          if (entry.type === 'story') state.stories.push(newItem);
+          else state.music.push(newItem);
+
+          if (raw.audioBase64 && !raw.url) {
+            var arr = raw.audioBase64.split(',');
+            var mimeMatch = arr[0].match(/:(.*?);/);
+            var mime = (mimeMatch && mimeMatch[1]) ? mimeMatch[1] : 'audio/mpeg';
+            var bstr = atob(arr[1] || '');
+            var n = bstr.length;
+            var u8 = new Uint8Array(n);
+            while (n--) u8[n] = bstr.charCodeAt(n);
+            var blob = new Blob([u8], { type: mime });
+            saveAudioBlob(newItem.id, blob, function() { nextMedia(); });
+          } else {
+            nextMedia();
+          }
+        }
+        nextMedia();
+        return;
+      }
+
+      // 完整備份（含聯絡人）
+      if (!data.contacts) {
         alert('備份檔格式不正確');
         return;
       }
@@ -1550,22 +1660,22 @@ function importBackup(e) {
       state.stories = [];
       state.music = [];
 
-      var items = [];
-      var i;
+      var items2 = [];
+      var j;
       if (data.stories) {
-        for (i = 0; i < data.stories.length; i++) {
-          items.push({ type: 'story', item: data.stories[i] });
+        for (j = 0; j < data.stories.length; j++) {
+          items2.push({ type: 'story', item: data.stories[j] });
         }
       }
       if (data.music) {
-        for (i = 0; i < data.music.length; i++) {
-          items.push({ type: 'music', item: data.music[i] });
+        for (j = 0; j < data.music.length; j++) {
+          items2.push({ type: 'music', item: data.music[j] });
         }
       }
 
-      var idx = 0;
-      function next() {
-        if (idx >= items.length) {
+      var idx2 = 0;
+      function nextFull() {
+        if (idx2 >= items2.length) {
           persistState(function() {
             alert('匯入完成');
             renderContacts();
@@ -1575,13 +1685,14 @@ function importBackup(e) {
           });
           return;
         }
-        var entry = items[idx++];
+        var entry = items2[idx2++];
         var raw = entry.item;
         var newItem = {
           id: raw.id || uid(),
           name: raw.name || '未命名',
           cover: raw.cover || '',
-          url: raw.url || null
+          url: raw.url || null,
+          svgKey: raw.svgKey || null
         };
         if (entry.type === 'story') state.stories.push(newItem);
         else state.music.push(newItem);
@@ -1595,12 +1706,12 @@ function importBackup(e) {
           var u8 = new Uint8Array(n);
           while (n--) u8[n] = bstr.charCodeAt(n);
           var blob = new Blob([u8], { type: mime });
-          saveAudioBlob(newItem.id, blob, function() { next(); });
+          saveAudioBlob(newItem.id, blob, function() { nextFull(); });
         } else {
-          next();
+          nextFull();
         }
       }
-      next();
+      nextFull();
     } catch (err) {
       alert('解析備份檔失敗：' + (err.message || err));
     }
