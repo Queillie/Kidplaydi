@@ -1,1816 +1,2005 @@
 <!DOCTYPE html>
-<html lang="zh-HK">
+<html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="小朋友音樂盒" />
-  <title>小朋友音樂盒 - Kids iPad Launcher</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Noto+Sans+TC:wght@700;900&display=swap" rel="stylesheet" />
-  <style>
-    /* Global reset & touch rules for kids iPad screen */
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-      -webkit-user-select: none;
-      user-select: none;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="寶貝小天地">
+<title>寶貝小天地 - 兒童專用啟動器</title>
+<style>
+  /* 全局重置與 iOS 12.5.8 觸控優化 */
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #FAF7F0;
+    background-image: radial-gradient(#EAE4D7 1px, transparent 1px);
+    background-size: 20px 20px;
+    font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
+    color: #2C2A29;
+    -webkit-user-select: none;
+    user-select: none;
+  }
 
-    input, select, textarea {
-      -webkit-user-select: auto;
-      user-select: auto;
-    }
+  /* 限制所有 SVG 尺寸，防止 iOS 12.5.8 Safari 異常放大 */
+  svg {
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 100%;
+    max-height: 100%;
+  }
 
-    html, body {
-      margin: 0;
-      padding: 0;
+  /* 手繪針筆邊框樣式 */
+  .sketch-box {
+    border: 2.5px solid #2C2A29;
+    border-radius: 22px 18px 24px 19px / 19px 23px 18px 22px;
+    box-shadow: 3px 4px 0px rgba(44, 42, 41, 0.16);
+  }
+  .sketch-circle {
+    border: 2.5px solid #2C2A29;
+    border-radius: 52% 48% 51% 49% / 49% 52% 48% 51%;
+    box-shadow: 2px 3px 0px rgba(44, 42, 41, 0.16);
+  }
+  .btn-press:active {
+    -webkit-transform: translate(2px, 2px);
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0px rgba(44, 42, 41, 0.16);
+  }
+
+  /* 主畫面容器 (固定比例佈局，不使用 gap 與 flex:1) */
+  #main-app {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 14px 20px;
+  }
+
+  /* 頂部列：家人頭像與家長鎖 */
+  .top-bar {
+    position: relative;
+    width: 100%;
+    height: 120px;
+    margin-bottom: 10px;
+  }
+  .contacts-container {
+    width: 100%;
+    height: 120px;
+    text-align: center;
+    padding-right: 60px;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .contact-item {
+    display: inline-block;
+    vertical-align: top;
+    width: 116px;
+    margin: 0 18px;
+    text-align: center;
+    text-decoration: none;
+    color: #2C2A29;
+    cursor: pointer;
+  }
+  .contact-avatar {
+    width: 82px;
+    height: 82px;
+    margin: 0 auto 6px auto;
+    background-color: #FFFDF9;
+    overflow: hidden;
+    position: relative;
+  }
+  .contact-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .contact-name {
+    display: inline-block;
+    font-size: 17px;
+    font-weight: bold;
+    background-color: #FFF9DB;
+    padding: 2px 14px;
+    border: 2px solid #2C2A29;
+    border-radius: 14px 12px 15px 11px;
+  }
+
+  /* 右上角家長鎖按鈕 */
+  #parent-lock-btn {
+    position: absolute;
+    top: 6px;
+    right: 4px;
+    width: 52px;
+    height: 52px;
+    background-color: #EFECE6;
+    text-align: center;
+    line-height: 46px;
+    cursor: pointer;
+    z-index: 10;
+  }
+
+  /* 主面板：雙列橫向滑動軌道 */
+  .tracks-wrapper {
+    width: 100%;
+    height: calc(100% - 134px);
+  }
+  .track-row {
+    position: relative;
+    width: 100%;
+    height: 48%;
+    margin-bottom: 12px;
+    background-color: rgba(255, 255, 255, 0.58);
+    padding: 10px 14px 10px 102px;
+  }
+  .track-row:last-child {
+    margin-bottom: 0;
+  }
+
+  /* 左側分類圖示標籤 */
+  .track-badge {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    margin-top: -45px;
+    width: 74px;
+    height: 90px;
+    text-align: center;
+    padding-top: 10px;
+  }
+  .badge-story {
+    background-color: #DCEEFB;
+  }
+  .badge-music {
+    background-color: #FDE2E4;
+  }
+  .track-badge-label {
+    display: block;
+    margin-top: 6px;
+    font-size: 17px;
+    font-weight: bold;
+  }
+
+  /* 橫向滑動捲軸區域 */
+  .cards-scroller {
+    width: 100%;
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+  .cards-scroller::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* 媒體卡片樣式 (水彩暈染底色或自訂封面) */
+  .media-card {
+    display: inline-block;
+    vertical-align: top;
+    width: 180px;
+    height: 100%;
+    margin-right: 16px;
+    padding: 10px;
+    position: relative;
+    white-space: normal;
+    cursor: pointer;
+    text-align: center;
+  }
+  .bg-blue { background-color: #E3F2FD; }
+  .bg-pink { background-color: #FCE4EC; }
+  .bg-mint { background-color: #E0F2F1; }
+  .bg-yellow { background-color: #FFFDE7; }
+
+  .card-art {
+    width: 100%;
+    height: 62%;
+    background-color: rgba(255, 255, 255, 0.75);
+    border: 2px solid #2C2A29;
+    border-radius: 16px 14px 18px 13px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .card-art img.cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .card-art svg.center-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -32px;
+    margin-left: -32px;
+  }
+  .play-pill {
+    position: absolute;
+    right: 6px;
+    bottom: 6px;
+    width: 30px;
+    height: 30px;
+    background-color: #FFD166;
+    border: 2px solid #2C2A29;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 25px;
+  }
+  .podcast-tag {
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    background-color: #D8F3DC;
+    border: 1.5px solid #2C2A29;
+    border-radius: 8px;
+    padding: 1px 6px;
+    font-size: 11px;
+    font-weight: bold;
+    z-index: 2;
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.25;
+    height: 40px;
+    overflow: hidden;
+    color: #2C2A29;
+  }
+
+  /* 彈出層通用遮罩 */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(44, 42, 41, 0.68);
+    z-index: 100;
+    text-align: center;
+  }
+  .modal-center-helper {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+  }
+  .modal-box {
+    display: inline-block;
+    vertical-align: middle;
+    background-color: #FAF7F0;
+    padding: 20px;
+    text-align: left;
+    position: relative;
+    max-height: 94%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* 自訂手繪對話框 (取代原生 alert / confirm / prompt) */
+  #dialog-modal {
+    z-index: 300;
+  }
+  .dialog-box {
+    width: 380px;
+    max-width: 90%;
+    background-color: #FFFDF9;
+    text-align: center;
+    padding: 22px 20px;
+  }
+  .dialog-title {
+    font-size: 19px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  .dialog-msg {
+    font-size: 15px;
+    line-height: 1.45;
+    color: #3A3734;
+    margin-bottom: 14px;
+  }
+  .dialog-input-group {
+    margin-bottom: 14px;
+    text-align: left;
+  }
+  .dialog-input-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  .dialog-input-group input {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 15px;
+    border: 2px solid #2C2A29;
+    border-radius: 10px;
+    background-color: #FAF7F0;
+    margin-bottom: 8px;
+  }
+  .dialog-btns button {
+    min-width: 92px;
+    padding: 9px 16px;
+    margin: 0 6px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .btn-dlg-ok {
+    background-color: #FFD166;
+  }
+  .btn-dlg-cancel {
+    background-color: #EFECE6;
+  }
+
+  /* 播放器視窗 */
+  .player-box {
+    width: 450px;
+    max-width: 92%;
+    text-align: center;
+    background-color: #FFFDF9;
+  }
+  .player-art-large {
+    width: 156px;
+    height: 156px;
+    margin: 8px auto 14px auto;
+    background-color: #E3F2FD;
+    position: relative;
+    overflow: hidden;
+  }
+  .player-art-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .player-art-large svg.center-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -45px;
+    margin-left: -45px;
+  }
+  .player-title {
+    font-size: 23px;
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+  .player-status {
+    font-size: 14px;
+    color: #6B6661;
+    margin-bottom: 16px;
+  }
+  .progress-wrap {
+    width: 100%;
+    height: 18px;
+    background-color: #EAE4D7;
+    border: 2px solid #2C2A29;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .progress-bar {
+    width: 0%;
+    height: 100%;
+    background-color: #7BDFF2;
+  }
+  .player-controls button {
+    width: 88px;
+    height: 60px;
+    margin: 0 10px;
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #FFD166;
+    cursor: pointer;
+  }
+  #btn-close-player {
+    background-color: #F4978E;
+  }
+
+  /* 密碼鍵盤彈窗 */
+  .pin-box {
+    width: 340px;
+    max-width: 92%;
+    text-align: center;
+  }
+  .pin-dots {
+    margin: 14px 0 18px 0;
+    height: 28px;
+  }
+  .pin-dot {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin: 0 8px;
+    border: 2.5px solid #2C2A29;
+    border-radius: 50%;
+    background-color: #FFFFFF;
+  }
+  .pin-dot.filled {
+    background-color: #2C2A29;
+  }
+  .keypad-grid {
+    width: 276px;
+    margin: 0 auto;
+  }
+  .key-btn {
+    display: inline-block;
+    width: 78px;
+    height: 62px;
+    margin: 5px;
+    font-size: 24px;
+    font-weight: bold;
+    background-color: #FFFFFF;
+    line-height: 56px;
+    cursor: pointer;
+  }
+  .key-btn.action-clear { background-color: #FDE2E4; font-size: 17px; }
+  .key-btn.action-cancel { background-color: #EFECE6; font-size: 17px; }
+
+  /* 家長設定面板 (暖黃雙欄手繪風格) */
+  .settings-box {
+    width: 920px;
+    max-width: 96%;
+    background-color: #FCE99C;
+    padding: 18px 20px;
+  }
+  .settings-header {
+    position: relative;
+    margin-bottom: 14px;
+    padding-right: 48px;
+  }
+  .settings-header h2 {
+    margin: 0;
+    font-size: 23px;
+    font-weight: bold;
+  }
+  .btn-close-x {
+    position: absolute;
+    right: 0;
+    top: -2px;
+    width: 38px;
+    height: 38px;
+    line-height: 32px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    background-color: #FFFDF9;
+    cursor: pointer;
+  }
+
+  /* 左右雙欄容器 (iOS 12.5.8 穩定排版，小螢幕自動上下堆疊) */
+  .two-col-wrap {
+    width: 100%;
+    font-size: 0;
+  }
+  .col-left {
+    display: inline-block;
+    vertical-align: top;
+    width: 46%;
+    margin-right: 3%;
+    font-size: 15px;
+  }
+  .col-right {
+    display: inline-block;
+    vertical-align: top;
+    width: 51%;
+    font-size: 15px;
+  }
+  @media screen and (max-width: 680px) {
+    .col-left, .col-right {
+      display: block;
       width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background-color: #F9D45C;
-      font-family: 'Fredoka', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
-      color: #1E1B18;
+      margin-right: 0;
+      margin-bottom: 14px;
     }
+  }
 
-    /* Dynamically sized root container to avoid iOS 12 standalone 100vh clipping */
-    #appRoot {
-      width: 100%;
-      height: 100%;
-      display: -webkit-flex;
-      display: flex;
-      -webkit-flex-direction: column;
-      flex-direction: column;
-      -webkit-justify-content: space-between;
-      justify-content: space-between;
-      padding: 12px 16px;
-    }
+  .panel-card {
+    background-color: #FAF3D6;
+    border: 2.5px solid #2C2A29;
+    border-radius: 16px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    box-shadow: 2px 3px 0px rgba(44, 42, 41, 0.12);
+  }
+  .panel-title-row {
+    position: relative;
+    margin-bottom: 10px;
+  }
+  .panel-title-row h3 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: bold;
+    padding-right: 76px;
+  }
+  .btn-mini {
+    border: 2px solid #2C2A29;
+    border-radius: 10px;
+    padding: 4px 10px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #FFFFFF;
+  }
+  .btn-add-green {
+    position: absolute;
+    right: 0;
+    top: -2px;
+    background-color: #38B000;
+    color: #FFFFFF;
+  }
 
-    /* Thick-outlined cartoon board & pills */
-    .cartoon-board {
-      background-color: #FFFDF5;
-      border: 4px solid #1E1B18;
-      border-radius: 30px;
-      box-shadow: 0 7px 0 #1E1B18;
-    }
+  /* 聯絡人列表列 */
+  .contact-row-item {
+    background-color: #FFFDF9;
+    border: 2px solid #2C2A29;
+    border-radius: 12px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .contact-row-item:last-child {
+    margin-bottom: 0;
+  }
+  .c-thumb {
+    display: inline-block;
+    vertical-align: middle;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 2px solid #2C2A29;
+    overflow: hidden;
+    background-color: #FFF9DB;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  .c-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .c-info {
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 48%;
+  }
+  .c-info-name {
+    font-weight: bold;
+    font-size: 16px;
+  }
+  .c-info-target {
+    font-size: 12px;
+    color: #555;
+    word-break: break-all;
+  }
+  .c-actions {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    margin-top: -15px;
+  }
+  .c-actions button {
+    margin-left: 4px;
+  }
 
-    .cartoon-pill {
-      border: 3.5px solid #1E1B18;
-      box-shadow: 0 4px 0 #1E1B18;
-    }
+  /* 備份與說明區塊 */
+  .help-text {
+    font-size: 13px;
+    line-height: 1.45;
+    color: #3A3734;
+    margin-bottom: 10px;
+  }
+  .btn-wide-purple {
+    display: inline-block;
+    width: 47%;
+    margin-right: 4%;
+    padding: 9px 6px;
+    text-align: center;
+    background-color: #A855F7;
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 13px;
+    border: 2px solid #2C2A29;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  .btn-wide-green {
+    display: inline-block;
+    width: 47%;
+    padding: 9px 6px;
+    text-align: center;
+    background-color: #16A34A;
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 13px;
+    border: 2px solid #2C2A29;
+    border-radius: 12px;
+    cursor: pointer;
+  }
 
-    .tactile-btn {
-      -webkit-transition: -webkit-transform 0.1s ease, box-shadow 0.1s ease;
-      transition: transform 0.1s ease, box-shadow 0.1s ease;
-      cursor: pointer;
-    }
+  /* 右欄：故事列 / 音樂列分頁 */
+  .tab-switch-wrap {
+    width: 100%;
+    margin-bottom: 10px;
+    font-size: 0;
+  }
+  .tab-btn {
+    display: inline-block;
+    width: 48%;
+    padding: 7px 6px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: bold;
+    border: 2px solid #2C2A29;
+    border-radius: 12px;
+    background-color: #FFFDF9;
+    cursor: pointer;
+  }
+  .tab-btn:first-child {
+    margin-right: 4%;
+  }
+  .tab-btn.active-story {
+    background-color: #D8F3DC;
+  }
+  .tab-btn.active-music {
+    background-color: #E3F2FD;
+  }
 
-    .tactile-btn:active {
-      -webkit-transform: translateY(3px);
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 #1E1B18 !important;
-    }
+  .media-form-box {
+    background-color: #FFFDF9;
+    border: 2px solid #2C2A29;
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  .cover-preview-box {
+    display: inline-block;
+    vertical-align: middle;
+    width: 68px;
+    height: 68px;
+    border: 2px solid #2C2A29;
+    border-radius: 10px;
+    background-color: #FAF7F0;
+    margin-right: 10px;
+    overflow: hidden;
+    text-align: center;
+    line-height: 64px;
+  }
+  .cover-preview-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .cover-fields-right {
+    display: inline-block;
+    vertical-align: middle;
+    width: calc(100% - 82px);
+  }
+  .text-input-full {
+    width: 100%;
+    padding: 7px 9px;
+    font-size: 14px;
+    border: 2px solid #2C2A29;
+    border-radius: 9px;
+    background-color: #FFFFFF;
+    margin-bottom: 6px;
+  }
+  .btn-cover-pick {
+    display: inline-block;
+    width: 100%;
+    padding: 6px 8px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: bold;
+    background-color: #FFE5D9;
+    border: 2px solid #2C2A29;
+    border-radius: 9px;
+    cursor: pointer;
+    margin-bottom: 6px;
+  }
+  .btn-audio-blue {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    background-color: #1D9BF0;
+    color: #FFFFFF;
+    border: 2px solid #2C2A29;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .podcast-inline-row {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #CCCCCC;
+  }
+  .podcast-inline-row input {
+    width: 71%;
+    padding: 6px 8px;
+    font-size: 13px;
+    border: 2px solid #2C2A29;
+    border-radius: 8px;
+    margin-right: 4px;
+  }
+  .btn-podcast-add {
+    width: 26%;
+    padding: 6px 4px;
+    font-size: 13px;
+    font-weight: bold;
+    background-color: #D8F3DC;
+    border: 2px solid #2C2A29;
+    border-radius: 8px;
+    cursor: pointer;
+  }
 
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    /* Explicit margins instead of CSS gap for iOS 12.5.8 Safari compatibility */
-    .avatar-item {
-      margin-left: 16px;
-      margin-right: 16px;
-    }
-    @media (min-width: 768px) {
-      .avatar-item {
-        margin-left: 26px;
-        margin-right: 26px;
-      }
-    }
-
-    .track-card-item {
-      margin-right: 14px;
-    }
-    .track-card-item:last-child {
-      margin-right: 4px;
-    }
-
-    /* Active playing card pulse & equalizer bars */
-    @-webkit-keyframes activeBounce {
-      0%, 100% { -webkit-transform: scale(1); transform: scale(1); }
-      50% { -webkit-transform: scale(1.03); transform: scale(1.03); }
-    }
-    @keyframes activeBounce {
-      0%, 100% { -webkit-transform: scale(1); transform: scale(1); }
-      50% { -webkit-transform: scale(1.03); transform: scale(1.03); }
-    }
-    .playing-card {
-      -webkit-animation: activeBounce 1.3s ease-in-out infinite;
-      animation: activeBounce 1.3s ease-in-out infinite;
-      border-color: #EC4899 !important;
-      box-shadow: 0 0 0 4px #FBCFE8, 0 5px 0 #1E1B18 !important;
-    }
-
-    @-webkit-keyframes eqBounce {
-      0%, 100% { height: 6px; }
-      50% { height: 20px; }
-    }
-    @keyframes eqBounce {
-      0%, 100% { height: 6px; }
-      50% { height: 20px; }
-    }
-    .eq-bar {
-      width: 5px;
-      background-color: #FFFFFF;
-      border-radius: 9999px;
-      display: inline-block;
-      margin-left: 2px;
-      margin-right: 2px;
-    }
-    .eq-1 { -webkit-animation: eqBounce 0.5s ease-in-out infinite; animation: eqBounce 0.5s ease-in-out infinite; }
-    .eq-2 { -webkit-animation: eqBounce 0.38s ease-in-out 0.12s infinite; animation: eqBounce 0.38s ease-in-out 0.12s infinite; }
-    .eq-3 { -webkit-animation: eqBounce 0.58s ease-in-out 0.24s infinite; animation: eqBounce 0.58s ease-in-out 0.24s infinite; }
-
-    /* One-tap FaceTime calling ripple */
-    @-webkit-keyframes callPulse {
-      0% { -webkit-transform: scale(0.96); transform: scale(0.96); opacity: 0.9; }
-      100% { -webkit-transform: scale(1.28); transform: scale(1.28); opacity: 0; }
-    }
-    @keyframes callPulse {
-      0% { -webkit-transform: scale(0.96); transform: scale(0.96); opacity: 0.9; }
-      100% { -webkit-transform: scale(1.28); transform: scale(1.28); opacity: 0; }
-    }
-    .calling-ring {
-      position: relative;
-    }
-    .calling-ring::after {
-      content: '';
-      position: absolute;
-      top: -6px;
-      left: -6px;
-      right: -6px;
-      bottom: -6px;
-      border-radius: 9999px;
-      border: 5px solid #2CC865;
-      -webkit-animation: callPulse 0.9s ease-out infinite;
-      animation: callPulse 0.9s ease-out infinite;
-    }
-
-    /* PIN pad cells & indicator dots (no CSS gap) */
-    .pin-cell {
-      padding: 5px;
-    }
-    .pin-dot {
-      width: 18px;
-      height: 18px;
-      border-radius: 9999px;
-      border: 3px solid #1E1B18;
-      background-color: #FFFFFF;
-      margin-left: 8px;
-      margin-right: 8px;
-    }
-  </style>
+  .media-list-scroll {
+    max-height: 150px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .m-row-item {
+    background-color: #FFFDF9;
+    border: 2px solid #2C2A29;
+    border-radius: 10px;
+    padding: 6px 8px;
+    margin-bottom: 6px;
+    position: relative;
+  }
+  .m-row-item:last-child {
+    margin-bottom: 0;
+  }
+  .m-thumb {
+    display: inline-block;
+    vertical-align: middle;
+    width: 32px;
+    height: 32px;
+    border: 1.5px solid #2C2A29;
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: #E3F2FD;
+    margin-right: 8px;
+    text-align: center;
+    line-height: 28px;
+  }
+  .m-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .m-title-text {
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 48%;
+    font-size: 14px;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .m-actions {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    margin-top: -13px;
+  }
+  .pin-row input {
+    width: 110px;
+    padding: 6px 8px;
+    font-size: 14px;
+    border: 2px solid #2C2A29;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    margin-right: 6px;
+  }
+</style>
 </head>
 <body>
 
-  <div id="appRoot">
-    <!-- Hidden HTML5 audio element for offline playback -->
-    <audio id="htmlAudioPlayer" playsinline webkit-playsinline preload="auto"></audio>
-
-    <!-- ==================== 1. TOP BAR: CLEAN CIRCULAR PORTRAITS + PADLOCK ==================== -->
-    <header class="w-full flex items-center justify-between px-2 sm:px-4 mb-2.5 shrink-0 relative z-10" style="height: 25%; min-height: 108px; max-height: 158px;">
-      <!-- Left spacer to keep circular portraits centered -->
-      <div class="w-12 h-12 sm:w-14 sm:h-14 shrink-0"></div>
-
-      <!-- Clean Circular Family Portraits (No text labels, no green video badge icon) -->
-      <div id="topContactsRow" class="flex-1 flex items-center justify-center overflow-x-auto no-scrollbar py-1"></div>
-
-      <!-- Top-Right Compact Round Padlock Button -->
-      <button
-        type="button"
-        onclick="openParentLockModal()"
-        aria-label="家長設定"
-        class="tactile-btn cartoon-pill w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#FFFDF5] flex items-center justify-center shrink-0"
-      >
-        <svg class="w-6 h-6 sm:w-7 sm:h-7" viewBox="0 0 28 28" fill="none">
-          <path d="M9.5 12V9C9.5 6.51472 11.5147 4.5 14 4.5C16.4853 4.5 18.5 6.51472 18.5 9V12" stroke="#1E1B18" stroke-width="2.8" stroke-linecap="round"/>
-          <rect x="6.5" y="12" width="15" height="11.5" rx="3.5" fill="#F9D45C" stroke="#1E1B18" stroke-width="2.5"/>
-          <circle cx="14" cy="17" r="1.8" fill="#1E1B18"/>
-          <path d="M14 18.5V20.5" stroke="#1E1B18" stroke-width="2.2" stroke-linecap="round"/>
-        </svg>
-      </button>
-    </header>
-
-    <!-- ==================== 2. MAIN CARTOON BOARD: STORY ROW + MUSIC ROW ==================== -->
-    <main class="cartoon-board flex-1 w-full min-h-0 p-3 sm:p-4 flex flex-col justify-between overflow-hidden z-10">
-
-      <!-- ROW 1: STORIES SHELF -->
-      <section class="flex-1 min-h-0 flex items-center pb-2.5 sm:pb-3 border-b-4 border-[#1E1B18]">
-        <div class="w-16 sm:w-20 md:w-24 h-full flex items-center justify-center shrink-0 mr-2.5 sm:mr-3.5">
-          <div class="cartoon-pill w-14 h-14 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-3xl bg-[#E0F2FE] flex items-center justify-center">
-            <svg class="w-9 h-9 sm:w-12 sm:h-12" viewBox="0 0 64 64" fill="none">
-              <path d="M8 17C17 12 27 14 32 21C37 14 47 12 56 17V48C47 43 37 45 32 51C27 45 17 43 8 48V17Z" fill="#FFFDF5" stroke="#1E1B18" stroke-width="4" stroke-linejoin="round"/>
-              <path d="M32 21V51" stroke="#1E1B18" stroke-width="3.5" stroke-linecap="round"/>
-              <path d="M15 24H25M15 31H24M39 24H49M40 31H49" stroke="#38BDF8" stroke-width="3.5" stroke-linecap="round"/>
-            </svg>
-          </div>
-        </div>
-
-        <div id="storyShelf" class="flex-1 h-full flex items-center overflow-x-auto no-scrollbar py-1 px-1"></div>
-
-        <button
-          type="button"
-          onclick="scrollShelf('storyShelf')"
-          aria-label="向右捲動故事"
-          class="tactile-btn cartoon-pill w-10 sm:w-12 h-16 sm:h-20 rounded-2xl bg-[#FFF7D6] flex items-center justify-center shrink-0 ml-2 sm:ml-3"
-        >
-          <svg class="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="#1E1B18">
-            <path d="M8 5L18 12L8 19V5Z"/>
-          </svg>
-        </button>
-      </section>
-
-      <!-- ROW 2: MUSIC SHELF -->
-      <section class="flex-1 min-h-0 flex items-center pt-2.5 sm:pt-3">
-        <div class="w-16 sm:w-20 md:w-24 h-full flex items-center justify-center shrink-0 mr-2.5 sm:mr-3.5">
-          <div class="cartoon-pill w-14 h-14 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-3xl bg-[#FCE7F3] flex items-center justify-center">
-            <svg class="w-9 h-9 sm:w-12 sm:h-12" viewBox="0 0 64 64" fill="none">
-              <path d="M24 45V16L50 11V40" stroke="#1E1B18" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M24 24L50 19" stroke="#1E1B18" stroke-width="4.5" stroke-linecap="round"/>
-              <circle cx="18" cy="45" r="7.5" fill="#FB7185" stroke="#1E1B18" stroke-width="4"/>
-              <circle cx="44" cy="40" r="7.5" fill="#F9D45C" stroke="#1E1B18" stroke-width="4"/>
-            </svg>
-          </div>
-        </div>
-
-        <div id="musicShelf" class="flex-1 h-full flex items-center overflow-x-auto no-scrollbar py-1 px-1"></div>
-
-        <button
-          type="button"
-          onclick="scrollShelf('musicShelf')"
-          aria-label="向右捲動音樂"
-          class="tactile-btn cartoon-pill w-10 sm:w-12 h-16 sm:h-20 rounded-2xl bg-[#FFF7D6] flex items-center justify-center shrink-0 ml-2 sm:ml-3"
-        >
-          <svg class="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="#1E1B18">
-            <path d="M8 5L18 12L8 19V5Z"/>
-          </svg>
-        </button>
-      </section>
-
-    </main>
-  </div>
-
-  <!-- ==================== PIN LOCK MODAL ==================== -->
-  <div id="pinModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
-    <div class="cartoon-board max-w-sm w-full p-6 text-center bg-[#FFFDF5]">
-      <div class="flex justify-between items-center mb-3">
-        <span class="text-xl font-black text-[#1E1B18]">🔒 家長密碼</span>
-        <button type="button" onclick="closePinModal()" class="tactile-btn cartoon-pill w-10 h-10 rounded-full bg-rose-200 text-[#1E1B18] font-black text-lg">✕</button>
-      </div>
-      <p class="text-sm font-bold text-slate-600 mb-4">請輸入 4 位數字密碼（預設：1234）</p>
-
-      <div class="flex justify-center mb-5">
-        <div id="pinDot0" class="pin-dot"></div>
-        <div id="pinDot1" class="pin-dot"></div>
-        <div id="pinDot2" class="pin-dot"></div>
-        <div id="pinDot3" class="pin-dot"></div>
-      </div>
-
-      <div class="flex flex-wrap -mx-1">
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('1')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">1</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('2')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">2</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('3')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">3</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('4')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">4</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('5')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">5</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('6')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">6</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('7')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">7</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('8')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">8</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('9')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">9</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="clearPinInput()" class="tactile-btn cartoon-pill w-full bg-rose-200 rounded-2xl py-3 text-base font-black">清除</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="enterPinDigit('0')" class="tactile-btn cartoon-pill w-full bg-white rounded-2xl py-3 text-2xl font-black">0</button></div>
-        <div class="w-1/3 pin-cell"><button type="button" onclick="backspacePinDigit()" class="tactile-btn cartoon-pill w-full bg-amber-200 rounded-2xl py-3 text-lg font-black">⌫</button></div>
-      </div>
+<!-- 主介面 -->
+<div id="main-app">
+  <!-- 頂部家人頭像列與家長鎖 -->
+  <div class="top-bar">
+    <div class="contacts-container" id="contacts-list"></div>
+    <div id="parent-lock-btn" class="sketch-circle btn-press" title="家長設定">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2C2A29" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="3" ry="3" fill="#FFD166"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+      </svg>
     </div>
   </div>
 
-  <!-- ==================== PARENT MODE MODAL ==================== -->
-  <div id="parentModal" class="fixed inset-0 bg-black/65 z-50 hidden flex items-center justify-center p-3 sm:p-5">
-    <div class="cartoon-board max-w-5xl w-full flex flex-col overflow-hidden bg-[#FFFDF5]" style="max-height: 92%;">
-      <!-- Header -->
-      <div class="bg-[#F9D45C] border-b-4 border-[#1E1B18] px-5 py-3 flex items-center justify-between shrink-0">
-        <div class="flex items-center">
-          <span class="text-2xl mr-2">🔐</span>
-          <h2 class="text-xl sm:text-2xl font-black text-[#1E1B18]">家長設定</h2>
+  <!-- 雙列橫向滑動軌道 -->
+  <div class="tracks-wrapper">
+    <!-- 上排：故事 -->
+    <div class="track-row sketch-box">
+      <div class="track-badge badge-story sketch-box">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2C2A29" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" fill="#FFFDF9"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" fill="#FFFDF9"></path>
+        </svg>
+        <span class="track-badge-label">故事</span>
+      </div>
+      <div class="cards-scroller" id="story-scroller"></div>
+    </div>
+
+    <!-- 下排：音樂 -->
+    <div class="track-row sketch-box">
+      <div class="track-badge badge-music sketch-box">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2C2A29" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18V5l12-2v13"></path>
+          <circle cx="6" cy="18" r="3" fill="#FFD166"></circle>
+          <circle cx="18" cy="16" r="3" fill="#FFD166"></circle>
+        </svg>
+        <span class="track-badge-label">音樂</span>
+      </div>
+      <div class="cards-scroller" id="music-scroller"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 音訊播放器彈窗 -->
+<div id="player-modal" class="modal-overlay">
+  <span class="modal-center-helper"></span>
+  <div class="modal-box player-box sketch-box">
+    <div id="player-art" class="player-art-large sketch-box"></div>
+    <div id="player-title" class="player-title">播放中</div>
+    <div id="player-status" class="player-status">準備播放...</div>
+    <div class="progress-wrap">
+      <div id="player-progress" class="progress-bar"></div>
+    </div>
+    <div class="player-controls">
+      <button id="btn-toggle-play" class="sketch-box btn-press">暫停</button>
+      <button id="btn-close-player" class="sketch-box btn-press">關閉</button>
+    </div>
+  </div>
+</div>
+
+<!-- 家長密碼輸入彈窗 -->
+<div id="pin-modal" class="modal-overlay">
+  <span class="modal-center-helper"></span>
+  <div class="modal-box pin-box sketch-box">
+    <h3 style="margin:0; font-size:20px;">請輸入家長密碼</h3>
+    <div id="pin-hint-text" style="font-size:13px; color:#6B6661; margin-top:4px;">預設密碼：1234</div>
+    <div class="pin-dots" id="pin-dots">
+      <span class="pin-dot"></span>
+      <span class="pin-dot"></span>
+      <span class="pin-dot"></span>
+      <span class="pin-dot"></span>
+    </div>
+    <div class="keypad-grid" id="keypad-grid">
+      <div class="key-btn sketch-box btn-press" data-key="1">1</div>
+      <div class="key-btn sketch-box btn-press" data-key="2">2</div>
+      <div class="key-btn sketch-box btn-press" data-key="3">3</div>
+      <div class="key-btn sketch-box btn-press" data-key="4">4</div>
+      <div class="key-btn sketch-box btn-press" data-key="5">5</div>
+      <div class="key-btn sketch-box btn-press" data-key="6">6</div>
+      <div class="key-btn sketch-box btn-press" data-key="7">7</div>
+      <div class="key-btn sketch-box btn-press" data-key="8">8</div>
+      <div class="key-btn sketch-box btn-press" data-key="9">9</div>
+      <div class="key-btn action-cancel sketch-box btn-press" data-key="cancel">取消</div>
+      <div class="key-btn sketch-box btn-press" data-key="0">0</div>
+      <div class="key-btn action-clear sketch-box btn-press" data-key="clear">清除</div>
+    </div>
+  </div>
+</div>
+
+<!-- 家長設定主面板 (暖黃雙欄手繪介面) -->
+<div id="settings-modal" class="modal-overlay">
+  <span class="modal-center-helper"></span>
+  <div class="modal-box settings-box sketch-box">
+    <div class="settings-header">
+      <h2>家長設定</h2>
+      <div id="btn-close-settings" class="btn-close-x sketch-circle btn-press">&times;</div>
+    </div>
+
+    <div class="two-col-wrap">
+      <!-- 左欄：家人視訊聯絡人 + 備份與還原 + HomePod 連接說明 -->
+      <div class="col-left">
+        <div class="panel-card">
+          <div class="panel-title-row">
+            <h3>家人視訊聯絡人（一按即 FaceTime）</h3>
+            <button id="btn-add-contact" class="btn-mini btn-add-green btn-press">+ 新增</button>
+          </div>
+          <div class="help-text" style="font-size:12px; margin-bottom:8px;">
+            * 點擊聯絡人直接喚起 <code>facetime://</code>（iOS 系統原生確認窗無法由網頁略過）。點擊頭像可更換照片。
+          </div>
+          <div id="contacts-editor-list"></div>
+          <input type="file" id="contact-avatar-picker" accept="image/*" style="display:none;">
         </div>
-        <button type="button" onclick="closeParentModal()" class="tactile-btn cartoon-pill w-10 h-10 rounded-full bg-white text-[#1E1B18] font-black text-lg flex items-center justify-center">
-          ✕
-        </button>
+
+        <div class="panel-card">
+          <h3>備份與還原（iPhone AirDrop 傳送至 iPad）</h3>
+          <div class="help-text">
+            在 iPhone 整理好歌曲、故事、封面與頭像後按「匯出備份檔」，透過 AirDrop 傳至舊 iPad 並儲存到「檔案」，再於舊 iPad 按「匯入備份檔」即可一鍵同步。
+          </div>
+          <div>
+            <button id="btn-export-json" class="btn-wide-purple btn-press">匯出備份檔 (.json)</button>
+            <label class="btn-wide-green btn-press">
+              匯入備份檔 (.json)
+              <input type="file" id="import-json-file" accept=".json,application/json" style="display:none;">
+            </label>
+          </div>
+        </div>
+
+        <div class="panel-card" style="margin-bottom:0;">
+          <h3>HomePod 喇叭連接方式（iOS 12.5.8）</h3>
+          <div class="help-text" style="margin-bottom:0;">
+            iOS 12.5.8 Safari 不支援從網頁按鈕直接觸發 AirPlay。請由舊 iPad 螢幕右上角向下拉開「控制中心」→ 長按右上角音樂方塊 → 點選 AirPlay 圖示選擇家中的 HomePod。
+          </div>
+        </div>
       </div>
 
-      <!-- Body -->
-      <div class="flex-1 overflow-y-auto p-4 sm:p-5 flex flex-wrap -mx-2" style="-webkit-overflow-scrolling: touch;">
-
-        <!-- Left Column: Contacts, Backup/Restore & HomePod Control Center Note -->
-        <div class="w-full lg:w-1/2 px-2 mb-4 lg:mb-0">
-          <!-- FaceTime Contacts -->
-          <div class="bg-[#FFF7D6] border-3 border-[#1E1B18] rounded-3xl p-4 shadow-sm mb-4">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="text-base sm:text-lg font-black">👨‍👩‍👧 家人視訊聯絡人（一按即 FaceTime）</h3>
-              <button type="button" onclick="toggleAddContactForm()" class="tactile-btn cartoon-pill bg-[#2CC865] text-white rounded-full px-3.5 py-1 text-sm font-black shrink-0 ml-2">
-                + 新增
-              </button>
-            </div>
-
-            <!-- Add / Edit Contact Form -->
-            <div id="contactFormBox" class="hidden bg-white border-3 border-[#1E1B18] rounded-2xl p-3 mb-3">
-              <input type="hidden" id="editContactIdx" value="-1" />
-              <div class="flex items-center mb-2.5">
-                <div id="contactAvatarPreview" class="w-12 h-12 rounded-full border-2 border-[#1E1B18] bg-amber-100 overflow-hidden flex items-center justify-center shrink-0 mr-2.5">
-                  <span class="text-lg">👤</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <input id="contactNameInput" type="text" placeholder="備註稱呼（例：爸爸 / 媽媽，僅家長可見）" class="w-full border-2 border-[#1E1B18] rounded-xl px-3 py-1.5 text-sm font-bold bg-amber-50 mb-1.5" />
-                  <input id="contactTargetInput" type="text" placeholder="FaceTime Apple ID 電郵或電話號碼" class="w-full border-2 border-[#1E1B18] rounded-xl px-3 py-1.5 text-sm font-bold bg-amber-50" />
-                </div>
-              </div>
-
-              <div class="flex flex-wrap items-center justify-between">
-                <div class="flex items-center mb-1.5 sm:mb-0">
-                  <select id="contactAvatarSelect" onchange="previewPresetContactAvatar()" class="border-2 border-[#1E1B18] rounded-xl px-2.5 py-1.5 text-xs sm:text-sm font-bold bg-amber-50 mr-2">
-                    <option value="dad">👨 爸爸插畫</option>
-                    <option value="mom">👩 媽媽插畫</option>
-                    <option value="grandma">👵 婆婆插畫</option>
-                    <option value="grandpa">👴 公公插畫</option>
-                  </select>
-                  <label class="tactile-btn border-2 border-[#1E1B18] bg-[#F9D45C] rounded-xl px-2.5 py-1.5 text-xs font-black cursor-pointer">
-                    📷 自訂頭像
-                    <input id="contactPhotoFileInput" type="file" accept="image/*" class="hidden" onchange="handleContactPhotoSelect(event)" />
-                  </label>
-                </div>
-                <div class="flex items-center">
-                  <button type="button" onclick="cancelContactForm()" class="tactile-btn border-2 border-[#1E1B18] bg-slate-200 rounded-xl px-3 py-1.5 text-xs sm:text-sm font-black mr-2">取消</button>
-                  <button type="button" onclick="saveContact()" class="tactile-btn border-2 border-[#1E1B18] bg-[#2CC865] text-white rounded-xl px-4 py-1.5 text-xs sm:text-sm font-black">儲存</button>
-                </div>
-              </div>
-            </div>
-
-            <div id="parentContactList" class="max-h-40 overflow-y-auto pr-1"></div>
+      <!-- 右欄：故事與音樂管理 (含封面 400x400、本地音訊與 Podcast 連結) + 更改家長密碼 -->
+      <div class="col-right">
+        <div class="panel-card">
+          <h3>故事與音樂管理（離線音訊 / Podcast 連結）</h3>
+          <div class="tab-switch-wrap">
+            <div id="tab-story" class="tab-btn active-story" data-tab="story">故事列</div>
+            <div id="tab-music" class="tab-btn" data-tab="music">音樂列</div>
           </div>
 
-          <!-- Backup & Restore (.json via AirDrop) -->
-          <div class="bg-[#F3E8FF] border-3 border-[#1E1B18] rounded-3xl p-4 shadow-sm mb-4">
-            <h3 class="text-base sm:text-lg font-black mb-1.5">📦 備份與還原（iPhone AirDrop 傳送至 iPad）</h3>
-            <p class="text-xs font-bold text-slate-700 mb-3 leading-relaxed">
-              在 iPhone 整理好歌曲、故事、封面與頭像後按「匯出備份檔」，透過 <strong>AirDrop</strong> 傳至舊 iPad 並儲存到「檔案」，再於舊 iPad 按「匯入備份檔」即可一鍵同步。
-            </p>
-            <div class="flex -mx-1">
-              <div class="w-1/2 px-1">
-                <button type="button" onclick="exportBackupJson()" class="tactile-btn cartoon-pill w-full bg-[#C084FC] text-[#1E1B18] rounded-2xl py-2.5 px-2 text-xs sm:text-sm font-black text-center">
-                  📦 匯出備份檔 (.json)
-                </button>
-              </div>
-              <div class="w-1/2 px-1">
-                <label class="tactile-btn cartoon-pill w-full bg-[#2CC865] text-white rounded-2xl py-2.5 px-2 text-xs sm:text-sm font-black flex items-center justify-center cursor-pointer text-center">
-                  <span>📥 匯入備份檔 (.json)</span>
-                  <input id="importBackupInput" type="file" accept=".json,application/json" class="hidden" onchange="importBackupJson(event)" />
-                </label>
-              </div>
+          <div class="media-form-box">
+            <div class="cover-preview-box" id="new-cover-preview">
+              <span style="font-size:11px; color:#666;">封面</span>
             </div>
-          </div>
-
-          <!-- iOS 12.5.8 HomePod AirPlay via Control Center Note -->
-          <div class="bg-[#E0F2FE] border-3 border-[#1E1B18] rounded-3xl p-4 shadow-sm">
-            <h3 class="text-base sm:text-lg font-black mb-1.5">🔊 HomePod 喇叭連接方式（iOS 12.5.8）</h3>
-            <p class="text-xs font-bold text-slate-700 leading-relaxed">
-              iOS 12.5.8 Safari 不支援從網頁按鈕直接觸發 AirPlay。請由舊 iPad 螢幕<strong>右上角向下拉開「控制中心」</strong> → 長按右上角音樂方塊 → 點選 <strong>AirPlay 圖示</strong> 選擇家中的 HomePod。
-            </p>
-          </div>
-        </div>
-
-        <!-- Right Column: Story & Music Upload + Custom Covers + PIN Change -->
-        <div class="w-full lg:w-1/2 px-2">
-          <div class="bg-[#FFF7D6] border-3 border-[#1E1B18] rounded-3xl p-4 shadow-sm mb-4">
-            <h3 class="text-base sm:text-lg font-black mb-2.5">📖🎵 故事與音樂管理（離線 MP3 / M4A / WAV）</h3>
-
-            <div class="flex -mx-1 mb-3">
-              <div class="w-1/2 px-1">
-                <button type="button" id="parentTabStory" onclick="setParentMediaTab('story')" class="tactile-btn border-2 border-[#1E1B18] w-full py-2 rounded-xl font-black text-sm bg-[#BAE6FD]">
-                  📖 故事列
-                </button>
-              </div>
-              <div class="w-1/2 px-1">
-                <button type="button" id="parentTabMusic" onclick="setParentMediaTab('music')" class="tactile-btn border-2 border-[#1E1B18] w-full py-2 rounded-xl font-black text-sm bg-white">
-                  🎵 音樂列
-                </button>
-              </div>
-            </div>
-
-            <!-- Add New Track + Optional Custom Cover -->
-            <div class="bg-white border-2 border-[#1E1B18] rounded-2xl p-3 mb-3">
-              <div class="flex items-center mb-2.5">
-                <div id="newCoverPreviewBox" class="w-12 h-12 rounded-xl border-2 border-[#1E1B18] bg-amber-50 flex items-center justify-center overflow-hidden shrink-0 mr-2.5">
-                  <span class="text-xl">🖼️</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <input id="newTrackTitleInput" type="text" placeholder="輸入故事或歌曲名稱（留空則用檔名）" class="w-full border-2 border-[#1E1B18] rounded-xl px-3 py-1.5 text-sm font-bold bg-amber-50 mb-1.5" />
-                  <div class="flex items-center">
-                    <label class="tactile-btn border-2 border-[#1E1B18] bg-[#F9D45C] rounded-xl px-2.5 py-1 text-xs font-black cursor-pointer inline-block mr-2">
-                      🖼️ 選封面圖片 (自動壓縮 400×400)
-                      <input id="newCoverFileInput" type="file" accept="image/*" class="hidden" onchange="handleNewCoverSelect(event)" />
-                    </label>
-                    <button type="button" id="clearNewCoverBtn" onclick="clearNewCoverSelection()" class="hidden text-xs font-black text-rose-600 underline">清除</button>
-                  </div>
-                </div>
-              </div>
-              <label class="tactile-btn cartoon-pill w-full bg-[#38BDF8] text-[#1E1B18] rounded-xl py-2.5 px-4 flex items-center justify-center text-sm font-black cursor-pointer">
-                <span>📁 選擇音訊並加入 (MP3 / M4A / WAV)</span>
-                <input id="audioFileUploadInput" type="file" accept="audio/*,.mp3,.m4a,.wav" class="hidden" onchange="handleAudioFileUpload(event)" />
+            <div class="cover-fields-right">
+              <input type="text" id="new-media-title" class="text-input-full" placeholder="輸入故事或歌曲名稱（留空則用檔名）">
+              <label class="btn-cover-pick btn-press">
+                選封面圖片（自動壓縮 400×400）
+                <input type="file" id="new-media-cover" accept="image/*" style="display:none;">
               </label>
             </div>
 
-            <!-- Edit Existing Track Title & Cover -->
-            <div id="editTrackBox" class="hidden bg-pink-50 border-3 border-[#1E1B18] rounded-2xl p-3 mb-3">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-sm font-black">✏️ 編輯名稱與封面圖片</span>
-                <button type="button" onclick="closeEditTrackBox()" class="text-xs font-black bg-white border-2 border-[#1E1B18] rounded-lg px-2 py-0.5">取消</button>
-              </div>
-              <input type="hidden" id="editTrackIdInput" value="" />
-              <div class="flex items-center mb-2.5">
-                <div id="editCoverPreviewBox" class="w-16 h-16 rounded-2xl border-2 border-[#1E1B18] bg-white flex items-center justify-center overflow-hidden shrink-0 mr-3">
-                  <span class="text-2xl">🖼️</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <input id="editTrackTitleInput" type="text" placeholder="名稱" class="w-full border-2 border-[#1E1B18] rounded-xl px-3 py-1.5 text-sm font-bold bg-white mb-2" />
-                  <div class="flex flex-wrap items-center">
-                    <label class="tactile-btn border-2 border-[#1E1B18] bg-[#F9D45C] rounded-xl px-3 py-1 text-xs font-black cursor-pointer mr-2 mb-1">
-                      🖼️ 換新封面相片
-                      <input id="editCoverFileInput" type="file" accept="image/*" class="hidden" onchange="handleEditCoverSelect(event)" />
-                    </label>
-                    <button type="button" onclick="resetTrackCoverToArt()" class="tactile-btn border-2 border-[#1E1B18] bg-white rounded-xl px-2.5 py-1 text-xs font-black text-slate-600 mb-1">
-                      用回插畫
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <button type="button" onclick="saveEditedTrack()" class="tactile-btn cartoon-pill w-full bg-[#2CC865] text-white rounded-xl py-2 text-sm font-black">
-                儲存修改
-              </button>
-            </div>
+            <label class="btn-audio-blue btn-press">
+              選擇音訊並加入（MP3 / M4A / WAV）
+              <input type="file" id="new-media-file" accept="audio/*" style="display:none;">
+            </label>
 
-            <div id="parentTrackList" class="max-h-40 overflow-y-auto pr-1"></div>
+            <div class="podcast-inline-row">
+              <input type="url" id="new-podcast-url" placeholder="或貼上 Podcast 音訊直連網址 (.mp3 / .m4a)">
+              <button id="btn-add-podcast" class="btn-podcast-add btn-press">加連結</button>
+            </div>
           </div>
 
-          <!-- Change PIN -->
-          <div class="bg-[#FFF7D6] border-3 border-[#1E1B18] rounded-3xl p-4 shadow-sm flex items-center justify-between">
-            <div class="mr-2">
-              <h4 class="text-base font-black">🔐 更改家長密碼 (PIN)</h4>
-              <p class="text-xs font-bold text-slate-600">設定新 4 位數字密碼</p>
-            </div>
-            <div class="flex items-center shrink-0">
-              <input id="newPinInput" type="password" inputmode="numeric" maxlength="4" placeholder="4位數字" class="w-24 border-2 border-[#1E1B18] rounded-xl px-3 py-2 text-center text-base font-black bg-white mr-2" />
-              <button type="button" onclick="updateParentPin()" class="tactile-btn cartoon-pill bg-[#F9D45C] rounded-xl px-4 py-2 text-sm font-black">
-                更改
-              </button>
-            </div>
-          </div>
+          <div id="media-manage-list" class="media-list-scroll"></div>
+          <input type="file" id="item-cover-replace-picker" accept="image/*" style="display:none;">
         </div>
 
+        <div class="panel-card" style="margin-bottom:0;">
+          <h3>更改家長密碼 (PIN)</h3>
+          <div class="help-text" style="margin-bottom:6px;">設定新 4 位數字密碼</div>
+          <div class="pin-row">
+            <input type="text" id="new-pin-input" maxlength="4" placeholder="4位數字">
+            <button id="btn-change-pin" class="btn-mini btn-press" style="background-color:#E5E7EB;">更改</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Toast Notification -->
-  <div id="toastPill" class="fixed top-5 left-1/2 -translate-x-1/2 cartoon-pill bg-[#1E1B18] text-white px-6 py-2.5 rounded-full text-base sm:text-lg font-black z-50 hidden text-center">
-    提示
+<!-- 自訂手繪提示與編輯對話框 (取代 alert / confirm / prompt) -->
+<div id="dialog-modal" class="modal-overlay">
+  <span class="modal-center-helper"></span>
+  <div class="modal-box dialog-box sketch-box">
+    <div id="dialog-title" class="dialog-title">提示</div>
+    <div id="dialog-msg" class="dialog-msg"></div>
+    <div id="dialog-inputs" class="dialog-input-group" style="display:none;"></div>
+    <div class="dialog-btns" id="dialog-btns"></div>
   </div>
+</div>
 
-  <script>
-    /*************************************************************************
-     * 1. STRICT iOS 12.5.8 SAFARI COMPATIBLE STATE & INDEXEDDB STORAGE
-     * Uses ES5/ES6 Promises and IndexedDB (no ?., ??, .at(), replaceAll, async/await)
-     *************************************************************************/
-    var DB_NAME = 'KidsStorybookLauncherDB';
-    var DB_VERSION = 1;
-    var STORE_AUDIO = 'audioFiles';
-    var STORE_COVERS = 'coverImages';
-    var dbInstance = null;
-    var imageUrlCache = {};
-    var pendingNewCoverBlob = null;
-    var pendingEditCoverBlob = null;
-    var pendingResetCover = false;
-    var pendingContactPhotoBlob = null;
+<script>
+(function() {
+  'use strict';
 
-    var DEFAULT_STATE = {
-      pin: '1234',
-      contacts: [
-        { id: 'c1', name: '爸爸', target: 'dad@example.com', avatar: 'dad', badge: '#FDE047', hasCustomAvatar: false },
-        { id: 'c2', name: '媽媽', target: 'mom@example.com', avatar: 'mom', badge: '#FDA4AF', hasCustomAvatar: false },
-        { id: 'c3', name: '婆婆', target: 'grandma@example.com', avatar: 'grandma', badge: '#DDD6FE', hasCustomAvatar: false }
-      ],
-      tracks: [
-        { id: 's_castle', category: 'story', title: '童話城堡', art: 'castle', bg: '#FCE7F3', builtinMelody: 'lullaby' },
-        { id: 's_unicorn', category: 'story', title: '彩虹獨角獸', art: 'unicorn', bg: '#E0F2FE', builtinMelody: 'forest' },
-        { id: 's_jungle', category: 'story', title: '森林小獅子', art: 'lion', bg: '#FEF3C7', builtinMelody: 'storyChime' },
-        { id: 's_fox', category: 'story', title: '小貓與小狐狸', art: 'fox', bg: '#FFEDD5', builtinMelody: 'twinkle' },
-        { id: 's_moon', category: 'story', title: '月亮晚安', art: 'moon', bg: '#EDE9FE', builtinMelody: 'lullaby' },
+  /* ==========================================
+     1. 狀態與預設資料 (ES5 語法)
+     ========================================== */
+  var DB_NAME = 'KidsLauncherDB_v2';
+  var DB_VERSION = 1;
+  var db = null;
 
-        { id: 'm_guitar', category: 'music', title: '快樂結他', art: 'guitar', bg: '#FEF08A', builtinMelody: 'twinkle' },
-        { id: 'm_notes', category: 'music', title: '跳動音符', art: 'notes', bg: '#BAE6FD', builtinMelody: 'birthday' },
-        { id: 'm_galaxy', category: 'music', title: '宇宙小星星', art: 'galaxy', bg: '#DDD6FE', builtinMelody: 'tiger' },
-        { id: 'm_rainbow', category: 'music', title: '彩虹旋律', art: 'rainbow', bg: '#FBCFE8', builtinMelody: 'london' },
-        { id: 'm_sheep', category: 'music', title: '小綿羊搖籃曲', art: 'sheep', bg: '#DCFCE7', builtinMelody: 'mary' }
-      ]
+  var DEFAULT_CONTACTS = [
+    { id: 'c1', name: '爸爸', target: 'dad@example.com', avatar: '', role: 'dad' },
+    { id: 'c2', name: '媽媽', target: 'mom@example.com', avatar: '', role: 'mom' },
+    { id: 'c3', name: '嫲嫲', target: 'grandma@example.com', avatar: '', role: 'grandma' }
+  ];
+
+  var DEFAULT_MEDIA = [
+    { id: 's1', type: 'story', title: '童話城堡', color: 'bg-blue', icon: 'bunny', cover: '', audioData: null, audioUrl: null, builtinTone: [261.6, 329.6, 392.0, 523.2] },
+    { id: 's2', type: 'story', title: '彩虹獨角獸', color: 'bg-pink', icon: 'rainbow', cover: '', audioData: null, audioUrl: null, builtinTone: [392.0, 349.2, 329.6, 261.6] },
+    { id: 's3', type: 'story', title: '森林小獅子', color: 'bg-mint', icon: 'dino', cover: '', audioData: null, audioUrl: null, builtinTone: [293.7, 349.2, 440.0, 293.7] },
+    { id: 'm1', type: 'music', title: '一閃一閃小星星', color: 'bg-yellow', icon: 'star', cover: '', audioData: null, audioUrl: null, builtinTone: [261.6, 261.6, 392.0, 392.0, 440.0, 440.0, 392.0] },
+    { id: 'm2', type: 'music', title: '快樂拍手歌', color: 'bg-pink', icon: 'music', cover: '', audioData: null, audioUrl: null, builtinTone: [329.6, 329.6, 349.2, 392.0, 392.0, 349.2, 329.6] },
+    { id: 'm3', type: 'music', title: '搖籃曲輕音樂', color: 'bg-blue', icon: 'cloud', cover: '', audioData: null, audioUrl: null, builtinTone: [261.6, 329.6, 293.7, 246.9, 261.6] }
+  ];
+
+  var appState = {
+    pin: '1234',
+    contacts: JSON.parse(JSON.stringify(DEFAULT_CONTACTS)),
+    mediaList: []
+  };
+
+  var activeMediaTab = 'story';
+  var draftCoverDataUrl = '';
+  var pendingAvatarContactIdx = -1;
+  var pendingReplaceCoverId = null;
+
+  /* ==========================================
+     2. 自訂手繪對話框工具 (無原生 alert/confirm/prompt)
+     ========================================== */
+  function showNotice(title, msg, callback) {
+    var modal = document.getElementById('dialog-modal');
+    document.getElementById('dialog-title').innerText = title || '提示';
+    document.getElementById('dialog-msg').innerText = msg || '';
+    var inputsBox = document.getElementById('dialog-inputs');
+    inputsBox.style.display = 'none';
+    inputsBox.innerHTML = '';
+
+    var btnsBox = document.getElementById('dialog-btns');
+    btnsBox.innerHTML = '<button id="dlg-btn-single" class="btn-dlg-ok sketch-box btn-press">確定</button>';
+    modal.style.display = 'block';
+
+    document.getElementById('dlg-btn-single').onclick = function() {
+      modal.style.display = 'none';
+      if (callback) callback();
     };
+  }
 
-    var appState = loadSavedState();
-    var parentMediaTab = 'story';
-    var playingTrackId = null;
-    var callingContactId = null;
-    var enteredPin = '';
+  function showConfirm(title, msg, onConfirm, onCancel) {
+    var modal = document.getElementById('dialog-modal');
+    document.getElementById('dialog-title').innerText = title || '確認';
+    document.getElementById('dialog-msg').innerText = msg || '';
+    var inputsBox = document.getElementById('dialog-inputs');
+    inputsBox.style.display = 'none';
+    inputsBox.innerHTML = '';
 
-    var audioCtx = null;
-    var melodyTimer = null;
-    var melodyStep = 0;
-    var currentObjectUrl = null;
-    var htmlAudio = document.getElementById('htmlAudioPlayer');
+    var btnsBox = document.getElementById('dialog-btns');
+    btnsBox.innerHTML = '<button id="dlg-btn-no" class="btn-dlg-cancel sketch-box btn-press">取消</button>' +
+      '<button id="dlg-btn-yes" class="btn-dlg-ok sketch-box btn-press">確定</button>';
+    modal.style.display = 'block';
 
-    function cloneDefaultState() {
-      return JSON.parse(JSON.stringify(DEFAULT_STATE));
-    }
-
-    function loadSavedState() {
-      try {
-        var raw = localStorage.getItem('kids_storybook_scroll_state_v1');
-        if (raw) {
-          var parsed = JSON.parse(raw);
-          var contacts = (parsed && Array.isArray(parsed.contacts) && parsed.contacts.length)
-            ? parsed.contacts
-            : cloneDefaultState().contacts;
-          var tracks = (parsed && Array.isArray(parsed.tracks) && parsed.tracks.length)
-            ? parsed.tracks
-            : cloneDefaultState().tracks;
-          return {
-            pin: (parsed && parsed.pin) ? parsed.pin : DEFAULT_STATE.pin,
-            contacts: contacts,
-            tracks: tracks
-          };
-        }
-      } catch (e) {
-        console.warn('State fallback:', e);
-      }
-      return cloneDefaultState();
-    }
-
-    function saveState() {
-      try {
-        localStorage.setItem('kids_storybook_scroll_state_v1', JSON.stringify(appState));
-      } catch (e) {
-        console.warn('Save state warning:', e);
-      }
-    }
-
-    function initIndexedDB() {
-      return new Promise(function (resolve) {
-        if (!window.indexedDB) {
-          resolve(null);
-          return;
-        }
-        try {
-          var req = window.indexedDB.open(DB_NAME, DB_VERSION);
-          req.onupgradeneeded = function (e) {
-            var db = e.target.result;
-            if (!db.objectStoreNames.contains(STORE_AUDIO)) {
-              db.createObjectStore(STORE_AUDIO, { keyPath: 'id' });
-            }
-            if (!db.objectStoreNames.contains(STORE_COVERS)) {
-              db.createObjectStore(STORE_COVERS, { keyPath: 'id' });
-            }
-          };
-          req.onsuccess = function (e) {
-            dbInstance = e.target.result;
-            resolve(dbInstance);
-          };
-          req.onerror = function () {
-            resolve(null);
-          };
-        } catch (err) {
-          resolve(null);
-        }
-      });
-    }
-
-    function putBlobToStore(storeName, id, blob) {
-      return new Promise(function (resolve, reject) {
-        if (!dbInstance) {
-          reject(new Error('No IndexedDB'));
-          return;
-        }
-        try {
-          var tx = dbInstance.transaction(storeName, 'readwrite');
-          tx.objectStore(storeName).put({ id: id, blob: blob });
-          tx.oncomplete = function () { resolve(true); };
-          tx.onerror = function (e) { reject(e); };
-        } catch (err) {
-          reject(err);
-        }
-      });
-    }
-
-    function getBlobFromStore(storeName, id) {
-      return new Promise(function (resolve) {
-        if (!dbInstance) {
-          resolve(null);
-          return;
-        }
-        try {
-          var tx = dbInstance.transaction(storeName, 'readonly');
-          var req = tx.objectStore(storeName).get(id);
-          req.onsuccess = function () {
-            resolve(req.result ? req.result.blob : null);
-          };
-          req.onerror = function () {
-            resolve(null);
-          };
-        } catch (err) {
-          resolve(null);
-        }
-      });
-    }
-
-    function deleteBlobFromStore(storeName, id) {
-      if (!dbInstance) return;
-      try {
-        var tx = dbInstance.transaction(storeName, 'readwrite');
-        tx.objectStore(storeName).delete(id);
-      } catch (err) {
-        console.warn('Delete blob warning:', err);
-      }
-    }
-
-    function getCachedImageUrl(key) {
-      if (imageUrlCache[key]) {
-        return Promise.resolve(imageUrlCache[key]);
-      }
-      return getBlobFromStore(STORE_COVERS, key).then(function (blob) {
-        if (!blob) return null;
-        var url = URL.createObjectURL(blob);
-        imageUrlCache[key] = url;
-        return url;
-      });
-    }
-
-    function clearImageCacheFor(key) {
-      if (imageUrlCache[key]) {
-        URL.revokeObjectURL(imageUrlCache[key]);
-        delete imageUrlCache[key];
-      }
-    }
-
-    function clearAllImageCache() {
-      var keys = Object.keys(imageUrlCache);
-      for (var i = 0; i < keys.length; i++) {
-        URL.revokeObjectURL(imageUrlCache[keys[i]]);
-      }
-      imageUrlCache = {};
-    }
-
-    /* Compress uploaded images to max 400x400 JPEG blob for offline storage */
-    function compressImageToBlob(file, maxSize) {
-      var targetSize = maxSize || 400;
-      return new Promise(function (resolve, reject) {
-        var img = new Image();
-        var url = URL.createObjectURL(file);
-        img.onload = function () {
-          URL.revokeObjectURL(url);
-          var canvas = document.createElement('canvas');
-          var w = img.width;
-          var h = img.height;
-          if (w > h) {
-            if (w > targetSize) {
-              h = Math.round((h * targetSize) / w);
-              w = targetSize;
-            }
-          } else {
-            if (h > targetSize) {
-              w = Math.round((w * targetSize) / h);
-              h = targetSize;
-            }
-          }
-          canvas.width = w;
-          canvas.height = h;
-          var ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          if (canvas.toBlob) {
-            canvas.toBlob(function (blob) {
-              if (blob) {
-                resolve(blob);
-              } else {
-                reject(new Error('Image encode failed'));
-              }
-            }, 'image/jpeg', 0.84);
-          } else {
-            var dataUrl = canvas.toDataURL('image/jpeg', 0.84);
-            resolve(dataUrlToBlob(dataUrl));
-          }
-        };
-        img.onerror = function () {
-          URL.revokeObjectURL(url);
-          reject(new Error('Invalid image'));
-        };
-        img.src = url;
-      });
-    }
-
-    function blobToDataUrl(blob) {
-      return new Promise(function (resolve, reject) {
-        var reader = new FileReader();
-        reader.onload = function () { resolve(reader.result); };
-        reader.onerror = function (err) { reject(err); };
-        reader.readAsDataURL(blob);
-      });
-    }
-
-    function dataUrlToBlob(dataUrl) {
-      var parts = dataUrl.split(',');
-      var mimeMatch = parts[0].match(/:(.*?);/);
-      var mime = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
-      var binary = atob(parts[1]);
-      var len = binary.length;
-      var arr = new Uint8Array(len);
-      for (var i = 0; i < len; i++) {
-        arr[i] = binary.charCodeAt(i);
-      }
-      return new Blob([arr], { type: mime });
-    }
-
-    function readFileAsText(file) {
-      return new Promise(function (resolve, reject) {
-        var reader = new FileReader();
-        reader.onload = function () { resolve(reader.result); };
-        reader.onerror = function (err) { reject(err); };
-        reader.readAsText(file);
-      });
-    }
-
-    /*************************************************************************
-     * 2. BACKUP EXPORT & IMPORT (.JSON FOR AIRDROP TRANSFER)
-     *************************************************************************/
-    function exportBackupJson() {
-      showToast('正在打包備份檔...');
-      var audioPayload = {};
-      var coverPayload = {};
-      var tasks = [];
-
-      for (var i = 0; i < appState.tracks.length; i++) {
-        (function (track) {
-          if (track.isCustom) {
-            tasks.push(
-              getBlobFromStore(STORE_AUDIO, track.id).then(function (aBlob) {
-                if (aBlob) {
-                  return blobToDataUrl(aBlob).then(function (dUrl) {
-                    audioPayload[track.id] = dUrl;
-                  });
-                }
-              })
-            );
-          }
-          if (track.hasCustomCover) {
-            tasks.push(
-              getBlobFromStore(STORE_COVERS, track.id).then(function (cBlob) {
-                if (cBlob) {
-                  return blobToDataUrl(cBlob).then(function (dUrl) {
-                    coverPayload[track.id] = dUrl;
-                  });
-                }
-              })
-            );
-          }
-        })(appState.tracks[i]);
-      }
-
-      for (var j = 0; j < appState.contacts.length; j++) {
-        (function (contact) {
-          if (contact.hasCustomAvatar) {
-            var avatarKey = 'avatar_' + contact.id;
-            tasks.push(
-              getBlobFromStore(STORE_COVERS, avatarKey).then(function (avBlob) {
-                if (avBlob) {
-                  return blobToDataUrl(avBlob).then(function (dUrl) {
-                    coverPayload[avatarKey] = dUrl;
-                  });
-                }
-              })
-            );
-          }
-        })(appState.contacts[j]);
-      }
-
-      Promise.all(tasks).then(function () {
-        var backupObj = {
-          version: 2,
-          exportedAt: new Date().toISOString(),
-          state: appState,
-          audioFiles: audioPayload,
-          coverImages: coverPayload
-        };
-
-        var jsonStr = JSON.stringify(backupObj);
-        var fileBlob = new Blob([jsonStr], { type: 'application/json' });
-        var downloadUrl = URL.createObjectURL(fileBlob);
-        var link = document.createElement('a');
-        var dateStamp = new Date().toISOString().slice(0, 10);
-        link.href = downloadUrl;
-        link.download = 'kids_ipad_backup_' + dateStamp + '.json';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        setTimeout(function () {
-          URL.revokeObjectURL(downloadUrl);
-        }, 4000);
-        showToast('備份檔已產生，可用 AirDrop 傳去 iPad');
-      }).catch(function (err) {
-        console.error(err);
-        showToast('匯出備份檔失敗');
-      });
-    }
-
-    function importBackupJson(event) {
-      var files = event.target.files;
-      var file = (files && files.length > 0) ? files[0] : null;
-      if (!file) return;
-
-      showToast('正在匯入備份檔...');
-      readFileAsText(file).then(function (text) {
-        var data = JSON.parse(text);
-        if (!data || !data.state || !Array.isArray(data.state.tracks)) {
-          showToast('備份檔格式不正確');
-          return;
-        }
-
-        stopPlayback();
-        clearAllImageCache();
-
-        var importedContacts = (Array.isArray(data.state.contacts) && data.state.contacts.length)
-          ? data.state.contacts
-          : cloneDefaultState().contacts;
-
-        for (var cIdx = 0; cIdx < importedContacts.length; cIdx++) {
-          if (!importedContacts[cIdx].name && importedContacts[cIdx].zh) {
-            importedContacts[cIdx].name = importedContacts[cIdx].zh;
-          }
-        }
-
-        appState = {
-          pin: data.state.pin || '1234',
-          contacts: importedContacts,
-          tracks: data.state.tracks
-        };
-        saveState();
-
-        var restoreTasks = [];
-        if (data.audioFiles) {
-          var audioKeys = Object.keys(data.audioFiles);
-          for (var i = 0; i < audioKeys.length; i++) {
-            var aId = audioKeys[i];
-            restoreTasks.push(putBlobToStore(STORE_AUDIO, aId, dataUrlToBlob(data.audioFiles[aId])));
-          }
-        }
-        if (data.coverImages) {
-          var coverKeys = Object.keys(data.coverImages);
-          for (var j = 0; j < coverKeys.length; j++) {
-            var cId = coverKeys[j];
-            restoreTasks.push(putBlobToStore(STORE_COVERS, cId, dataUrlToBlob(data.coverImages[cId])));
-          }
-        }
-
-        return Promise.all(restoreTasks).then(function () {
-          event.target.value = '';
-          return Promise.all([
-            renderParentContacts(),
-            renderParentTracks(),
-            renderTopContacts(),
-            renderShelves()
-          ]);
-        }).then(function () {
-          showToast('已成功匯入所有歌曲、故事與封面');
-        });
-      }).catch(function (err) {
-        console.error(err);
-        showToast('匯入失敗，請確認檔案是否完整');
-      });
-    }
-
-    /*************************************************************************
-     * 3. THICK-OUTLINED CARTOON ILLUSTRATIONS (PORTRAITS & STORY/SONG ART)
-     *************************************************************************/
-    function getPortraitSvg(type) {
-      switch (type) {
-        case 'mom':
-          return '<svg viewBox="0 0 100 100" class="w-full h-full">' +
-            '<path d="M23 50C23 24 77 24 77 50V76H23V50Z" fill="#5B2C1D" stroke="#1E1B18" stroke-width="4" stroke-linejoin="round"/>' +
-            '<circle cx="50" cy="51" r="23" fill="#FFDFC2" stroke="#1E1B18" stroke-width="4"/>' +
-            '<path d="M27 47C34 32 66 32 73 47" fill="#5B2C1D" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>' +
-            '<circle cx="42" cy="51" r="2.8" fill="#1E1B18"/>' +
-            '<circle cx="58" cy="51" r="2.8" fill="#1E1B18"/>' +
-            '<circle cx="36" cy="57" r="3.5" fill="#FF8FA3" opacity="0.8"/>' +
-            '<circle cx="64" cy="57" r="3.5" fill="#FF8FA3" opacity="0.8"/>' +
-            '<path d="M44 61Q50 66 56 61" fill="none" stroke="#1E1B18" stroke-width="3.2" stroke-linecap="round"/>' +
-            '<path d="M28 84C32 72 68 72 72 84" fill="#FB7185" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>' +
-            '</svg>';
-        case 'grandma':
-          return '<svg viewBox="0 0 100 100" class="w-full h-full">' +
-            '<circle cx="50" cy="24" r="12" fill="#E2E8F0" stroke="#1E1B18" stroke-width="4"/>' +
-            '<circle cx="50" cy="51" r="23" fill="#FFDFC2" stroke="#1E1B18" stroke-width="4"/>' +
-            '<path d="M27 48C27 30 73 30 73 48" fill="#F1F5F9" stroke="#1E1B18" stroke-width="4"/>' +
-            '<circle cx="42" cy="51" r="2.8" fill="#1E1B18"/>' +
-            '<circle cx="58" cy="51" r="2.8" fill="#1E1B18"/>' +
-            '<circle cx="42" cy="51" r="6" fill="none" stroke="#1E1B18" stroke-width="2.2"/>' +
-            '<circle cx="58" cy="51" r="6" fill="none" stroke="#1E1B18" stroke-width="2.2"/>' +
-            '<path d="M48 51H52" stroke="#1E1B18" stroke-width="2.2"/>' +
-            '<path d="M43 61Q50 66 57 61" fill="none" stroke="#1E1B18" stroke-width="3.2" stroke-linecap="round"/>' +
-            '<path d="M28 84C32 72 68 72 72 84" fill="#A855F7" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>' +
-            '</svg>';
-        case 'grandpa':
-          return '<svg viewBox="0 0 100 100" class="w-full h-full">' +
-            '<circle cx="50" cy="51" r="23" fill="#FFDFC2" stroke="#1E1B18" stroke-width="4"/>' +
-            '<path d="M27 46C27 32 73 32 73 46" fill="#CBD5E1" stroke="#1E1B18" stroke-width="4"/>' +
-            '<circle cx="42" cy="51" r="2.8" fill="#1E1B18"/>' +
-            '<circle cx="58" cy="51" r="2.8" fill="#1E1B18"/>' +
-            '<path d="M42 61Q50 66 58 61" fill="none" stroke="#1E1B18" stroke-width="3.2" stroke-linecap="round"/>' +
-            '<path d="M28 84C32 72 68 72 72 84" fill="#38BDF8" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>' +
-            '</svg>';
-        default:
-          return '<svg viewBox="0 0 100 100" class="w-full h-full">' +
-            '<circle cx="50" cy="51" r="23" fill="#FFDFC2" stroke="#1E1B18" stroke-width="4"/>' +
-            '<path d="M27 47C27 25 73 25 73 47C64 38 36 38 27 47Z" fill="#2B2D42" stroke="#1E1B18" stroke-width="4" stroke-linejoin="round"/>' +
-            '<circle cx="42" cy="51" r="2.8" fill="#1E1B18"/>' +
-            '<circle cx="58" cy="51" r="2.8" fill="#1E1B18"/>' +
-            '<circle cx="42" cy="51" r="6" fill="none" stroke="#1E1B18" stroke-width="2.2"/>' +
-            '<circle cx="58" cy="51" r="6" fill="none" stroke="#1E1B18" stroke-width="2.2"/>' +
-            '<path d="M48 51H52" stroke="#1E1B18" stroke-width="2.2"/>' +
-            '<path d="M43 61Q50 66 57 61" fill="none" stroke="#1E1B18" stroke-width="3.2" stroke-linecap="round"/>' +
-            '<path d="M28 84C32 72 68 72 72 84" fill="#3B82F6" stroke="#1E1B18" stroke-width="4" stroke-linecap="round"/>' +
-            '</svg>';
-      }
-    }
-
-    function getCartoonCardArt(art, category) {
-      switch (art) {
-        case 'castle':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
-            '<rect x="0" y="54" width="80" height="26" fill="#86EFAC" stroke="#1E1B18" stroke-width="3"/>' +
-            '<rect x="24" y="34" width="32" height="24" rx="4" fill="#F472B6" stroke="#1E1B18" stroke-width="3"/>' +
-            '<rect x="16" y="26" width="12" height="32" rx="3" fill="#FB7185" stroke="#1E1B18" stroke-width="3"/>' +
-            '<rect x="52" y="26" width="12" height="32" rx="3" fill="#FB7185" stroke="#1E1B18" stroke-width="3"/>' +
-            '<polygon points="15,26 22,12 29,26" fill="#F9D45C" stroke="#1E1B18" stroke-width="3" stroke-linejoin="round"/>' +
-            '<polygon points="51,26 58,12 65,26" fill="#F9D45C" stroke="#1E1B18" stroke-width="3" stroke-linejoin="round"/>' +
-            '<path d="M35 58V46A5 5 0 0 1 45 46V58Z" fill="#7C3AED" stroke="#1E1B18" stroke-width="2.8"/>' +
-            '</svg>';
-        case 'unicorn':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
-            '<rect x="0" y="54" width="80" height="26" fill="#6EE7B7" stroke="#1E1B18" stroke-width="3"/>' +
-            '<polygon points="44,12 40,28 50,28" fill="#F9D45C" stroke="#1E1B18" stroke-width="3" stroke-linejoin="round"/>' +
-            '<circle cx="42" cy="40" r="16" fill="#FFFDF5" stroke="#1E1B18" stroke-width="3.2"/>' +
-            '<path d="M26 32C20 34 20 48 28 52" fill="#FB7185" stroke="#1E1B18" stroke-width="3" stroke-linecap="round"/>' +
-            '<circle cx="48" cy="37" r="2.5" fill="#1E1B18"/>' +
-            '</svg>';
-        case 'lion':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
-            '<rect x="0" y="54" width="80" height="26" fill="#4ADE80" stroke="#1E1B18" stroke-width="3"/>' +
-            '<circle cx="40" cy="40" r="20" fill="#EA580C" stroke="#1E1B18" stroke-width="3.2"/>' +
-            '<circle cx="40" cy="41" r="13" fill="#FBBF24" stroke="#1E1B18" stroke-width="3"/>' +
-            '<circle cx="35" cy="39" r="2.5" fill="#1E1B18"/>' +
-            '<circle cx="45" cy="39" r="2.5" fill="#1E1B18"/>' +
-            '</svg>';
-        case 'fox':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
-            '<rect x="0" y="54" width="80" height="26" fill="#A7F3D0" stroke="#1E1B18" stroke-width="3"/>' +
-            '<polygon points="22,38 20,18 34,30" fill="#FB923C" stroke="#1E1B18" stroke-width="3" stroke-linejoin="round"/>' +
-            '<polygon points="58,38 60,18 46,30" fill="#FB923C" stroke="#1E1B18" stroke-width="3" stroke-linejoin="round"/>' +
-            '<circle cx="40" cy="42" r="16" fill="#FB923C" stroke="#1E1B18" stroke-width="3.2"/>' +
-            '<circle cx="34" cy="40" r="2.4" fill="#1E1B18"/>' +
-            '<circle cx="46" cy="40" r="2.4" fill="#1E1B18"/>' +
-            '</svg>';
-        case 'guitar':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
-            '<circle cx="42" cy="46" r="18" fill="#F59E0B" stroke="#1E1B18" stroke-width="3.2"/>' +
-            '<circle cx="34" cy="34" r="12" fill="#FBBF24" stroke="#1E1B18" stroke-width="3.2"/>' +
-            '<circle cx="42" cy="46" r="5" fill="#451A03" stroke="#1E1B18" stroke-width="2.5"/>' +
-            '<rect x="46" y="14" width="7" height="24" rx="3" transform="rotate(35 46 14)" fill="#FDE68A" stroke="#1E1B18" stroke-width="3"/>' +
-            '</svg>';
-        case 'notes':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
-            '<path d="M28 52V22L54 17V47" stroke="#1E1B18" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>' +
-            '<circle cx="22" cy="52" r="7" fill="#FB7185" stroke="#1E1B18" stroke-width="3.2"/>' +
-            '<circle cx="48" cy="47" r="7" fill="#F9D45C" stroke="#1E1B18" stroke-width="3.2"/>' +
-            '</svg>';
-        case 'galaxy':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
-            '<circle cx="24" cy="58" r="18" fill="#22C55E" stroke="#1E1B18" stroke-width="3.2"/>' +
-            '<path d="M54 14L57 22L65 25L57 28L54 36L51 28L43 25L51 22Z" fill="#F9D45C" stroke="#1E1B18" stroke-width="2.8" stroke-linejoin="round"/>' +
-            '<circle cx="24" cy="24" r="4" fill="#FDE68A" stroke="#1E1B18" stroke-width="2.5"/>' +
-            '</svg>';
-        case 'rainbow':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
-            '<path d="M14 58A26 26 0 0 1 66 58" fill="none" stroke="#FB7185" stroke-width="6" stroke-linecap="round"/>' +
-            '<path d="M21 58A19 19 0 0 1 59 58" fill="none" stroke="#F9D45C" stroke-width="6" stroke-linecap="round"/>' +
-            '<path d="M28 58A12 12 0 0 1 52 58" fill="none" stroke="#38BDF8" stroke-width="6" stroke-linecap="round"/>' +
-            '</svg>';
-        case 'sheep':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
-            '<circle cx="40" cy="42" r="20" fill="#FFFDF5" stroke="#1E1B18" stroke-width="3.2"/>' +
-            '<circle cx="40" cy="44" r="11" fill="#FFDFC2" stroke="#1E1B18" stroke-width="3"/>' +
-            '<circle cx="36" cy="42" r="2.2" fill="#1E1B18"/>' +
-            '<circle cx="44" cy="42" r="2.2" fill="#1E1B18"/>' +
-            '</svg>';
-        case 'moon':
-          return '<svg viewBox="0 0 80 80" class="w-full h-full">' +
-            '<path d="M46 16A22 22 0 1 0 60 48A17 17 0 1 1 46 16Z" fill="#F9D45C" stroke="#1E1B18" stroke-width="3.2" stroke-linejoin="round"/>' +
-            '<circle cx="22" cy="24" r="3" fill="#FFFDF5" stroke="#1E1B18" stroke-width="2.2"/>' +
-            '<circle cx="62" cy="20" r="2.5" fill="#FFFDF5" stroke="#1E1B18" stroke-width="2.2"/>' +
-            '</svg>';
-        default:
-          return category === 'story'
-            ? '<svg viewBox="0 0 80 80" class="w-full h-full"><rect x="16" y="20" width="48" height="40" rx="8" fill="#FFFDF5" stroke="#1E1B18" stroke-width="3.5"/><path d="M24 32H56M24 42H48" stroke="#38BDF8" stroke-width="4" stroke-linecap="round"/></svg>'
-            : '<svg viewBox="0 0 80 80" class="w-full h-full"><path d="M30 54V24L54 19V49" stroke="#1E1B18" stroke-width="5" stroke-linecap="round"/><circle cx="24" cy="54" r="7" fill="#F9D45C" stroke="#1E1B18" stroke-width="3.2"/><circle cx="48" cy="49" r="7" fill="#38BDF8" stroke="#1E1B18" stroke-width="3.2"/></svg>';
-      }
-    }
-
-    /*************************************************************************
-     * 4. RENDER CLEAN CIRCULAR PORTRAITS & DUAL STORY/MUSIC SHELVES
-     *************************************************************************/
-    function renderTopContacts() {
-      var row = document.getElementById('topContactsRow');
-      var tasks = appState.contacts.map(function (c) {
-        if (c.hasCustomAvatar) {
-          return getCachedImageUrl('avatar_' + c.id).then(function (url) {
-            return { contact: c, customUrl: url };
-          });
-        }
-        return Promise.resolve({ contact: c, customUrl: null });
-      });
-
-      return Promise.all(tasks).then(function (items) {
-        row.innerHTML = '';
-        for (var i = 0; i < items.length; i++) {
-          (function (item) {
-            var c = item.contact;
-            var isCalling = callingContactId === c.id;
-            var btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'tactile-btn avatar-item flex items-center justify-center shrink-0 focus:outline-none';
-            btn.setAttribute('aria-label', c.name || '視訊通話');
-            btn.onclick = function () {
-              triggerOneTapVideoCall(c);
-            };
-
-            var innerArt = item.customUrl
-              ? '<img src="' + item.customUrl + '" alt="" class="w-full h-full object-cover" />'
-              : getPortraitSvg(c.avatar);
-
-            btn.innerHTML =
-              '<div class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-[#1E1B18] shadow-[0_5px_0_#1E1B18] flex items-center justify-center ' + (isCalling ? 'calling-ring' : '') + '" style="background-color: ' + (c.badge || '#FDE047') + ';">' +
-                '<div class="w-full h-full rounded-full overflow-hidden">' +
-                  innerArt +
-                '</div>' +
-              '</div>';
-            row.appendChild(btn);
-          })(items[i]);
-        }
-      });
-    }
-
-    function triggerOneTapVideoCall(contact) {
-      if (!contact || !contact.target) return;
-      if (playingTrackId) stopPlayback();
-
-      callingContactId = contact.id;
-      renderTopContacts();
-      showToast('📹 正在撥出視訊通話...');
-
-      setTimeout(function () {
-        callingContactId = null;
-        renderTopContacts();
-      }, 2400);
-
-      try {
-        window.location.href = 'facetime://' + encodeURIComponent(contact.target.trim());
-      } catch (e) {
-        console.warn('FaceTime launch warning:', e);
-      }
-    }
-
-    function renderShelves() {
-      return Promise.all([
-        renderSingleShelf('storyShelf', 'story'),
-        renderSingleShelf('musicShelf', 'music')
-      ]);
-    }
-
-    function renderSingleShelf(containerId, category) {
-      var shelf = document.getElementById(containerId);
-      var tracks = appState.tracks.filter(function (t) {
-        return t.category === category;
-      });
-
-      if (!tracks.length) {
-        shelf.innerHTML = '<div class="w-full text-center text-[#1E1B18]/70 font-black text-base">請家長按右上角 🔒 新增項目</div>';
-        return Promise.resolve();
-      }
-
-      var coverTasks = tracks.map(function (track) {
-        if (track.hasCustomCover) {
-          return getCachedImageUrl(track.id).then(function (url) {
-            return { track: track, coverUrl: url };
-          });
-        }
-        return Promise.resolve({ track: track, coverUrl: null });
-      });
-
-      return Promise.all(coverTasks).then(function (entries) {
-        shelf.innerHTML = '';
-        for (var i = 0; i < entries.length; i++) {
-          (function (entry) {
-            var track = entry.track;
-            var isPlaying = playingTrackId === track.id;
-
-            var card = document.createElement('button');
-            card.type = 'button';
-            card.className = 'tactile-btn track-card-item h-full aspect-square max-h-[195px] min-w-[118px] sm:min-w-[148px] md:min-w-[162px] rounded-[24px] bg-[#FFFDF5] border-4 border-[#1E1B18] shadow-[0_5px_0_#1E1B18] p-2 flex flex-col items-center justify-between shrink-0 relative ' + (isPlaying ? 'playing-card' : '');
-            card.onclick = function () {
-              toggleCardPlayPause(track);
-            };
-
-            var artHtml = entry.coverUrl
-              ? '<img src="' + entry.coverUrl + '" alt="' + escapeHtml(track.title) + '" class="w-full h-full object-cover" />'
-              : getCartoonCardArt(track.art, category);
-
-            var centerIndicator = isPlaying
-              ? '<div class="flex items-end justify-center h-5">' +
-                  '<span class="eq-bar eq-1"></span>' +
-                  '<span class="eq-bar eq-2"></span>' +
-                  '<span class="eq-bar eq-3"></span>' +
-                '</div>'
-              : '<svg class="w-5 h-5 sm:w-6 sm:h-6 ml-0.5" viewBox="0 0 24 24" fill="#1E1B18">' +
-                  '<path d="M7 5L19 12L7 19V5Z"/>' +
-                '</svg>';
-
-            card.innerHTML =
-              '<div class="w-full flex-1 rounded-2xl border-3 border-[#1E1B18] overflow-hidden relative flex items-center justify-center" style="background: ' + (track.bg || '#E0F2FE') + ';">' +
-                artHtml +
-                '<div class="absolute inset-0 flex items-center justify-center bg-black/5">' +
-                  '<div class="w-11 h-11 sm:w-12 sm:h-12 rounded-full border-3 border-[#1E1B18] ' + (isPlaying ? 'bg-[#FB7185]' : 'bg-[#FFFDF5]/95') + ' shadow-[0_3px_0_#1E1B18] flex items-center justify-center">' +
-                    centerIndicator +
-                  '</div>' +
-                '</div>' +
-              '</div>' +
-              '<div class="mt-1.5 w-full px-2.5 py-0.5 rounded-full bg-[#FFF7D6] border-2 border-[#1E1B18] text-[#1E1B18] text-center truncate text-xs sm:text-sm font-black">' +
-                escapeHtml(track.title) +
-              '</div>';
-
-            shelf.appendChild(card);
-          })(entries[i]);
-        }
-      });
-    }
-
-    function scrollShelf(shelfId) {
-      var el = document.getElementById(shelfId);
-      if (!el) return;
-      var step = Math.max(200, Math.round(el.clientWidth * 0.65));
-      if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 16) {
-        el.scrollLeft = 0;
-      } else {
-        el.scrollLeft += step;
-      }
-    }
-
-    /*************************************************************************
-     * 5. PLAY / PAUSE ENGINE (OFFLINE INDEXEDDB AUDIO + BUILT-IN MELODIES)
-     *************************************************************************/
-    var MELODIES = {
-      twinkle: [261.6, 261.6, 392.0, 392.0, 440.0, 440.0, 392.0, 0, 349.2, 349.2, 329.6, 329.6, 293.7, 293.7, 261.6, 0],
-      birthday: [261.6, 261.6, 293.7, 261.6, 349.2, 329.6, 0, 261.6, 261.6, 293.7, 261.6, 392.0, 349.2, 0],
-      tiger: [261.6, 293.7, 329.6, 261.6, 261.6, 293.7, 329.6, 261.6, 329.6, 349.2, 392.0, 0, 329.6, 349.2, 392.0, 0],
-      london: [392.0, 440.0, 392.0, 349.2, 329.6, 349.2, 392.0, 0, 293.7, 329.6, 349.2, 0, 329.6, 349.2, 392.0, 0],
-      mary: [329.6, 293.7, 261.6, 293.7, 329.6, 329.6, 329.6, 0, 293.7, 293.7, 293.7, 0, 329.6, 392.0, 392.0, 0],
-      lullaby: [329.6, 329.6, 392.0, 0, 329.6, 329.6, 392.0, 0, 329.6, 329.6, 523.3, 493.9, 440.0, 440.0, 392.0, 0],
-      forest: [261.6, 329.6, 392.0, 523.3, 392.0, 329.6, 293.7, 349.2, 440.0, 349.2, 293.7, 261.6],
-      storyChime: [523.3, 659.3, 784.0, 1046.5, 784.0, 659.3, 523.3, 0]
+    document.getElementById('dlg-btn-no').onclick = function() {
+      modal.style.display = 'none';
+      if (onCancel) onCancel();
     };
+    document.getElementById('dlg-btn-yes').onclick = function() {
+      modal.style.display = 'none';
+      if (onConfirm) onConfirm();
+    };
+  }
 
-    function toggleCardPlayPause(track) {
-      if (playingTrackId === track.id) {
-        stopPlayback();
-        return;
+  function showFormDialog(title, fields, onSubmit) {
+    var modal = document.getElementById('dialog-modal');
+    document.getElementById('dialog-title').innerText = title || '編輯';
+    document.getElementById('dialog-msg').innerText = '';
+    var inputsBox = document.getElementById('dialog-inputs');
+    var html = '';
+    for (var i = 0; i < fields.length; i++) {
+      var f = fields[i];
+      html += '<label>' + escapeHTML(f.label) + '</label>' +
+        '<input type="text" id="dlg-field-' + i + '" value="' + escapeHTML(f.value || '') + '" placeholder="' + escapeHTML(f.placeholder || '') + '">';
+    }
+    inputsBox.innerHTML = html;
+    inputsBox.style.display = 'block';
+
+    var btnsBox = document.getElementById('dialog-btns');
+    btnsBox.innerHTML = '<button id="dlg-btn-cancel" class="btn-dlg-cancel sketch-box btn-press">取消</button>' +
+      '<button id="dlg-btn-save" class="btn-dlg-ok sketch-box btn-press">儲存</button>';
+    modal.style.display = 'block';
+
+    document.getElementById('dlg-btn-cancel').onclick = function() {
+      modal.style.display = 'none';
+    };
+    document.getElementById('dlg-btn-save').onclick = function() {
+      var values = [];
+      for (var j = 0; j < fields.length; j++) {
+        values.push(document.getElementById('dlg-field-' + j).value);
       }
+      modal.style.display = 'none';
+      if (onSubmit) onSubmit(values);
+    };
+  }
 
-      stopPlayback();
-      playingTrackId = track.id;
-      renderShelves();
+  /* ==========================================
+     3. 手繪風 SVG 圖示庫 (固定寬高與 viewBox)
+     ========================================== */
+  function getAvatarSVG(role) {
+    if (role === 'mom') {
+      return '<svg width="80" height="80" viewBox="0 0 80 80">' +
+        '<circle cx="40" cy="40" r="38" fill="#FCE4EC"/>' +
+        '<path d="M18 55 C18 22, 62 22, 62 55" fill="#4A3525" stroke="#2C2A29" stroke-width="2.5"/>' +
+        '<circle cx="40" cy="44" r="18" fill="#FFE0BD" stroke="#2C2A29" stroke-width="2.5"/>' +
+        '<circle cx="34" cy="42" r="2" fill="#2C2A29"/><circle cx="46" cy="42" r="2" fill="#2C2A29"/>' +
+        '<path d="M35 50 Q40 55 45 50" fill="none" stroke="#2C2A29" stroke-width="2.2" stroke-linecap="round"/>' +
+        '</svg>';
+    }
+    if (role === 'dad') {
+      return '<svg width="80" height="80" viewBox="0 0 80 80">' +
+        '<circle cx="40" cy="40" r="38" fill="#E3F2FD"/>' +
+        '<path d="M22 36 C22 18, 58 18, 58 36" fill="#2C2A29"/>' +
+        '<circle cx="40" cy="44" r="18" fill="#FFD2A6" stroke="#2C2A29" stroke-width="2.5"/>' +
+        '<rect x="29" y="38" width="9" height="6" rx="2" fill="none" stroke="#2C2A29" stroke-width="2"/>' +
+        '<rect x="42" y="38" width="9" height="6" rx="2" fill="none" stroke="#2C2A29" stroke-width="2"/>' +
+        '<line x1="38" y1="41" x2="42" y2="41" stroke="#2C2A29" stroke-width="2"/>' +
+        '<path d="M35 51 Q40 55 45 51" fill="none" stroke="#2C2A29" stroke-width="2.2" stroke-linecap="round"/>' +
+        '</svg>';
+    }
+    return '<svg width="80" height="80" viewBox="0 0 80 80">' +
+      '<circle cx="40" cy="40" r="38" fill="#E0F2F1"/>' +
+      '<circle cx="40" cy="20" r="9" fill="#D8D8D8" stroke="#2C2A29" stroke-width="2.2"/>' +
+      '<circle cx="40" cy="44" r="18" fill="#FFE0BD" stroke="#2C2A29" stroke-width="2.5"/>' +
+      '<path d="M22 38 Q40 24 58 38" fill="none" stroke="#D8D8D8" stroke-width="6"/>' +
+      '<circle cx="34" cy="43" r="2" fill="#2C2A29"/><circle cx="46" cy="43" r="2" fill="#2C2A29"/>' +
+      '<path d="M35 50 Q40 55 45 50" fill="none" stroke="#2C2A29" stroke-width="2.2" stroke-linecap="round"/>' +
+      '</svg>';
+  }
 
-      if (track.isCustom) {
-        getBlobFromStore(STORE_AUDIO, track.id).then(function (blob) {
-          if (!blob) {
-            showToast('找不到音訊檔案，請家長重新上傳或匯入備份');
-            stopPlayback();
-            return;
-          }
-          if (currentObjectUrl) {
-            URL.revokeObjectURL(currentObjectUrl);
-          }
-          currentObjectUrl = URL.createObjectURL(blob);
-          htmlAudio.src = currentObjectUrl;
-          var playPromise = htmlAudio.play();
-          if (playPromise && typeof playPromise.catch === 'function') {
-            playPromise.catch(function () {
-              showToast('請再點一下卡片播放');
-              stopPlayback();
-            });
-          }
-        });
+  function getMediaSVG(iconName, size) {
+    var s = size || 64;
+    var icons = {
+      bunny: '<svg class="center-icon" width="' + s + '" height="' + s + '" viewBox="0 0 64 64"><ellipse cx="24" cy="18" rx="5" ry="14" fill="#FFF" stroke="#2C2A29" stroke-width="2.5"/><ellipse cx="40" cy="18" rx="5" ry="14" fill="#FFF" stroke="#2C2A29" stroke-width="2.5"/><circle cx="32" cy="40" r="16" fill="#FFF" stroke="#2C2A29" stroke-width="2.5"/><circle cx="27" cy="37" r="2" fill="#2C2A29"/><circle cx="37" cy="37" r="2" fill="#2C2A29"/><circle cx="32" cy="42" r="2.5" fill="#F4978E"/></svg>',
+      moon: '<svg class="center-icon" width="' + s + '" height="' + s + '" viewBox="0 0 64 64"><path d="M40 12 A20 20 0 1 0 52 44 A16 16 0 1 1 40 12 Z" fill="#FFD166" stroke="#2C2A29" stroke-width="2.5"/></svg>',
+      dino: '<svg class="center-icon" width="' + s + '" height="' + s + '" viewBox="0 0 64 64"><path d="M18 48 L18 28 Q18 14 34 14 Q46 14 46 28 L46 48 Z" fill="#95D5B2" stroke="#2C2A29" stroke-width="2.5"/><circle cx="36" cy="24" r="2.5" fill="#2C2A29"/><path d="M32 32 Q38 35 44 32" fill="none" stroke="#2C2A29" stroke-width="2.2"/></svg>',
+      star: '<svg class="center-icon" width="' + s + '" height="' + s + '" viewBox="0 0 64 64"><polygon points="32,8 39,24 56,26 43,38 47,55 32,46 17,55 21,38 8,26 25,24" fill="#FFD166" stroke="#2C2A29" stroke-width="2.5" stroke-linejoin="round"/></svg>',
+      cloud: '<svg class="center-icon" width="' + s + '" height="' + s + '" viewBox="0 0 64 64"><path d="M18 46 H46 A10 10 0 0 0 46 26 A14 14 0 0 0 20 22 A10 10 0 0 0 18 46 Z" fill="#FFFFFF" stroke="#2C2A29" stroke-width="2.5"/></svg>',
+      rainbow: '<svg class="center-icon" width="' + s + '" height="' + s + '" viewBox="0 0 64 64"><path d="M10 46 A22 22 0 0 1 54 46" fill="none" stroke="#F4978E" stroke-width="5"/><path d="M16 46 A16 16 0 0 1 48 46" fill="none" stroke="#FFD166" stroke-width="5"/><path d="M22 46 A10 10 0 0 1 42 46" fill="none" stroke="#7BDFF2" stroke-width="5"/></svg>',
+      podcast: '<svg class="center-icon" width="' + s + '" height="' + s + '" viewBox="0 0 64 64"><circle cx="32" cy="30" r="8" fill="#FFD166" stroke="#2C2A29" stroke-width="2.5"/><path d="M20 30 A12 12 0 0 1 44 30" fill="none" stroke="#2C2A29" stroke-width="2.5" stroke-linecap="round"/><path d="M14 30 A18 18 0 0 1 50 30" fill="none" stroke="#7BDFF2" stroke-width="2.5" stroke-linecap="round"/><path d="M26 48 L32 38 L38 48 Z" fill="#F4978E" stroke="#2C2A29" stroke-width="2.5"/></svg>',
+      music: '<svg class="center-icon" width="' + s + '" height="' + s + '" viewBox="0 0 64 64"><path d="M24 46 V18 L48 14 V42" fill="none" stroke="#2C2A29" stroke-width="3"/><circle cx="18" cy="46" r="7" fill="#F4978E" stroke="#2C2A29" stroke-width="2.5"/><circle cx="42" cy="42" r="7" fill="#7BDFF2" stroke="#2C2A29" stroke-width="2.5"/></svg>'
+    };
+    return icons[iconName] || icons.music;
+  }
+
+  /* ==========================================
+     4. IndexedDB 永久儲存引擎 (ES5 相容)
+     ========================================== */
+  function initDB(callback) {
+    if (!window.indexedDB) {
+      loadFallbackStorage();
+      if (callback) callback();
+      return;
+    }
+    var request = window.indexedDB.open(DB_NAME, DB_VERSION);
+    request.onupgradeneeded = function(e) {
+      var database = e.target.result;
+      if (!database.objectStoreNames.contains('settings')) {
+        database.createObjectStore('settings', { keyPath: 'key' });
+      }
+      if (!database.objectStoreNames.contains('media')) {
+        database.createObjectStore('media', { keyPath: 'id' });
+      }
+    };
+    request.onsuccess = function(e) {
+      db = e.target.result;
+      loadFromDB(callback);
+    };
+    request.onerror = function() {
+      loadFallbackStorage();
+      if (callback) callback();
+    };
+  }
+
+  function loadFallbackStorage() {
+    try {
+      var saved = localStorage.getItem('kids_launcher_settings_v2');
+      if (saved) {
+        var parsed = JSON.parse(saved);
+        appState.pin = parsed.pin || '1234';
+        appState.contacts = parsed.contacts || DEFAULT_CONTACTS;
+      }
+    } catch (err) {}
+    appState.mediaList = JSON.parse(JSON.stringify(DEFAULT_MEDIA));
+  }
+
+  function loadFromDB(callback) {
+    var tx = db.transaction(['settings', 'media'], 'readonly');
+    var settingsStore = tx.objectStore('settings');
+    var mediaStore = tx.objectStore('media');
+
+    var pinReq = settingsStore.get('pin');
+    var contactsReq = settingsStore.get('contacts');
+    var initFlagReq = settingsStore.get('initialized');
+    var mediaReq = mediaStore.getAll();
+
+    tx.oncomplete = function() {
+      if (pinReq.result && pinReq.result.value) {
+        appState.pin = pinReq.result.value;
+      }
+      if (contactsReq.result && contactsReq.result.value) {
+        appState.contacts = contactsReq.result.value;
+      }
+      if (!initFlagReq.result) {
+        seedDefaultMedia(callback);
       } else {
-        startBuiltInMelody(track.builtinMelody || 'twinkle', track.category === 'story');
+        appState.mediaList = mediaReq.result || [];
+        if (callback) callback();
+      }
+    };
+  }
+
+  function seedDefaultMedia(callback) {
+    var tx = db.transaction(['settings', 'media'], 'readwrite');
+    var settingsStore = tx.objectStore('settings');
+    var mediaStore = tx.objectStore('media');
+
+    settingsStore.put({ key: 'initialized', value: true });
+    settingsStore.put({ key: 'pin', value: appState.pin });
+    settingsStore.put({ key: 'contacts', value: appState.contacts });
+
+    for (var i = 0; i < DEFAULT_MEDIA.length; i++) {
+      mediaStore.put(DEFAULT_MEDIA[i]);
+    }
+    tx.oncomplete = function() {
+      appState.mediaList = JSON.parse(JSON.stringify(DEFAULT_MEDIA));
+      if (callback) callback();
+    };
+  }
+
+  function saveSettingToDB(key, val, callback) {
+    try {
+      localStorage.setItem('kids_launcher_settings_v2', JSON.stringify({
+        pin: appState.pin,
+        contacts: appState.contacts
+      }));
+    } catch (e) {}
+    if (!db) {
+      if (callback) callback();
+      return;
+    }
+    var tx = db.transaction(['settings'], 'readwrite');
+    tx.objectStore('settings').put({ key: key, value: val });
+    tx.oncomplete = function() {
+      if (callback) callback();
+    };
+  }
+
+  function saveMediaItemToDB(item, callback) {
+    if (!db) {
+      var found = false;
+      for (var i = 0; i < appState.mediaList.length; i++) {
+        if (appState.mediaList[i].id === item.id) {
+          appState.mediaList[i] = item;
+          found = true;
+          break;
+        }
+      }
+      if (!found) appState.mediaList.push(item);
+      if (callback) callback();
+      return;
+    }
+    var tx = db.transaction(['media'], 'readwrite');
+    tx.objectStore('media').put(item);
+    tx.oncomplete = function() {
+      loadFromDB(callback);
+    };
+  }
+
+  function deleteMediaItemFromDB(id, callback) {
+    if (!db) {
+      appState.mediaList = appState.mediaList.filter(function(m) { return m.id !== id; });
+      if (callback) callback();
+      return;
+    }
+    var tx = db.transaction(['media'], 'readwrite');
+    tx.objectStore('media').delete(id);
+    tx.oncomplete = function() {
+      loadFromDB(callback);
+    };
+  }
+
+  /* ==========================================
+     5. 主畫面渲染邏輯
+     ========================================== */
+  function renderContacts() {
+    var container = document.getElementById('contacts-list');
+    var html = '';
+    for (var i = 0; i < appState.contacts.length; i++) {
+      var c = appState.contacts[i];
+      var href = 'facetime://' + encodeURIComponent(c.target || '');
+      var avatarInner = c.avatar
+        ? '<img src="' + c.avatar + '" alt="' + escapeHTML(c.name) + '">'
+        : getAvatarSVG(c.role);
+      html += '<a class="contact-item btn-press" href="' + href + '">' +
+        '<div class="contact-avatar sketch-circle">' + avatarInner + '</div>' +
+        '<span class="contact-name">' + escapeHTML(c.name) + '</span>' +
+        '</a>';
+    }
+    container.innerHTML = html;
+  }
+
+  function renderMediaTracks() {
+    var storyBox = document.getElementById('story-scroller');
+    var musicBox = document.getElementById('music-scroller');
+    var storyHTML = '';
+    var musicHTML = '';
+
+    for (var i = 0; i < appState.mediaList.length; i++) {
+      var item = appState.mediaList[i];
+      var badge = item.audioUrl ? '<span class="podcast-tag">Podcast</span>' : '';
+      var artContent = item.cover
+        ? '<img class="cover-img" src="' + item.cover + '" alt="' + escapeHTML(item.title) + '">'
+        : getMediaSVG(item.icon || (item.type === 'story' ? 'bunny' : 'music'), 64);
+
+      var cardHTML = '<div class="media-card sketch-box btn-press ' + (item.color || 'bg-blue') + '" data-id="' + item.id + '">' +
+        '<div class="card-art">' +
+          badge +
+          artContent +
+          '<div class="play-pill">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="#2C2A29"><polygon points="6,4 20,12 6,20"></polygon></svg>' +
+          '</div>' +
+        '</div>' +
+        '<div class="card-title">' + escapeHTML(item.title) + '</div>' +
+      '</div>';
+
+      if (item.type === 'story') {
+        storyHTML += cardHTML;
+      } else {
+        musicHTML += cardHTML;
       }
     }
+    storyBox.innerHTML = storyHTML;
+    musicBox.innerHTML = musicHTML;
 
-    function startBuiltInMelody(melodyKey, isStorySoft) {
-      if (!audioCtx) {
-        var AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        if (AudioContextClass) {
-          audioCtx = new AudioContextClass();
+    var cards = document.querySelectorAll('.media-card');
+    for (var j = 0; j < cards.length; j++) {
+      cards[j].onclick = function() {
+        var id = this.getAttribute('data-id');
+        openPlayerById(id);
+      };
+    }
+  }
+
+  function escapeHTML(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  /* ==========================================
+     6. 音訊播放器 (支援本地音訊、Podcast 網址與內建示範)
+     ========================================== */
+  var currentAudio = null;
+  var synthTimer = null;
+  var audioCtx = null;
+  var isPlaying = false;
+
+  function openPlayerById(id) {
+    var item = findMediaById(id);
+    if (!item) return;
+
+    stopAllAudio();
+    var artEl = document.getElementById('player-art');
+    if (item.cover) {
+      artEl.innerHTML = '<img src="' + item.cover + '" alt="' + escapeHTML(item.title) + '">';
+    } else {
+      artEl.innerHTML = getMediaSVG(item.icon || 'music', 90);
+    }
+
+    document.getElementById('player-title').innerText = item.title;
+    document.getElementById('player-progress').style.width = '0%';
+    document.getElementById('player-modal').style.display = 'block';
+
+    var audioSource = item.audioData || item.audioUrl;
+    var isStream = !!item.audioUrl;
+
+    if (audioSource) {
+      currentAudio = new Audio(audioSource);
+      currentAudio.preload = 'auto';
+
+      currentAudio.onloadstart = function() {
+        document.getElementById('player-status').innerText = isStream ? '正在連線載入 Podcast...' : '準備播放本地音訊...';
+      };
+      currentAudio.onplaying = function() {
+        isPlaying = true;
+        document.getElementById('btn-toggle-play').innerText = '暫停';
+        document.getElementById('player-status').innerText = isStream ? '正在串流播放 Podcast...' : '正在播放本地音訊...';
+      };
+      currentAudio.ontimeupdate = function() {
+        if (currentAudio && currentAudio.duration && !isNaN(currentAudio.duration)) {
+          var pct = (currentAudio.currentTime / currentAudio.duration) * 100;
+          document.getElementById('player-progress').style.width = pct + '%';
         }
-      }
-      if (!audioCtx) return;
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-
-      var notes = MELODIES[melodyKey] || MELODIES.twinkle;
-      melodyStep = 0;
-
-      var playNote = function () {
-        if (!playingTrackId) return;
-        var freq = notes[melodyStep % notes.length];
-        if (freq > 0) {
-          var osc = audioCtx.createOscillator();
-          var gain = audioCtx.createGain();
-          osc.type = isStorySoft ? 'sine' : 'triangle';
-          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-          gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(isStorySoft ? 0.14 : 0.2, audioCtx.currentTime + 0.04);
-          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.42);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.45);
-        }
-        melodyStep++;
+      };
+      currentAudio.onended = function() {
+        isPlaying = false;
+        document.getElementById('btn-toggle-play').innerText = '重播';
+        document.getElementById('player-status').innerText = '播放完畢';
+      };
+      currentAudio.onerror = function() {
+        isPlaying = false;
+        document.getElementById('btn-toggle-play').innerText = '重試';
+        document.getElementById('player-status').innerText = isStream
+          ? '無法播放此 Podcast 連結（請確認 Wi-Fi 或直連音訊網址）'
+          : '音訊檔案讀取失敗';
       };
 
-      playNote();
-      melodyTimer = setInterval(playNote, isStorySoft ? 560 : 440);
-    }
-
-    function stopPlayback() {
-      playingTrackId = null;
-      if (melodyTimer) {
-        clearInterval(melodyTimer);
-        melodyTimer = null;
-      }
-      try {
-        htmlAudio.pause();
-      } catch (e) {}
-      renderShelves();
-    }
-
-    htmlAudio.addEventListener('ended', function () {
-      stopPlayback();
-    });
-
-    /*************************************************************************
-     * 6. PIN MODAL & PARENT MODE ACTIONS
-     *************************************************************************/
-    function openParentLockModal() {
-      enteredPin = '';
-      updatePinDots();
-      document.getElementById('pinModal').classList.remove('hidden');
-    }
-
-    function closePinModal() {
-      document.getElementById('pinModal').classList.add('hidden');
-    }
-
-    function enterPinDigit(digit) {
-      if (enteredPin.length >= 4) return;
-      enteredPin += digit;
-      updatePinDots();
-      if (enteredPin.length === 4) {
-        setTimeout(function () {
-          if (enteredPin === appState.pin) {
-            closePinModal();
-            openParentModal();
-          } else {
-            showToast('密碼錯誤，預設為 1234');
-            enteredPin = '';
-            updatePinDots();
-          }
-        }, 120);
-      }
-    }
-
-    function backspacePinDigit() {
-      enteredPin = enteredPin.slice(0, -1);
-      updatePinDots();
-    }
-
-    function clearPinInput() {
-      enteredPin = '';
-      updatePinDots();
-    }
-
-    function updatePinDots() {
-      for (var i = 0; i < 4; i++) {
-        var dot = document.getElementById('pinDot' + i);
-        if (dot) {
-          dot.style.backgroundColor = i < enteredPin.length ? '#1E1B18' : '#FFFFFF';
-        }
-      }
-    }
-
-    function openParentModal() {
-      renderParentContacts();
-      setParentMediaTab(parentMediaTab);
-      document.getElementById('parentModal').classList.remove('hidden');
-    }
-
-    function closeParentModal() {
-      document.getElementById('parentModal').classList.add('hidden');
-      renderTopContacts();
-      renderShelves();
-    }
-
-    function renderParentContacts() {
-      var list = document.getElementById('parentContactList');
-      var tasks = appState.contacts.map(function (c, idx) {
-        if (c.hasCustomAvatar) {
-          return getCachedImageUrl('avatar_' + c.id).then(function (url) {
-            return { contact: c, idx: idx, customUrl: url };
-          });
-        }
-        return Promise.resolve({ contact: c, idx: idx, customUrl: null });
-      });
-
-      return Promise.all(tasks).then(function (items) {
-        list.innerHTML = '';
-        for (var i = 0; i < items.length; i++) {
-          var c = items[i].contact;
-          var idx = items[i].idx;
-          var avatarHtml = items[i].customUrl
-            ? '<img src="' + items[i].customUrl + '" class="w-full h-full object-cover" />'
-            : getPortraitSvg(c.avatar);
-
-          var row = document.createElement('div');
-          row.className = 'flex items-center justify-between bg-white border-2 border-[#1E1B18] rounded-2xl px-3 py-2 mb-2';
-          row.innerHTML =
-            '<div class="flex items-center min-w-0 mr-2">' +
-              '<div class="w-10 h-10 rounded-full border-2 border-[#1E1B18] overflow-hidden shrink-0 mr-2.5" style="background:' + (c.badge || '#FDE047') + '">' +
-                avatarHtml +
-              '</div>' +
-              '<div class="truncate">' +
-                '<div class="text-sm font-black">' + escapeHtml(c.name || '家人') + '</div>' +
-                '<div class="text-xs font-bold text-slate-500 truncate">' + escapeHtml(c.target) + '</div>' +
-              '</div>' +
-            '</div>' +
-            '<div class="flex items-center shrink-0">' +
-              '<button type="button" onclick="editContact(' + idx + ')" class="tactile-btn border-2 border-[#1E1B18] bg-amber-200 rounded-xl px-2.5 py-1 text-xs font-black mr-1.5">編輯</button>' +
-              '<button type="button" onclick="deleteContact(' + idx + ')" class="tactile-btn border-2 border-[#1E1B18] bg-rose-200 rounded-xl px-2.5 py-1 text-xs font-black">刪除</button>' +
-            '</div>';
-          list.appendChild(row);
-        }
-      });
-    }
-
-    function previewPresetContactAvatar() {
-      pendingContactPhotoBlob = null;
-      var sel = document.getElementById('contactAvatarSelect').value;
-      document.getElementById('contactAvatarPreview').innerHTML = getPortraitSvg(sel);
-    }
-
-    function handleContactPhotoSelect(event) {
-      var files = event.target.files;
-      var file = (files && files.length > 0) ? files[0] : null;
-      if (!file) return;
-      compressImageToBlob(file, 400).then(function (blob) {
-        pendingContactPhotoBlob = blob;
-        var url = URL.createObjectURL(blob);
-        document.getElementById('contactAvatarPreview').innerHTML = '<img src="' + url + '" class="w-full h-full object-cover" />';
-      }).catch(function () {
-        showToast('頭像圖片讀取失敗');
-      });
-    }
-
-    function toggleAddContactForm() {
-      pendingContactPhotoBlob = null;
-      document.getElementById('editContactIdx').value = '-1';
-      document.getElementById('contactNameInput').value = '';
-      document.getElementById('contactTargetInput').value = '';
-      document.getElementById('contactAvatarSelect').value = 'dad';
-      document.getElementById('contactPhotoFileInput').value = '';
-      previewPresetContactAvatar();
-      document.getElementById('contactFormBox').classList.remove('hidden');
-    }
-
-    function cancelContactForm() {
-      pendingContactPhotoBlob = null;
-      document.getElementById('contactFormBox').classList.add('hidden');
-    }
-
-    function editContact(idx) {
-      var c = appState.contacts[idx];
-      if (!c) return;
-      pendingContactPhotoBlob = null;
-      document.getElementById('editContactIdx').value = String(idx);
-      document.getElementById('contactNameInput').value = c.name || '';
-      document.getElementById('contactTargetInput').value = c.target || '';
-      document.getElementById('contactAvatarSelect').value = c.avatar || 'dad';
-      document.getElementById('contactPhotoFileInput').value = '';
-
-      if (c.hasCustomAvatar) {
-        getCachedImageUrl('avatar_' + c.id).then(function (url) {
-          if (url) {
-            document.getElementById('contactAvatarPreview').innerHTML = '<img src="' + url + '" class="w-full h-full object-cover" />';
-          } else {
-            previewPresetContactAvatar();
-          }
+      var playPromise = currentAudio.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(function() {
+          document.getElementById('player-status').innerText = '請點擊「播放」開始';
+          document.getElementById('btn-toggle-play').innerText = '播放';
         });
+      }
+      isPlaying = true;
+      document.getElementById('btn-toggle-play').innerText = '暫停';
+    } else {
+      playBuiltinDemoMelody(item.builtinTone || [261.6, 329.6, 392.0, 523.2]);
+    }
+  }
+
+  function playBuiltinDemoMelody(notes) {
+    isPlaying = true;
+    document.getElementById('btn-toggle-play').innerText = '暫停';
+    document.getElementById('player-status').innerText = '示範音樂播放中（可於家長設定加入音訊或 Podcast 連結）';
+
+    var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+    if (!audioCtx) audioCtx = new AudioContextClass();
+
+    var step = 0;
+    synthTimer = setInterval(function() {
+      if (!isPlaying) return;
+      var freq = notes[step % notes.length];
+      var osc = audioCtx.createOscillator();
+      var gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.45);
+
+      step++;
+      var pct = ((step % (notes.length * 2)) / (notes.length * 2)) * 100;
+      document.getElementById('player-progress').style.width = pct + '%';
+    }, 520);
+  }
+
+  function stopAllAudio() {
+    isPlaying = false;
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.src = '';
+      currentAudio = null;
+    }
+    if (synthTimer) {
+      clearInterval(synthTimer);
+      synthTimer = null;
+    }
+  }
+
+  document.getElementById('btn-toggle-play').onclick = function() {
+    if (currentAudio) {
+      if (isPlaying) {
+        currentAudio.pause();
+        isPlaying = false;
+        this.innerText = '繼續';
+        document.getElementById('player-status').innerText = '已暫停';
       } else {
-        previewPresetContactAvatar();
+        currentAudio.play();
+        isPlaying = true;
+        this.innerText = '暫停';
       }
-      document.getElementById('contactFormBox').classList.remove('hidden');
+    } else {
+      isPlaying = !isPlaying;
+      this.innerText = isPlaying ? '暫停' : '繼續';
+      document.getElementById('player-status').innerText = isPlaying ? '示範音樂播放中...' : '已暫停';
     }
+  };
 
-    function saveContact() {
-      var idx = parseInt(document.getElementById('editContactIdx').value, 10);
-      var name = document.getElementById('contactNameInput').value.trim() || '家人';
-      var target = document.getElementById('contactTargetInput').value.trim();
-      var avatar = document.getElementById('contactAvatarSelect').value;
+  document.getElementById('btn-close-player').onclick = function() {
+    stopAllAudio();
+    document.getElementById('player-modal').style.display = 'none';
+  };
 
-      if (!target) {
-        showToast('請填寫 FaceTime 電郵或電話');
+  /* ==========================================
+     7. 家長密碼鎖與數字鍵盤
+     ========================================== */
+  var enteredPin = '';
+
+  function updatePinDots() {
+    var dots = document.getElementById('pin-dots').getElementsByTagName('span');
+    for (var i = 0; i < dots.length; i++) {
+      dots[i].className = i < enteredPin.length ? 'pin-dot filled' : 'pin-dot';
+    }
+  }
+
+  document.getElementById('parent-lock-btn').onclick = function() {
+    enteredPin = '';
+    document.getElementById('pin-hint-text').innerText = '預設密碼：1234';
+    document.getElementById('pin-hint-text').style.color = '#6B6661';
+    updatePinDots();
+    document.getElementById('pin-modal').style.display = 'block';
+  };
+
+  var keyButtons = document.getElementById('keypad-grid').getElementsByTagName('div');
+  for (var k = 0; k < keyButtons.length; k++) {
+    keyButtons[k].onclick = function() {
+      var val = this.getAttribute('data-key');
+      if (val === 'cancel') {
+        document.getElementById('pin-modal').style.display = 'none';
         return;
       }
-
-      var badges = { dad: '#FDE047', mom: '#FDA4AF', grandma: '#DDD6FE', grandpa: '#BAE6FD' };
-      var existing = (idx >= 0 && appState.contacts[idx]) ? appState.contacts[idx] : null;
-      var contactId = existing ? existing.id : ('c_' + Date.now());
-      var hasCustomAvatar = existing ? Boolean(existing.hasCustomAvatar) : false;
-
-      var saveAvatarTask = Promise.resolve();
-      if (pendingContactPhotoBlob) {
-        hasCustomAvatar = true;
-        saveAvatarTask = putBlobToStore(STORE_COVERS, 'avatar_' + contactId, pendingContactPhotoBlob).then(function () {
-          clearImageCacheFor('avatar_' + contactId);
-        });
+      if (val === 'clear') {
+        enteredPin = '';
+        updatePinDots();
+        return;
       }
-
-      saveAvatarTask.then(function () {
-        var item = {
-          id: contactId,
-          name: name,
-          target: target,
-          avatar: avatar,
-          badge: badges[avatar] || '#FDE047',
-          hasCustomAvatar: hasCustomAvatar
-        };
-
-        if (existing) {
-          appState.contacts[idx] = item;
-        } else {
-          appState.contacts.push(item);
+      if (enteredPin.length < 4) {
+        enteredPin += val;
+        updatePinDots();
+        if (enteredPin.length === 4) {
+          setTimeout(function() {
+            if (enteredPin === appState.pin) {
+              document.getElementById('pin-modal').style.display = 'none';
+              openParentSettings();
+            } else {
+              document.getElementById('pin-hint-text').innerText = '密碼錯誤，請再試一次';
+              document.getElementById('pin-hint-text').style.color = '#D90429';
+              enteredPin = '';
+              updatePinDots();
+            }
+          }, 120);
         }
-
-        saveState();
-        cancelContactForm();
-        renderParentContacts();
-        renderTopContacts();
-        showToast('聯絡人已儲存');
-      });
-    }
-
-    function deleteContact(idx) {
-      if (appState.contacts.length <= 1) {
-        showToast('最少要保留 1 位聯絡人');
-        return;
       }
-      var removed = appState.contacts.splice(idx, 1)[0];
-      if (removed && removed.hasCustomAvatar) {
-        deleteBlobFromStore(STORE_COVERS, 'avatar_' + removed.id);
-        clearImageCacheFor('avatar_' + removed.id);
-      }
-      saveState();
-      renderParentContacts();
-      renderTopContacts();
+    };
+  }
+
+  /* ==========================================
+     8. 家長設定面板 (雙欄佈局與完整管理)
+     ========================================== */
+  function openParentSettings() {
+    draftCoverDataUrl = '';
+    document.getElementById('new-cover-preview').innerHTML = '<span style="font-size:11px; color:#666;">封面</span>';
+    renderContactsEditor();
+    updateTabButtons();
+    renderMediaManageList();
+    document.getElementById('settings-modal').style.display = 'block';
+  }
+
+  document.getElementById('btn-close-settings').onclick = function() {
+    document.getElementById('settings-modal').style.display = 'none';
+  };
+
+  /* 圖片壓縮工具 (支援頭像 200x200 與封面 400x400) */
+  function resizeImageToDataURL(file, targetSize, callback) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = new Image();
+      img.onload = function() {
+        var canvas = document.createElement('canvas');
+        canvas.width = targetSize;
+        canvas.height = targetSize;
+        var ctx = canvas.getContext('2d');
+        var minSide = Math.min(img.width, img.height);
+        var sx = (img.width - minSide) / 2;
+        var sy = (img.height - minSide) / 2;
+        ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, targetSize, targetSize);
+        callback(canvas.toDataURL('image/jpeg', 0.82));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  /* 左欄：家人聯絡人新增 / 編輯 / 換頭像 / 刪除 */
+  function renderContactsEditor() {
+    var container = document.getElementById('contacts-editor-list');
+    var html = '';
+    for (var i = 0; i < appState.contacts.length; i++) {
+      var c = appState.contacts[i];
+      var thumbHTML = c.avatar
+        ? '<img src="' + c.avatar + '" alt="">'
+        : getAvatarSVG(c.role);
+
+      html += '<div class="contact-row-item">' +
+        '<div class="c-thumb" data-av-idx="' + i + '" title="點擊更換頭像">' + thumbHTML + '</div>' +
+        '<div class="c-info">' +
+          '<div class="c-info-name">' + escapeHTML(c.name) + '</div>' +
+          '<div class="c-info-target">' + escapeHTML(c.target || '未設定帳號') + '</div>' +
+        '</div>' +
+        '<div class="c-actions">' +
+          '<button class="btn-mini btn-edit-c" data-idx="' + i + '">編輯</button>' +
+          '<button class="btn-mini btn-del-c" data-idx="' + i + '" style="background-color:#FDE2E4;">刪除</button>' +
+        '</div>' +
+      '</div>';
+    }
+    container.innerHTML = html || '<div class="help-text" style="text-align:center;">尚無聯絡人，請按右上角「+ 新增」</div>';
+
+    var thumbs = container.querySelectorAll('.c-thumb');
+    for (var t = 0; t < thumbs.length; t++) {
+      thumbs[t].onclick = function() {
+        pendingAvatarContactIdx = parseInt(this.getAttribute('data-av-idx'), 10);
+        document.getElementById('contact-avatar-picker').click();
+      };
     }
 
-    function setParentMediaTab(cat) {
-      parentMediaTab = cat;
-      document.getElementById('parentTabStory').className = 'tactile-btn border-2 border-[#1E1B18] w-full py-2 rounded-xl font-black text-sm ' + (cat === 'story' ? 'bg-[#BAE6FD]' : 'bg-white');
-      document.getElementById('parentTabMusic').className = 'tactile-btn border-2 border-[#1E1B18] w-full py-2 rounded-xl font-black text-sm ' + (cat === 'music' ? 'bg-[#FBCFE8]' : 'bg-white');
-      closeEditTrackBox();
-      renderParentTracks();
-    }
-
-    function renderParentTracks() {
-      var list = document.getElementById('parentTrackList');
-      var tracks = appState.tracks.filter(function (t) {
-        return t.category === parentMediaTab;
-      });
-
-      var tasks = tracks.map(function (t) {
-        if (t.hasCustomCover) {
-          return getCachedImageUrl(t.id).then(function (url) {
-            return { track: t, customUrl: url };
+    var editBtns = container.querySelectorAll('.btn-edit-c');
+    for (var eBtn = 0; eBtn < editBtns.length; eBtn++) {
+      editBtns[eBtn].onclick = function() {
+        var idx = parseInt(this.getAttribute('data-idx'), 10);
+        var targetC = appState.contacts[idx];
+        showFormDialog('編輯家人聯絡人', [
+          { label: '家人稱呼：', value: targetC.name, placeholder: '例如：爸爸、媽媽' },
+          { label: 'FaceTime 電話或 Apple ID 電郵：', value: targetC.target, placeholder: '例如：mom@example.com' }
+        ], function(vals) {
+          targetC.name = vals[0] || '家人';
+          targetC.target = vals[1] || '';
+          saveSettingToDB('contacts', appState.contacts, function() {
+            renderContacts();
+            renderContactsEditor();
           });
-        }
-        return Promise.resolve({ track: t, customUrl: null });
-      });
-
-      return Promise.all(tasks).then(function (items) {
-        list.innerHTML = '';
-        for (var i = 0; i < items.length; i++) {
-          var t = items[i].track;
-          var customUrl = items[i].customUrl;
-          var thumb = customUrl
-            ? '<img src="' + customUrl + '" class="w-8 h-8 rounded-lg border-2 border-[#1E1B18] object-cover shrink-0 mr-2" />'
-            : '<span class="w-8 h-8 rounded-lg border-2 border-[#1E1B18] flex items-center justify-center text-sm shrink-0 mr-2" style="background:' + (t.bg || '#E0F2FE') + '">' + (t.category === 'story' ? '📖' : '🎵') + '</span>';
-
-          var row = document.createElement('div');
-          row.className = 'flex items-center justify-between bg-white border-2 border-[#1E1B18] rounded-2xl px-3 py-2 mb-2';
-          row.innerHTML =
-            '<div class="flex items-center min-w-0 mr-2">' +
-              thumb +
-              '<span class="text-sm font-black truncate mr-1.5">' + escapeHtml(t.title) + '</span>' +
-              (t.isCustom ? '<span class="text-[11px] bg-sky-100 border border-[#1E1B18] rounded-full px-2 font-bold shrink-0">離線音訊</span>' : '') +
-            '</div>' +
-            '<div class="flex items-center shrink-0">' +
-              '<button type="button" onclick="openEditTrackBox(\'' + t.id + '\')" class="tactile-btn border-2 border-[#1E1B18] bg-amber-200 rounded-xl px-2.5 py-1 text-xs font-black mr-1.5">🖼️ 封面/改名</button>' +
-              '<button type="button" onclick="deleteTrack(\'' + t.id + '\')" class="tactile-btn border-2 border-[#1E1B18] bg-rose-200 rounded-xl px-2.5 py-1 text-xs font-black">刪除</button>' +
-            '</div>';
-          list.appendChild(row);
-        }
-      });
-    }
-
-    function handleNewCoverSelect(event) {
-      var files = event.target.files;
-      var file = (files && files.length > 0) ? files[0] : null;
-      if (!file) return;
-      compressImageToBlob(file, 400).then(function (blob) {
-        pendingNewCoverBlob = blob;
-        var url = URL.createObjectURL(blob);
-        document.getElementById('newCoverPreviewBox').innerHTML = '<img src="' + url + '" class="w-full h-full object-cover" />';
-        document.getElementById('clearNewCoverBtn').classList.remove('hidden');
-      }).catch(function () {
-        showToast('圖片讀取失敗');
-      });
-    }
-
-    function clearNewCoverSelection() {
-      pendingNewCoverBlob = null;
-      document.getElementById('newCoverFileInput').value = '';
-      document.getElementById('newCoverPreviewBox').innerHTML = '<span class="text-xl">🖼️</span>';
-      document.getElementById('clearNewCoverBtn').classList.add('hidden');
-    }
-
-    function openEditTrackBox(trackId) {
-      var track = null;
-      for (var i = 0; i < appState.tracks.length; i++) {
-        if (appState.tracks[i].id === trackId) {
-          track = appState.tracks[i];
-          break;
-        }
-      }
-      if (!track) return;
-
-      pendingEditCoverBlob = null;
-      pendingResetCover = false;
-      document.getElementById('editCoverFileInput').value = '';
-      document.getElementById('editTrackIdInput').value = track.id;
-      document.getElementById('editTrackTitleInput').value = track.title;
-
-      var box = document.getElementById('editTrackBox');
-      var preview = document.getElementById('editCoverPreviewBox');
-
-      var loadPreview = track.hasCustomCover ? getCachedImageUrl(track.id) : Promise.resolve(null);
-      loadPreview.then(function (existingUrl) {
-        if (existingUrl) {
-          preview.innerHTML = '<img src="' + existingUrl + '" class="w-full h-full object-cover" />';
-        } else {
-          preview.style.background = track.bg || '#E0F2FE';
-          preview.innerHTML = getCartoonCardArt(track.art, track.category);
-        }
-        box.classList.remove('hidden');
-      });
-    }
-
-    function closeEditTrackBox() {
-      pendingEditCoverBlob = null;
-      pendingResetCover = false;
-      document.getElementById('editTrackBox').classList.add('hidden');
-    }
-
-    function handleEditCoverSelect(event) {
-      var files = event.target.files;
-      var file = (files && files.length > 0) ? files[0] : null;
-      if (!file) return;
-      compressImageToBlob(file, 400).then(function (blob) {
-        pendingEditCoverBlob = blob;
-        pendingResetCover = false;
-        var url = URL.createObjectURL(blob);
-        document.getElementById('editCoverPreviewBox').innerHTML = '<img src="' + url + '" class="w-full h-full object-cover" />';
-      }).catch(function () {
-        showToast('圖片讀取失敗');
-      });
-    }
-
-    function resetTrackCoverToArt() {
-      var trackId = document.getElementById('editTrackIdInput').value;
-      var track = null;
-      for (var i = 0; i < appState.tracks.length; i++) {
-        if (appState.tracks[i].id === trackId) {
-          track = appState.tracks[i];
-          break;
-        }
-      }
-      if (!track) return;
-      pendingEditCoverBlob = null;
-      pendingResetCover = true;
-      var preview = document.getElementById('editCoverPreviewBox');
-      preview.style.background = track.bg || '#E0F2FE';
-      preview.innerHTML = getCartoonCardArt(track.art, track.category);
-    }
-
-    function saveEditedTrack() {
-      var trackId = document.getElementById('editTrackIdInput').value;
-      var track = null;
-      for (var i = 0; i < appState.tracks.length; i++) {
-        if (appState.tracks[i].id === trackId) {
-          track = appState.tracks[i];
-          break;
-        }
-      }
-      if (!track) return;
-
-      var title = document.getElementById('editTrackTitleInput').value.trim();
-      if (title) track.title = title;
-
-      var coverTask = Promise.resolve();
-      if (pendingEditCoverBlob) {
-        coverTask = putBlobToStore(STORE_COVERS, track.id, pendingEditCoverBlob).then(function () {
-          clearImageCacheFor(track.id);
-          track.hasCustomCover = true;
         });
-      } else if (pendingResetCover) {
-        deleteBlobFromStore(STORE_COVERS, track.id);
-        clearImageCacheFor(track.id);
-        track.hasCustomCover = false;
-      }
-
-      coverTask.then(function () {
-        saveState();
-        closeEditTrackBox();
-        return Promise.all([renderParentTracks(), renderShelves()]);
-      }).then(function () {
-        showToast('已儲存封面與名稱');
-      });
+      };
     }
 
-    function handleAudioFileUpload(event) {
-      var files = event.target.files;
-      var file = (files && files.length > 0) ? files[0] : null;
-      if (!file) return;
-
-      var titleInput = document.getElementById('newTrackTitleInput').value.trim();
-      var title = titleInput || file.name.replace(/\.[^/.]+$/, '');
-      var id = 'custom_' + Date.now();
-
-      putBlobToStore(STORE_AUDIO, id, file).then(function () {
-        if (pendingNewCoverBlob) {
-          return putBlobToStore(STORE_COVERS, id, pendingNewCoverBlob).then(function () {
-            clearImageCacheFor(id);
-            return true;
+    var delBtns = container.querySelectorAll('.btn-del-c');
+    for (var dBtn = 0; dBtn < delBtns.length; dBtn++) {
+      delBtns[dBtn].onclick = function() {
+        var idx = parseInt(this.getAttribute('data-idx'), 10);
+        showConfirm('刪除聯絡人', '確定要刪除「' + appState.contacts[idx].name + '」嗎？', function() {
+          appState.contacts.splice(idx, 1);
+          saveSettingToDB('contacts', appState.contacts, function() {
+            renderContacts();
+            renderContactsEditor();
           });
-        }
-        return false;
-      }).then(function (hasCustomCover) {
-        var bgs = parentMediaTab === 'story'
-          ? ['#FCE7F3', '#E0F2FE', '#FEF3C7']
-          : ['#FEF08A', '#BAE6FD', '#FBCFE8'];
-
-        appState.tracks.push({
-          id: id,
-          category: parentMediaTab,
-          title: title,
-          art: parentMediaTab === 'story' ? 'castle' : 'notes',
-          bg: bgs[appState.tracks.length % bgs.length],
-          isCustom: true,
-          hasCustomCover: hasCustomCover
         });
+      };
+    }
+  }
 
-        saveState();
-        document.getElementById('newTrackTitleInput').value = '';
-        event.target.value = '';
-        clearNewCoverSelection();
-        return Promise.all([renderParentTracks(), renderShelves()]);
-      }).then(function () {
-        showToast('已加入「' + title + '」');
-      }).catch(function () {
-        showToast('儲存音訊失敗，請確認空間充足且未開啟無痕模式');
+  document.getElementById('btn-add-contact').onclick = function() {
+    showFormDialog('新增家人視訊聯絡人', [
+      { label: '家人稱呼：', value: '', placeholder: '例如：公公、姨姨' },
+      { label: 'FaceTime 電話或 Apple ID 電郵：', value: '', placeholder: '例如：+85291234567' }
+    ], function(vals) {
+      if (!vals[0]) return;
+      appState.contacts.push({
+        id: 'c_' + Date.now(),
+        name: vals[0],
+        target: vals[1] || '',
+        avatar: '',
+        role: 'mom'
       });
-    }
-
-    function deleteTrack(trackId) {
-      var idx = -1;
-      for (var i = 0; i < appState.tracks.length; i++) {
-        if (appState.tracks[i].id === trackId) {
-          idx = i;
-          break;
-        }
-      }
-      if (idx === -1) return;
-      if (playingTrackId === trackId) stopPlayback();
-
-      var removed = appState.tracks.splice(idx, 1)[0];
-      if (removed && removed.isCustom) {
-        deleteBlobFromStore(STORE_AUDIO, removed.id);
-      }
-      if (removed && removed.hasCustomCover) {
-        deleteBlobFromStore(STORE_COVERS, removed.id);
-        clearImageCacheFor(removed.id);
-      }
-      saveState();
-      renderParentTracks();
-      renderShelves();
-      showToast('已刪除項目');
-    }
-
-    function updateParentPin() {
-      var val = document.getElementById('newPinInput').value.trim();
-      if (!/^\d{4}$/.test(val)) {
-        showToast('請輸入 4 位數字密碼');
-        return;
-      }
-      appState.pin = val;
-      saveState();
-      document.getElementById('newPinInput').value = '';
-      showToast('家長密碼已更新');
-    }
-
-    function showToast(msg) {
-      var el = document.getElementById('toastPill');
-      el.textContent = msg;
-      el.classList.remove('hidden');
-      clearTimeout(el._t);
-      el._t = setTimeout(function () {
-        el.classList.add('hidden');
-      }, 2600);
-    }
-
-    function escapeHtml(str) {
-      return String(str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    /* Dynamically sync viewport height on resize/orientation changes to avoid 100vh clipping */
-    function syncViewportDimensions() {
-      var root = document.getElementById('appRoot');
-      if (root) {
-        root.style.height = window.innerHeight + 'px';
-      }
-    }
-
-    window.addEventListener('resize', syncViewportDimensions);
-    window.addEventListener('orientationchange', function () {
-      setTimeout(syncViewportDimensions, 150);
+      saveSettingToDB('contacts', appState.contacts, function() {
+        renderContacts();
+        renderContactsEditor();
+      });
     });
+  };
 
-    window.onload = function () {
-      syncViewportDimensions();
-      initIndexedDB().then(function () {
-        return Promise.all([renderTopContacts(), renderShelves()]);
+  document.getElementById('contact-avatar-picker').onchange = function(e) {
+    var file = e.target.files[0];
+    if (!file || pendingAvatarContactIdx < 0) return;
+    var idx = pendingAvatarContactIdx;
+    this.value = '';
+    resizeImageToDataURL(file, 200, function(dataUrl) {
+      appState.contacts[idx].avatar = dataUrl;
+      saveSettingToDB('contacts', appState.contacts, function() {
+        renderContacts();
+        renderContactsEditor();
+        showNotice('完成', '家人頭像已更新！');
+      });
+    });
+  };
+
+  /* 右欄：故事列 / 音樂列切換與新增 */
+  function updateTabButtons() {
+    var sTab = document.getElementById('tab-story');
+    var mTab = document.getElementById('tab-music');
+    sTab.className = 'tab-btn' + (activeMediaTab === 'story' ? ' active-story' : '');
+    mTab.className = 'tab-btn' + (activeMediaTab === 'music' ? ' active-music' : '');
+  }
+
+  document.getElementById('tab-story').onclick = function() {
+    activeMediaTab = 'story';
+    updateTabButtons();
+    renderMediaManageList();
+  };
+
+  document.getElementById('tab-music').onclick = function() {
+    activeMediaTab = 'music';
+    updateTabButtons();
+    renderMediaManageList();
+  };
+
+  document.getElementById('new-media-cover').onchange = function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    this.value = '';
+    resizeImageToDataURL(file, 400, function(dataUrl) {
+      draftCoverDataUrl = dataUrl;
+      document.getElementById('new-cover-preview').innerHTML = '<img src="' + dataUrl + '" alt="">';
+    });
+  };
+
+  function stripFileExtension(filename) {
+    if (!filename) return '未命名音訊';
+    return filename.replace(/\.[^/.]+$/, '');
+  }
+
+  function pickPaletteColor(index) {
+    var colors = ['bg-blue', 'bg-pink', 'bg-mint', 'bg-yellow'];
+    return colors[index % colors.length];
+  }
+
+  /* 上傳本地音訊並加入 */
+  document.getElementById('new-media-file').onchange = function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var titleInput = document.getElementById('new-media-title');
+    var finalTitle = (titleInput.value && titleInput.value.replace(/^\s+|\s+$/g, '')) || stripFileExtension(file.name);
+    var coverToUse = draftCoverDataUrl;
+    var typeToUse = activeMediaTab;
+    this.value = '';
+
+    var reader = new FileReader();
+    reader.onload = function(evt) {
+      var newItem = {
+        id: 'm_' + Date.now(),
+        type: typeToUse,
+        title: finalTitle,
+        color: pickPaletteColor(appState.mediaList.length),
+        icon: typeToUse === 'story' ? 'bunny' : 'music',
+        cover: coverToUse,
+        audioData: evt.target.result,
+        audioUrl: null
+      };
+      saveMediaItemToDB(newItem, function() {
+        titleInput.value = '';
+        draftCoverDataUrl = '';
+        document.getElementById('new-cover-preview').innerHTML = '<span style="font-size:11px; color:#666;">封面</span>';
+        renderMediaTracks();
+        renderMediaManageList();
+        showNotice('已加入', '「' + finalTitle + '」已離線儲存至本機！');
       });
     };
-  </script>
+    reader.readAsDataURL(file);
+  };
+
+  /* 加入 Podcast 音訊直連網址 */
+  document.getElementById('btn-add-podcast').onclick = function() {
+    var urlInput = document.getElementById('new-podcast-url');
+    var titleInput = document.getElementById('new-media-title');
+    var rawUrl = (urlInput.value || '').replace(/^\s+|\s+$/g, '');
+
+    if (!rawUrl || rawUrl.indexOf('http') !== 0) {
+      showNotice('網址格式不正確', '請輸入有效的 http:// 或 https:// Podcast 音訊直連網址（.mp3 / .m4a）。');
+      return;
+    }
+
+    var finalTitle = (titleInput.value && titleInput.value.replace(/^\s+|\s+$/g, '')) || 'Podcast 節目';
+    var newItem = {
+      id: 'p_' + Date.now(),
+      type: activeMediaTab,
+      title: finalTitle,
+      color: pickPaletteColor(appState.mediaList.length),
+      icon: 'podcast',
+      cover: draftCoverDataUrl,
+      audioData: null,
+      audioUrl: rawUrl
+    };
+
+    saveMediaItemToDB(newItem, function() {
+      urlInput.value = '';
+      titleInput.value = '';
+      draftCoverDataUrl = '';
+      document.getElementById('new-cover-preview').innerHTML = '<span style="font-size:11px; color:#666;">封面</span>';
+      renderMediaTracks();
+      renderMediaManageList();
+      showNotice('已加入', '已新增 Podcast 連結「' + finalTitle + '」！');
+    });
+  };
+
+  /* 右欄清單：封面/改名 與 刪除 */
+  function renderMediaManageList() {
+    var box = document.getElementById('media-manage-list');
+    var html = '';
+    var filtered = [];
+    for (var i = 0; i < appState.mediaList.length; i++) {
+      if (appState.mediaList[i].type === activeMediaTab) {
+        filtered.push(appState.mediaList[i]);
+      }
+    }
+
+    for (var j = 0; j < filtered.length; j++) {
+      var m = filtered[j];
+      var thumb = m.cover
+        ? '<img src="' + m.cover + '" alt="">'
+        : getMediaSVG(m.icon || (m.type === 'story' ? 'bunny' : 'music'), 24);
+      var podMark = m.audioUrl ? ' [Podcast]' : '';
+
+      html += '<div class="m-row-item">' +
+        '<div class="m-thumb">' + thumb + '</div>' +
+        '<span class="m-title-text">' + escapeHTML(m.title + podMark) + '</span>' +
+        '<div class="m-actions">' +
+          '<button class="btn-mini btn-rename-m" data-id="' + m.id + '" style="background-color:#FFF3B0;">封面/改名</button>' +
+          '<button class="btn-mini btn-del-m" data-id="' + m.id + '" style="margin-left:3px; background-color:#FDE2E4;">刪除</button>' +
+        '</div>' +
+      '</div>';
+    }
+    box.innerHTML = html || '<div class="help-text" style="text-align:center; padding:8px;">此分類目前沒有項目</div>';
+
+    var renameBtns = box.querySelectorAll('.btn-rename-m');
+    for (var r = 0; r < renameBtns.length; r++) {
+      renameBtns[r].onclick = function() {
+        var id = this.getAttribute('data-id');
+        var target = findMediaById(id);
+        if (!target) return;
+
+        showFormDialog('修改名稱', [
+          { label: '故事或歌曲名稱：', value: target.title, placeholder: '輸入新名稱' }
+        ], function(vals) {
+          if (vals[0] && vals[0].replace(/^\s+|\s+$/g, '') !== '') {
+            target.title = vals[0];
+          }
+          saveMediaItemToDB(target, function() {
+            renderMediaTracks();
+            renderMediaManageList();
+            showConfirm('更換封面', '名稱已儲存。是否同時從相簿選取新的封面圖片（自動壓縮 400×400）？', function() {
+              pendingReplaceCoverId = id;
+              document.getElementById('item-cover-replace-picker').click();
+            });
+          });
+        });
+      };
+    }
+
+    var delBtns = box.querySelectorAll('.btn-del-m');
+    for (var d = 0; d < delBtns.length; d++) {
+      delBtns[d].onclick = function() {
+        var delId = this.getAttribute('data-id');
+        var target = findMediaById(delId);
+        showConfirm('刪除項目', '確定要刪除「' + (target ? target.title : '') + '」嗎？', function() {
+          deleteMediaItemFromDB(delId, function() {
+            renderMediaTracks();
+            renderMediaManageList();
+          });
+        });
+      };
+    }
+  }
+
+  document.getElementById('item-cover-replace-picker').onchange = function(e) {
+    var file = e.target.files[0];
+    var id = pendingReplaceCoverId;
+    pendingReplaceCoverId = null;
+    this.value = '';
+    if (!file || !id) return;
+    var target = findMediaById(id);
+    if (!target) return;
+
+    resizeImageToDataURL(file, 400, function(dataUrl) {
+      target.cover = dataUrl;
+      saveMediaItemToDB(target, function() {
+        renderMediaTracks();
+        renderMediaManageList();
+        showNotice('完成', '封面圖片已更新！');
+      });
+    });
+  };
+
+  function findMediaById(id) {
+    for (var i = 0; i < appState.mediaList.length; i++) {
+      if (appState.mediaList[i].id === id) return appState.mediaList[i];
+    }
+    return null;
+  }
+
+  /* 更改家長密碼 */
+  document.getElementById('btn-change-pin').onclick = function() {
+    var newPin = document.getElementById('new-pin-input').value;
+    if (!/^\d{4}$/.test(newPin)) {
+      showNotice('格式不符', '請輸入 4 位半形數字作為新家長密碼。');
+      return;
+    }
+    appState.pin = newPin;
+    saveSettingToDB('pin', newPin, function() {
+      document.getElementById('new-pin-input').value = '';
+      showNotice('成功', '家長密碼已更新為 ' + newPin + '！');
+    });
+  };
+
+  /* 匯出 JSON 完整備份 */
+  document.getElementById('btn-export-json').onclick = function() {
+    var backupData = {
+      version: 2,
+      exportedAt: new Date().toISOString(),
+      pin: appState.pin,
+      contacts: appState.contacts,
+      mediaList: appState.mediaList
+    };
+    var jsonStr = JSON.stringify(backupData);
+    var blob = new Blob([jsonStr], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'kids-ipad-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+  };
+
+  /* 匯入 JSON 備份還原 */
+  document.getElementById('import-json-file').onchange = function(e) {
+    var file = e.target.files[0];
+    this.value = '';
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(evt) {
+      try {
+        var data = JSON.parse(evt.target.result);
+        if (!data.contacts || !data.mediaList) {
+          showNotice('還原失敗', '備份檔案格式不正確。');
+          return;
+        }
+        appState.pin = data.pin || '1234';
+        appState.contacts = data.contacts;
+
+        if (!db) {
+          appState.mediaList = data.mediaList;
+          refreshAllViews();
+          showNotice('還原完成', '所有設定與清單已還原！');
+          return;
+        }
+
+        var tx = db.transaction(['settings', 'media'], 'readwrite');
+        var settingsStore = tx.objectStore('settings');
+        var mediaStore = tx.objectStore('media');
+        settingsStore.put({ key: 'pin', value: appState.pin });
+        settingsStore.put({ key: 'contacts', value: appState.contacts });
+        settingsStore.put({ key: 'initialized', value: true });
+        mediaStore.clear();
+        for (var i = 0; i < data.mediaList.length; i++) {
+          mediaStore.put(data.mediaList[i]);
+        }
+        tx.oncomplete = function() {
+          loadFromDB(function() {
+            refreshAllViews();
+            showNotice('還原完成', '所有設定、封面、音訊與密碼已從備份檔完整還原！');
+          });
+        };
+      } catch (err) {
+        showNotice('讀取失敗', '無法解析備份檔案：' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  function refreshAllViews() {
+    renderContacts();
+    renderMediaTracks();
+    renderContactsEditor();
+    renderMediaManageList();
+  }
+
+  /* ==========================================
+     9. 啟動應用程式
+     ========================================== */
+  initDB(function() {
+    renderContacts();
+    renderMediaTracks();
+  });
+
+})();
+</script>
 </body>
 </html>
