@@ -717,6 +717,18 @@ audio { display: none; }
         </div>
         <div class="track" id="music-track"></div>
       </div>
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#3d3a34" stroke-width="2">
+              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              <polygon points="10 9 16 12 10 15 10 9" fill="#3d3a34"></polygon>
+            </svg>
+          </div>
+          <span class="section-title">影片</span>
+        </div>
+        <div class="track" id="video-track"></div>
+      </div>
     </div>
   </div>
 
@@ -776,14 +788,21 @@ audio { display: none; }
       <div id="contacts-list"></div>
       <button class="btn-block" onclick="openContactModal()">＋ 新增聯絡人</button>
 
-      <div class="parent-section-title">備份與還原</div>
-      <button class="btn-block secondary" onclick="exportBackup()">匯出備份檔 (.json)</button>
+      <div class="parent-section-title">線上更新內容</div>
+      <label>media.json 網址（GitHub Raw）</label>
+      <input type="url" id="media-json-url" placeholder="https://raw.githubusercontent.com/帳號/倉庫/main/media.json">
+      <button class="btn-block" onclick="updateFromRemote()">更新內容（從 GitHub 同步）</button>
+      <div class="note">
+        在管理頁下載 media.json 後上傳到 GitHub，再按上方按鈕即可同步故事／音樂／影片。<br>
+        <b>不會覆蓋</b>家人視訊與家長密碼。
+      </div>
+
+      <div class="parent-section-title">本機備份與還原</div>
+      <button class="btn-block secondary" onclick="exportBackup()">匯出完整備份 (.json)</button>
       <button class="btn-block secondary" onclick="document.getElementById('import-file').click()">匯入備份檔 (.json)</button>
       <input type="file" id="import-file" accept=".json,application/json" class="hidden" onchange="importBackup(event)">
       <div class="note">
-        建議用郵件或 AirDrop 傳送 .json 到 iPad 的「檔案」App 再匯入。<br>
-        從管理頁（admin）匯出的檔案只會更新故事與音樂，<b>不會覆蓋</b>家人視訊與密碼。<br>
-        完整備份（含聯絡人）才會覆蓋所有設定。
+        完整備份會包含聯絡人；管理頁的 media.json 只更新故事／音樂／影片。
       </div>
 
       <div class="parent-section-title">修改家長密碼</div>
@@ -875,7 +894,9 @@ var state = {
   contacts: [],
   stories: [],
   music: [],
-  pin: '1234'
+  videos: [],
+  pin: '1234',
+  mediaJsonUrl: ''
 };
 var pinBuffer = '';
 var currentMediaTab = 'story';
@@ -973,7 +994,17 @@ function persistState(cb) {
     music: state.music.map(function(m) {
       return { id: m.id, name: m.name, cover: m.cover, url: m.url || null, svgKey: m.svgKey || null };
     }),
-    pin: state.pin
+    videos: (state.videos || []).map(function(v) {
+      return {
+        id: v.id,
+        name: v.name,
+        cover: v.cover || '',
+        youtubeType: v.youtubeType || 'video',
+        youtubeId: v.youtubeId || ''
+      };
+    }),
+    pin: state.pin,
+    mediaJsonUrl: state.mediaJsonUrl || ''
   }, cb);
 }
 
@@ -983,7 +1014,9 @@ function loadState(cb) {
       state.contacts = data.contacts || [];
       state.stories = data.stories || [];
       state.music = data.music || [];
+      state.videos = data.videos || [];
       state.pin = data.pin || '1234';
+      state.mediaJsonUrl = data.mediaJsonUrl || '';
     }
     if (state.contacts.length === 0) {
       state.contacts = [
@@ -992,7 +1025,8 @@ function loadState(cb) {
         { id: uid(), name: '爺爺', account: '', avatar: '', avatarKey: 'grandma' }
       ];
     }
-    if (state.stories.length === 0 && state.music.length === 0) {
+    if (!state.videos) state.videos = [];
+    if (state.stories.length === 0 && state.music.length === 0 && state.videos.length === 0) {
       state.stories = DEMO_STORIES.slice();
       state.music = DEMO_MUSIC.slice();
     }
@@ -1072,14 +1106,15 @@ function renderFamily() {
 }
 
 function renderTrack(type) {
-  var trackId = type === 'story' ? 'story-track' : 'music-track';
-  var list = type === 'story' ? state.stories : state.music;
+  var trackId = type === 'story' ? 'story-track' : (type === 'music' ? 'music-track' : 'video-track');
+  var list = type === 'story' ? state.stories : (type === 'music' ? state.music : (state.videos || []));
   var track = $(trackId);
+  if (!track) return;
   track.innerHTML = '';
   if (list.length === 0) {
     var empty = createEl('div');
     empty.style.cssText = 'display:inline-block;padding:36px 16px;color:#a89f8e;font-size:14px;';
-    empty.textContent = type === 'story' ? '尚無故事，請家長新增' : '尚無音樂，請家長新增';
+    empty.textContent = type === 'story' ? '尚無故事，請家長新增' : (type === 'music' ? '尚無音樂，請家長新增' : '尚無影片，請家長新增');
     track.appendChild(empty);
     return;
   }
@@ -1105,7 +1140,10 @@ function renderTrack(type) {
       title.textContent = item.name || '未命名';
       card.appendChild(cover);
       card.appendChild(title);
-      card.onclick = function() { playMedia(type, item); };
+      card.onclick = function() {
+        if (type === 'video') openVideo(item);
+        else playMedia(type, item);
+      };
       track.appendChild(card);
     })(list[i]);
   }
@@ -1115,6 +1153,22 @@ function renderAll() {
   renderFamily();
   renderTrack('story');
   renderTrack('music');
+  renderTrack('video');
+}
+
+function openVideo(item) {
+  if (!item || !item.youtubeId) {
+    alert('此影片尚未設定 YouTube 連結');
+    return;
+  }
+  var url;
+  if (item.youtubeType === 'playlist') {
+    url = 'https://www.youtube.com/playlist?list=' + encodeURIComponent(item.youtubeId);
+  } else {
+    url = 'https://www.youtube.com/watch?v=' + encodeURIComponent(item.youtubeId);
+  }
+  // 舊 iPad 最穩的方式：直接開啟 YouTube
+  window.location.href = url;
 }
 
 /* ========== 播放 ========== */
@@ -1264,11 +1318,65 @@ function openParent() {
   $('parent-screen').className = 'active';
   renderContacts();
   switchMediaTab(currentMediaTab);
+  var urlInput = $('media-json-url');
+  if (urlInput) {
+    urlInput.value = state.mediaJsonUrl || 'https://raw.githubusercontent.com/Queillie/Kidplaydi/main/media.json';
+  }
 }
 
 function closeParent() {
+  var urlInput = $('media-json-url');
+  if (urlInput) {
+    state.mediaJsonUrl = urlInput.value.trim();
+    persistState(function() {});
+  }
   $('parent-screen').className = '';
   renderAll();
+}
+
+/* 從 GitHub 同步 media.json（只更新故事／音樂／影片） */
+function updateFromRemote() {
+  var urlInput = $('media-json-url');
+  var url = (urlInput && urlInput.value) ? urlInput.value.trim() : '';
+  if (!url) {
+    alert('請先填寫 media.json 的 GitHub Raw 網址');
+    return;
+  }
+  state.mediaJsonUrl = url;
+  // 加時間戳避免快取
+  var fetchUrl = url + (url.indexOf('?') >= 0 ? '&' : '?') + 't=' + Date.now();
+
+  if (!window.XMLHttpRequest) {
+    alert('此裝置不支援更新功能');
+    return;
+  }
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', fetchUrl, true);
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState !== 4) return;
+    if (xhr.status >= 200 && xhr.status < 300) {
+      try {
+        var data = JSON.parse(xhr.responseText);
+        if (data.stories) state.stories = data.stories;
+        if (data.music) state.music = data.music;
+        if (data.videos) state.videos = data.videos;
+        persistState(function() {
+          alert('更新成功！故事／音樂／影片已同步。');
+          renderMediaList();
+          renderAll();
+        });
+      } catch (err) {
+        alert('解析 media.json 失敗：' + (err.message || err));
+      }
+    } else {
+      alert('無法下載 media.json（狀態 ' + xhr.status + '）。\n請確認網址正確，且檔案已上傳到 GitHub。');
+    }
+  };
+  xhr.onerror = function() {
+    alert('網路錯誤，無法更新。請確認 iPad 有連線。');
+  };
+  xhr.send();
 }
 
 function renderContacts() {
@@ -1586,67 +1694,22 @@ function importBackup(e) {
         return;
       }
 
-      // 判斷是否為「只含故事/音樂」的管理頁匯出檔
-      var isMediaOnly = (data.type === 'media-only') || (!data.contacts && (data.stories || data.music));
+      // 判斷是否為「只含媒體」的管理頁匯出檔
+      var isMediaOnly = (data.type === 'media-only') || (!data.contacts && (data.stories || data.music || data.videos));
 
       if (isMediaOnly) {
-        // 只更新故事與音樂，保留原本的聯絡人與密碼
-        if (!confirm('將更新故事與音樂列表（不會改動家人視訊與密碼），確定嗎？')) return;
+        if (!confirm('將更新故事／音樂／影片（不會改動家人視訊與密碼），確定嗎？')) return;
 
-        state.stories = [];
-        state.music = [];
+        if (data.stories) state.stories = data.stories;
+        if (data.music) state.music = data.music;
+        if (data.videos) state.videos = data.videos;
 
-        var items = [];
-        var i;
-        if (data.stories) {
-          for (i = 0; i < data.stories.length; i++) {
-            items.push({ type: 'story', item: data.stories[i] });
-          }
-        }
-        if (data.music) {
-          for (i = 0; i < data.music.length; i++) {
-            items.push({ type: 'music', item: data.music[i] });
-          }
-        }
-
-        var idx = 0;
-        function nextMedia() {
-          if (idx >= items.length) {
-            persistState(function() {
-              alert('故事與音樂已更新（家人視訊設定已保留）');
-              renderMediaList();
-              renderAll();
-              $('import-file').value = '';
-            });
-            return;
-          }
-          var entry = items[idx++];
-          var raw = entry.item;
-          var newItem = {
-            id: raw.id || uid(),
-            name: raw.name || '未命名',
-            cover: raw.cover || '',
-            url: raw.url || null,
-            svgKey: raw.svgKey || null
-          };
-          if (entry.type === 'story') state.stories.push(newItem);
-          else state.music.push(newItem);
-
-          if (raw.audioBase64 && !raw.url) {
-            var arr = raw.audioBase64.split(',');
-            var mimeMatch = arr[0].match(/:(.*?);/);
-            var mime = (mimeMatch && mimeMatch[1]) ? mimeMatch[1] : 'audio/mpeg';
-            var bstr = atob(arr[1] || '');
-            var n = bstr.length;
-            var u8 = new Uint8Array(n);
-            while (n--) u8[n] = bstr.charCodeAt(n);
-            var blob = new Blob([u8], { type: mime });
-            saveAudioBlob(newItem.id, blob, function() { nextMedia(); });
-          } else {
-            nextMedia();
-          }
-        }
-        nextMedia();
+        persistState(function() {
+          alert('故事／音樂／影片已更新（家人視訊設定已保留）');
+          renderMediaList();
+          renderAll();
+          $('import-file').value = '';
+        });
         return;
       }
 
