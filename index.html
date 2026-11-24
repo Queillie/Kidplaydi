@@ -717,18 +717,6 @@ audio { display: none; }
         </div>
         <div class="track" id="music-track"></div>
       </div>
-      <div class="section">
-        <div class="section-header">
-          <div class="section-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#3d3a34" stroke-width="2">
-              <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-              <polygon points="10 9 16 12 10 15 10 9" fill="#3d3a34"></polygon>
-            </svg>
-          </div>
-          <span class="section-title">影片</span>
-        </div>
-        <div class="track" id="video-track"></div>
-      </div>
     </div>
   </div>
 
@@ -793,7 +781,7 @@ audio { display: none; }
       <input type="url" id="media-json-url" placeholder="https://raw.githubusercontent.com/帳號/倉庫/main/media.json">
       <button class="btn-block" onclick="updateFromRemote()">更新內容（從 GitHub 同步）</button>
       <div class="note">
-        在管理頁下載 media.json 後上傳到 GitHub，再按上方按鈕即可同步故事／音樂／影片。<br>
+        在管理頁下載 media.json 後上傳到 GitHub，再按上方按鈕即可同步故事與音樂。<br>
         <b>不會覆蓋</b>家人視訊與家長密碼。
       </div>
 
@@ -1000,7 +988,8 @@ function persistState(cb) {
         name: v.name,
         cover: v.cover || '',
         youtubeType: v.youtubeType || 'video',
-        youtubeId: v.youtubeId || ''
+        youtubeId: v.youtubeId || '',
+        startVideoId: v.startVideoId || null
       };
     }),
     pin: state.pin,
@@ -1153,7 +1142,6 @@ function renderAll() {
   renderFamily();
   renderTrack('story');
   renderTrack('music');
-  renderTrack('video');
 }
 
 function openVideo(item) {
@@ -1163,11 +1151,16 @@ function openVideo(item) {
   }
   var url;
   if (item.youtubeType === 'playlist') {
-    url = 'https://www.youtube.com/playlist?list=' + encodeURIComponent(item.youtubeId);
+    // 用 watch?list= 才會直接開始播放（不要用 /playlist?list=）
+    if (item.startVideoId) {
+      url = 'https://www.youtube.com/watch?v=' + encodeURIComponent(item.startVideoId) +
+            '&list=' + encodeURIComponent(item.youtubeId);
+    } else {
+      url = 'https://www.youtube.com/watch?list=' + encodeURIComponent(item.youtubeId);
+    }
   } else {
     url = 'https://www.youtube.com/watch?v=' + encodeURIComponent(item.youtubeId);
   }
-  // 舊 iPad 最穩的方式：直接開啟 YouTube
   window.location.href = url;
 }
 
