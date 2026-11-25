@@ -708,14 +708,13 @@ audio { display: none; }
         <div class="section-header">
           <div class="section-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="#3d3a34" stroke-width="2">
-              <path d="M9 18V5l12-2v13"></path>
-              <circle cx="6" cy="18" r="3"></circle>
-              <circle cx="18" cy="16" r="3"></circle>
+              <circle cx="12" cy="12" r="9"></circle>
+              <polygon points="10 8 16 12 10 16 10 8" fill="#3d3a34" stroke="none"></polygon>
             </svg>
           </div>
-          <span class="section-title">音樂</span>
+          <span class="section-title">歌單</span>
         </div>
-        <div class="track" id="music-track"></div>
+        <div class="track" id="playlist-track"></div>
       </div>
     </div>
   </div>
@@ -882,7 +881,7 @@ var state = {
   contacts: [],
   stories: [],
   music: [],
-  videos: [],
+  playlists: [],
   pin: '1234',
   mediaJsonUrl: ''
 };
@@ -982,14 +981,12 @@ function persistState(cb) {
     music: state.music.map(function(m) {
       return { id: m.id, name: m.name, cover: m.cover, url: m.url || null, svgKey: m.svgKey || null };
     }),
-    videos: (state.videos || []).map(function(v) {
+    playlists: (state.playlists || []).map(function(p) {
       return {
-        id: v.id,
-        name: v.name,
-        cover: v.cover || '',
-        youtubeType: v.youtubeType || 'video',
-        youtubeId: v.youtubeId || '',
-        startVideoId: v.startVideoId || null
+        id: p.id,
+        name: p.name,
+        cover: p.cover || '',
+        url: p.url || ''
       };
     }),
     pin: state.pin,
@@ -1003,7 +1000,7 @@ function loadState(cb) {
       state.contacts = data.contacts || [];
       state.stories = data.stories || [];
       state.music = data.music || [];
-      state.videos = data.videos || [];
+      state.playlists = data.playlists || [];
       state.pin = data.pin || '1234';
       state.mediaJsonUrl = data.mediaJsonUrl || '';
     }
@@ -1014,8 +1011,8 @@ function loadState(cb) {
         { id: uid(), name: '爺爺', account: '', avatar: '', avatarKey: 'grandma' }
       ];
     }
-    if (!state.videos) state.videos = [];
-    if (state.stories.length === 0 && state.music.length === 0 && state.videos.length === 0) {
+    if (!state.playlists) state.playlists = [];
+    if (state.stories.length === 0 && state.music.length === 0) {
       state.stories = DEMO_STORIES.slice();
       state.music = DEMO_MUSIC.slice();
     }
@@ -1095,15 +1092,15 @@ function renderFamily() {
 }
 
 function renderTrack(type) {
-  var trackId = type === 'story' ? 'story-track' : (type === 'music' ? 'music-track' : 'video-track');
-  var list = type === 'story' ? state.stories : (type === 'music' ? state.music : (state.videos || []));
+  var trackId = type === 'story' ? 'story-track' : (type === 'music' ? 'music-track' : 'playlist-track');
+  var list = type === 'story' ? state.stories : (type === 'music' ? state.music : (state.playlists || []));
   var track = $(trackId);
   if (!track) return;
   track.innerHTML = '';
   if (list.length === 0) {
     var empty = createEl('div');
     empty.style.cssText = 'display:inline-block;padding:36px 16px;color:#a89f8e;font-size:14px;';
-    empty.textContent = type === 'story' ? '尚無故事，請家長新增' : (type === 'music' ? '尚無音樂，請家長新增' : '尚無影片，請家長新增');
+    empty.textContent = type === 'story' ? '尚無故事，請家長新增' : (type === 'music' ? '尚無音樂，請家長新增' : '尚無歌單，請家長新增');
     track.appendChild(empty);
     return;
   }
@@ -1128,7 +1125,8 @@ function renderTrack(type) {
       card.appendChild(cover);
       card.appendChild(title);
       card.onclick = function() {
-        playMedia(type, item);
+        if (type === 'playlist') openPlaylist(item);
+        else playMedia(type, item);
       };
       track.appendChild(card);
     })(list[i]);
@@ -1138,7 +1136,16 @@ function renderTrack(type) {
 function renderAll() {
   renderFamily();
   renderTrack('story');
-  renderTrack('music');
+  renderTrack('playlist');
+}
+
+function openPlaylist(item) {
+  if (!item || !item.url) {
+    alert('此歌單尚未設定 Apple Music 連結');
+    return;
+  }
+  // 引導使用模式下可能無法跳轉；需先結束引導使用
+  window.location.href = item.url;
 }
 
 function openVideo(item) {
@@ -1350,9 +1357,9 @@ function updateFromRemote() {
         var data = JSON.parse(xhr.responseText);
         if (data.stories) state.stories = data.stories;
         if (data.music) state.music = data.music;
-        if (data.videos) state.videos = data.videos;
+        if (data.playlists) state.playlists = data.playlists;
         persistState(function() {
-          alert('更新成功！故事／音樂／影片已同步。');
+          alert('更新成功！故事／音樂／歌單已同步。');
           renderMediaList();
           renderAll();
         });
@@ -1685,17 +1692,17 @@ function importBackup(e) {
       }
 
       // 判斷是否為「只含媒體」的管理頁匯出檔
-      var isMediaOnly = (data.type === 'media-only') || (!data.contacts && (data.stories || data.music || data.videos));
+      var isMediaOnly = (data.type === 'media-only') || (!data.contacts && (data.stories || data.music || data.playlists));
 
       if (isMediaOnly) {
-        if (!confirm('將更新故事／音樂／影片（不會改動家人視訊與密碼），確定嗎？')) return;
+        if (!confirm('將更新故事／音樂／歌單（不會改動家人視訊與密碼），確定嗎？')) return;
 
         if (data.stories) state.stories = data.stories;
         if (data.music) state.music = data.music;
-        if (data.videos) state.videos = data.videos;
+        if (data.playlists) state.playlists = data.playlists;
 
         persistState(function() {
-          alert('故事／音樂／影片已更新（家人視訊設定已保留）');
+          alert('故事／音樂／歌單已更新（家人視訊設定已保留）');
           renderMediaList();
           renderAll();
           $('import-file').value = '';
